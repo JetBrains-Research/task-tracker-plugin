@@ -1,6 +1,6 @@
 <idea-plugin>
-    <id>io.github.elena-lyulina.actanalyzer.actanalyzer</id>
-    <name>Plugin display name here</name>
+    <id>io.github.elena-lyulina.codetracker.codetracker</id>
+    <name>codetracker</name>
     <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
 
     <description><![CDATA[
@@ -8,17 +8,13 @@
     <em>most HTML tags may be used</em>
     ]]></description>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
-    <depends>com.intellij.modules.lang</depends>
-    -->
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+        <postStartupActivity implementation="PluginWidgetInitActivity"></postStartupActivity>
     </extensions>
 
     <actions>
-        <!-- Add your actions here -->
+
     </actions>
 </idea-plugin>

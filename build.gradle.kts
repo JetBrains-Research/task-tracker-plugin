@@ -4,6 +4,7 @@ plugins {
     id("org.jetbrains.intellij") version "0.4.10"
     java
     kotlin("jvm") version "1.3.41"
+    id("org.openjfx.javafxplugin") version "0.0.8"
 }
 
 group = "io.github.elena-lyulina.actanalyzer"
@@ -13,15 +14,24 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     testCompile("junit", "junit", "4.12")
+    // https://mvnrepository.com/artifact/no.tornado/tornadofx
+    testCompile("no.tornado", "tornadofx", "1.7.19")
+
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version = "2019.2.2"
 }
+
+javafx {
+    modules("javafx.controls", "javafx.fxml")
+}
+
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
@@ -33,3 +43,4 @@ tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
+
