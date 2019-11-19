@@ -17,6 +17,10 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation("com.opencsv","opencsv", "5.0")
+    implementation("joda-time", "joda-time", "2.9.2")
+    implementation("org.apache.commons", "commons-csv", "1.7")
+
     testCompile("junit", "junit", "4.12")
     // https://mvnrepository.com/artifact/no.tornado/tornadofx
     testCompile("no.tornado", "tornadofx", "1.7.19")

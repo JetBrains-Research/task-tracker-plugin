@@ -18,7 +18,7 @@ class PluginWidgetInitActivity : StartupActivity {
         val statusBar = WindowManager.getInstance().getStatusBar(project)
         statusBar?.addWidget(widget, StatusBar.Anchors.DEFAULT_ANCHOR, disposable)
         statusBar?.updateWidget(widget.ID())
-        widget.plugin.addMultiDocumentListener(project)
+        widget.plugin.addProjectManagerListener(project)
     }
 }
 
@@ -38,7 +38,6 @@ class PluginStatusBarWidget(project: Project) : EditorBasedWidget(project) {
             override fun getTooltipText() : String = "Press to turn code-tracker ${plugin.switchedState()}"
             override fun getClickConsumer(): Consumer<MouseEvent>? = Consumer { mouseEvent ->
                 if (mouseEvent.id == MouseEvent.MOUSE_PRESSED) {
-                    println("pressed")
                     plugin.trackingState = plugin.switchedState()
                 }
             }
