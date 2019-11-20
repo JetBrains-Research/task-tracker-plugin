@@ -45,6 +45,7 @@ class CodeTrackerPlugin(private val widget: PluginStatusBarWidget) {
         ProjectManager.getInstance().addProjectManagerListener (project, object : ProjectManagerListener {
             override fun projectClosing(project: Project) {
                 flushLoggers()
+                trackingDocuments.values.forEach { it.close() }
                 super.projectClosing(project)
             }
 

@@ -1,4 +1,5 @@
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.wm.StatusBar
@@ -35,7 +36,7 @@ class PluginStatusBarWidget(project: Project) : EditorBasedWidget(project) {
         val presentation = object : StatusBarWidget.TextPresentation {
             override fun getAlignment(): Float = Component.CENTER_ALIGNMENT
             override fun getText() : String = "$ID: ${plugin.trackingState}"
-            override fun getTooltipText() : String = "Press to turn code-tracker ${plugin.switchedState()}"
+            override fun getTooltipText() : String = "Press to turn code-tracker ${plugin.switchedState()}; path: \"${PathManager.getPluginsPath()}\""
             override fun getClickConsumer(): Consumer<MouseEvent>? = Consumer { mouseEvent ->
                 if (mouseEvent.id == MouseEvent.MOUSE_PRESSED) {
                     plugin.trackingState = plugin.switchedState()

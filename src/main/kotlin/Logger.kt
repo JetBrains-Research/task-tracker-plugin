@@ -14,7 +14,6 @@ import java.io.FileWriter
 
 
 class Logger(initEvent: DocumentEvent) {
-
     companion object {
         private val folderPath = "${PathManager.getPluginsPath()}/code-tracker/"
     }
@@ -30,6 +29,7 @@ class Logger(initEvent: DocumentEvent) {
     }
 
     private fun createLogFile(): File {
+        File(folderPath).mkdirs()
         val file = FileDocumentManager.getInstance().getFile(document)
         val logFile = File("$folderPath${file?.nameWithoutExtension}_${file.hashCode()}_${document.hashCode()}.csv")
         FileUtil.createIfDoesntExist(logFile)
@@ -40,6 +40,11 @@ class Logger(initEvent: DocumentEvent) {
         csvPrinter.flush()
     }
 
+    fun close() {
+        csvPrinter.close()
+        fileWriter.close()
+    }
+
     fun log(event: DocumentEvent) {
         val change = getDocumentChange(event)
         csvPrinter.printRecord(change.getData())
@@ -48,16 +53,6 @@ class Logger(initEvent: DocumentEvent) {
     private fun getDocumentChange(event: DocumentEvent) : DocumentChange {
         val document = event.document
         val file = FileDocumentManager.getInstance().getFile(document)
-        val offset = event.offset
-        val newLength = event.newLength
-
-        val firstLine = document.getLineNumber(offset)
-        val lastLine =
-            if (newLength == 0) {
-                firstLine
-            } else {
-                document.getLineNumber(offset + newLength - 1)
-            }
 
         return DocumentChange(
             event.document.modificationStamp,
@@ -65,10 +60,6 @@ class Logger(initEvent: DocumentEvent) {
             file?.name,
             file?.hashCode(),
             document.hashCode(),
-            offset,
-            newLength,
-            firstLine,
-            lastLine,
             document.text
         )
     }
@@ -82,16 +73,11 @@ data class DocumentChange(
     val fileName: String?,
     val fileHashCode: Int?,
     val documentHashCode: Int,
-    val offset: Int,
-    val newLength: Int,
-    val firstLine: Int,
-    val lastLine: Int,
     val fragment: String
 ) {
 
     companion object {
-        val headers = listOf("timestamp", "userName", "fileName", "fileHashCode", "documentHashCode", "offset",
-            "newLength", "firstLine", "lastLine", "fragment")
+        val headers = listOf("timestamp", "userName", "fileName", "fileHashCode", "documentHashCode", "fragment")
     }
 
 
@@ -102,10 +88,6 @@ data class DocumentChange(
             fileName,
             fileHashCode,
             documentHashCode,
-            offset,
-            newLength,
-            firstLine,
-            lastLine,
             fragment
         ).map { it.toString() }
     }

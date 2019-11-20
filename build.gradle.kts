@@ -1,16 +1,20 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.jetbrains.intellij") version "0.4.10"
     java
-    kotlin("jvm") version "1.3.41"
+    kotlin("jvm") version "1.3.50"
     id("org.openjfx.javafxplugin") version "0.0.8"
+    id("com.github.johnrengelman.shadow") version "5.1.0"
 }
 
 group = "io.github.elena-lyulina.actanalyzer"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    maven (url = "https://www.jetbrains.com/intellij-repository/releases")
+    maven (url = "https://jetbrains.bintray.com/intellij-third-party-dependencies")
     mavenCentral()
 }
 
@@ -27,9 +31,21 @@ dependencies {
 
 }
 
+//instrumentCode {
+//    compilerVersion = "192.6817.32" // latest build of com.jetbrains.intellij.java from https://www.jetbrains.com/intellij-repository/releases/
+//}
+
+tasks.getByName<org.jetbrains.intellij.tasks.IntelliJInstrumentCodeTask>("instrumentCode") {
+    setCompilerVersion("192.6817.32")
+}
+
+
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "2019.2.2"
+    type = "RD"
+    version = "2019.2-SNAPSHOT"
+    downloadSources = false
+    intellij.updateSinceUntilBuild = false
 }
 
 javafx {
@@ -44,7 +60,12 @@ tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml
       Add change notes here.<br>
       <em>most HTML tags may be used</em>""")
 }
+
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+tasks.withType<ShadowJar>() {
+}
+
 

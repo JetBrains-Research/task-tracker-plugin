@@ -1,16 +1,16 @@
 <idea-plugin>
     <id>io.github.elena-lyulina.codetracker.codetracker</id>
     <name>codetracker</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="elena.lyulina@gmail.com" url="https://github.com/elena-lyulina"> Elena Lyulina </vendor>
 
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    This is a plugin for tracking all code changes and storing them in .csv file.
     ]]></description>
 
 
+    <depends>com.intellij.modules.platform</depends>
+
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
         <postStartupActivity implementation="PluginWidgetInitActivity"></postStartupActivity>
     </extensions>
 
