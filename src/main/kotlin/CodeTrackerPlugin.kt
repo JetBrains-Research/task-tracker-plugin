@@ -6,9 +6,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.VirtualFile
-import java.io.File
+import org.joda.time.DateTime
 
 
 class CodeTrackerPlugin(private val widget: PluginStatusBarWidget) {
@@ -23,20 +21,16 @@ class CodeTrackerPlugin(private val widget: PluginStatusBarWidget) {
             widget.updateState()
         }
 
-
-    // todo: rename tracking documents
-    private val trackingDocuments: MutableMap<Document, Logger> = HashMap()
+    private val documentsToLoggers: MutableMap<Document, Logger> = HashMap()
 
     private val documentListener = object : DocumentListener {
+
+        /*
+         Tracking documents changes before to be consistent with activity-tracker plugin
+         */
         override fun beforeDocumentChange(event: DocumentEvent) {
             if (isValidChange(event)) {
-                trackingDocuments.getOrPut(event.document, { Logger(event) } )
-            }
-        }
-
-        override fun documentChanged(event: DocumentEvent) {
-            if (isValidChange(event)) {
-                trackingDocuments.get(event.document)?.log(event)
+                documentsToLoggers.getOrPut(event.document, { Logger(event.document) } ).log(event)
             }
         }
     }
@@ -45,10 +39,9 @@ class CodeTrackerPlugin(private val widget: PluginStatusBarWidget) {
         ProjectManager.getInstance().addProjectManagerListener (project, object : ProjectManagerListener {
             override fun projectClosing(project: Project) {
                 flushLoggers()
-                trackingDocuments.values.forEach { it.close() }
+                documentsToLoggers.values.forEach { it.close() }
                 super.projectClosing(project)
             }
-
         } )
 
     }
@@ -68,7 +61,7 @@ class CodeTrackerPlugin(private val widget: PluginStatusBarWidget) {
     }
 
     private fun flushLoggers() {
-        trackingDocuments.values.forEach { it.flush() }
+        documentsToLoggers.values.forEach { it.flush() }
     }
 
 

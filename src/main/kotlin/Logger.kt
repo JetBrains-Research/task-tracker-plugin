@@ -11,21 +11,20 @@ import com.intellij.util.SystemProperties
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import java.io.FileWriter
+import java.util.*
 
 
-class Logger(initEvent: DocumentEvent) {
+class Logger(private val document: Document) {
     companion object {
         private val folderPath = "${PathManager.getPluginsPath()}/code-tracker/"
     }
 
-    private val document: Document = initEvent.document
     private val logFile: File = createLogFile()
     private val fileWriter: FileWriter = FileWriter(logFile)
     private val csvPrinter: CSVPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
 
     init {
         csvPrinter.printRecord(DocumentChange.headers)
-        log(initEvent)
     }
 
     private fun createLogFile(): File {
@@ -51,10 +50,12 @@ class Logger(initEvent: DocumentEvent) {
     }
 
     private fun getDocumentChange(event: DocumentEvent) : DocumentChange {
+        val time = DateTime.now()
         val document = event.document
         val file = FileDocumentManager.getInstance().getFile(document)
 
         return DocumentChange(
+            time,
             event.document.modificationStamp,
             SystemProperties.getUserName(),
             file?.name,
@@ -68,6 +69,7 @@ class Logger(initEvent: DocumentEvent) {
 
 
 data class DocumentChange(
+    val date: DateTime,
     val timestamp: Long,
     val userName: String,
     val fileName: String?,
@@ -77,12 +79,13 @@ data class DocumentChange(
 ) {
 
     companion object {
-        val headers = listOf("timestamp", "userName", "fileName", "fileHashCode", "documentHashCode", "fragment")
+        val headers = listOf("date", "timestamp", "userName", "fileName", "fileHashCode", "documentHashCode", "fragment")
     }
 
 
     fun getData() : List<String>{
         return listOf(
+            date,
             timestamp,
             userName,
             fileName,
