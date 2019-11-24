@@ -6,7 +6,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import org.joda.time.DateTime
+import ui.PluginStatusBarWidget
 
 
 class CodeTrackerPlugin(private val widget: PluginStatusBarWidget) {

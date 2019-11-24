@@ -4,17 +4,20 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.jetbrains.intellij") version "0.4.10"
     java
-    kotlin("jvm") version "1.3.50"
-    id("org.openjfx.javafxplugin") version "0.0.8"
+    kotlin("jvm") version "1.3.60"
     id("com.github.johnrengelman.shadow") version "5.1.0"
+    id("org.openjfx.javafxplugin") version "0.0.8"
+    id("com.gluonhq.client-gradle-plugin") version "0.0.11"
+
 }
 
-group = "io.github.elena-lyulina.actanalyzer"
+group = "io.github.elena-lyulina.codetracker"
 version = "1.0-SNAPSHOT"
 
 repositories {
     maven (url = "https://www.jetbrains.com/intellij-repository/releases")
     maven (url = "https://jetbrains.bintray.com/intellij-third-party-dependencies")
+    maven (url = "https://nexus.gluonhq.com/nexus/content/repositories/releases/")
     mavenCentral()
 }
 
@@ -24,32 +27,65 @@ dependencies {
     implementation("com.opencsv","opencsv", "5.0")
     implementation("joda-time", "joda-time", "2.9.2")
     implementation("org.apache.commons", "commons-csv", "1.7")
+    // https://mvnrepository.com/artifact/com.gluonhq/charm-glisten
+    implementation("com.gluonhq", "charm-glisten", "6.0.1")
 
     testCompile("junit", "junit", "4.12")
-    // https://mvnrepository.com/artifact/no.tornado/tornadofx
-    testCompile("no.tornado", "tornadofx", "1.7.19")
 
 }
 
-//instrumentCode {
-//    compilerVersion = "192.6817.32" // latest build of com.jetbrains.intellij.java from https://www.jetbrains.com/intellij-repository/releases/
+ /*
+    Uncomment for testing with Rider IDE
+ */
+//tasks.getByName<org.jetbrains.intellij.tasks.IntelliJInstrumentCodeTask>("instrumentCode") {
+//    setCompilerVersion("192.6817.32")
+//}
+//intellij {
+//    type = "RD"
+//    version = "2019.2-SNAPSHOT"
+//    downloadSources = false
+//    intellij.updateSinceUntilBuild = false
 //}
 
-tasks.getByName<org.jetbrains.intellij.tasks.IntelliJInstrumentCodeTask>("instrumentCode") {
-    setCompilerVersion("192.6817.32")
-}
 
-
-// See https://github.com/JetBrains/gradle-intellij-plugin/
+ /*
+    Uncomment for testing with Intellij IDEA
+ */
 intellij {
-    type = "RD"
-    version = "2019.2-SNAPSHOT"
-    downloadSources = false
-    intellij.updateSinceUntilBuild = false
+    version = "2019.2.2"
 }
+
+
+ /*
+    Uncomment for testing with PyCharm IDE
+ */
+//intellij {
+//    version = "2019.2.3"
+//    type = "PY"
+//}
+
+
+//intellij {
+//    val ideVersion = System.getenv().getOrDefault(
+//        "CODE_TRACKER_IDEA_VERSION",
+//        "192.5728.98"
+////			"LATEST-EAP-SNAPSHOT"
+//    )
+//    println("Using ide version: ${ideVersion}")
+//    version = ideVersion
+//            // The artifact name is deliberately not "activity-tracker" because
+//            // *.csv files are stored in the "activity-tracker" directory.
+//            // If plugin archive has the same name, the directory will be deleted on plugin update.
+//    pluginName = "code-tracker-plugin"
+//    downloadSources = true
+//    sameSinceUntilBuild = false
+//    updateSinceUntilBuild = false
+//}
 
 javafx {
-    modules("javafx.controls", "javafx.fxml")
+    version = "11"
+    modules("javafx.controls", "javafx.fxml", "javafx.swing")
+    configuration = "compileOnly"
 }
 
 configure<JavaPluginConvention> {
@@ -65,6 +101,10 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+gluonClient {
+    reflectionList = arrayListOf("javafx.fxml.FXMLLoader", "com.gluon.hello.views.HelloPresenter",
+        "javafx.scene.control.Button", "javafx.scene.control.Label")
+}
 tasks.withType<ShadowJar>() {
 }
 

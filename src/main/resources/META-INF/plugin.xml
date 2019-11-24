@@ -11,7 +11,9 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="PluginWidgetInitActivity"></postStartupActivity>
+        <postStartupActivity implementation="ui.PluginWidgetInitActivity"></postStartupActivity>
+        <toolWindow id="codetracker" anchor="right" factoryClass="ui.PluginToolWindowFactory"/>
+
     </extensions>
 
     <actions>
