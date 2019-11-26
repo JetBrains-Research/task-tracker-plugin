@@ -24,6 +24,22 @@ class UiData(val tasks: List<String>) {
 
     // todo handle it
     var programExperience: ProgramExperience = ProgramExperience.LESS_THAN_HALF_YEAR
+
+    companion object {
+        val headers = listOf(
+            "chosenTask",
+            "writtenTask",
+            "age",
+            "programExperience"
+        )
+    }
+
+    fun getData() = listOf(
+        chosenTask,
+        writtenTask,
+        age,
+        programExperience
+    ).map { it.toString() }
 }
 
 enum class ProgramExperience(val toString: String) {

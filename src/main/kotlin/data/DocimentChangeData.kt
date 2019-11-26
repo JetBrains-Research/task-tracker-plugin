@@ -13,7 +13,14 @@ data class DocumentChangeData(
 ) {
 
     companion object {
-        val headers = listOf("date", "timestamp", "userName", "fileName", "fileHashCode", "documentHashCode", "fragment")
+        val headers = listOf(
+            "date",
+            "timestamp",
+            "userName",
+            "fileName",
+            "fileHashCode",
+            "documentHashCode",
+            "fragment")
     }
 
     fun getData() : List<String>{

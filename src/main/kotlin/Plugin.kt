@@ -7,14 +7,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
 import data.UiData
+import ui.ControllerManager
 import java.util.logging.Logger
 
 
 object Plugin {
     private val log: Logger = Logger.getLogger(javaClass.name)
-    private val server: Server = DumbServer()
-    val uiData: UiData = UiData(server.getTasks())
-
     private val projectsToListeners: MutableMap<Project, PluginDocumentListener> = HashMap()
 
 

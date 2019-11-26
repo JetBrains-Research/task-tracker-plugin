@@ -1,10 +1,14 @@
 package ui
 
 import data.UiData
+import Server
+import DumbServer
 
 object ControllerManager {
     private val controllers : MutableList<Controller> = arrayListOf()
-    val uiData = UiData(listOf("a", "b"))
+
+    val server: Server = DumbServer
+    val uiData = UiData(server.getTasks())
 
     fun addController(controller: Controller) = controllers.add(controller)
 
@@ -21,5 +25,4 @@ object ControllerManager {
     fun ageNotify(newAge: Int) {
         controllers.forEach { it.ageSlider.value = newAge.toDouble() }
     }
-
 }

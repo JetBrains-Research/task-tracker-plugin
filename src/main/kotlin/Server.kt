@@ -9,7 +9,7 @@ interface Server {
 
 
 
-class DumbServer : Server {
+object DumbServer : Server {
     private val log: Logger = Logger.getLogger(javaClass.name)
 
     init {

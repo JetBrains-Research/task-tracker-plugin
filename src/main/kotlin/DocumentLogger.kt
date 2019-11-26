@@ -6,9 +6,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.SystemProperties
 import data.DocumentChangeData
+import data.UiData
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.joda.time.DateTime
+import ui.ControllerManager
 import java.io.File
 import java.io.FileWriter
 import java.util.logging.Logger
@@ -31,7 +33,7 @@ class DocumentLogger(project: Project) {
         val printer = documentsToPrinters.getOrPut(document, { initPrinter(document) })
 
         val change = getDocumentChange(event)
-        printer.csvPrinter.printRecord(change.getData())
+        printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData())
     }
 
     private fun getDocumentChange(event: DocumentEvent) : DocumentChangeData {
@@ -54,7 +56,7 @@ class DocumentLogger(project: Project) {
         val file = createLogFile(document)
         val fileWriter = FileWriter(file)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
-        csvPrinter.printRecord(DocumentChangeData.headers)
+        csvPrinter.printRecord(DocumentChangeData.headers + UiData.headers)
         return Printer(csvPrinter, fileWriter)
     }
 
