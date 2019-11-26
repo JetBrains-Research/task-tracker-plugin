@@ -59,7 +59,7 @@
                   <Font size="19.0" />
                </font>
             </Label>
-            <RadioButton layoutX="62.0" layoutY="501.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="221.0" text="меньше 0.5 года" textFill="#603261">
+            <RadioButton fx:id="peLessThanHalf" layoutX="62.0" layoutY="501.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="221.0" text="меньше 0.5 года" textFill="#603261">
                <toggleGroup>
                   <ToggleGroup fx:id="programExperienceGroup" />
                </toggleGroup>
@@ -67,27 +67,27 @@
                   <Font size="17.0" />
                </font>
             </RadioButton>
-            <RadioButton layoutX="62.0" layoutY="541.0" mnemonicParsing="false" text="от 0.5 до 1 года" textFill="#603261" toggleGroup="$programExperienceGroup">
+            <RadioButton fx:id="peFromHalfToOne" layoutX="62.0" layoutY="541.0" mnemonicParsing="false" text="от 0.5 до 1 года" textFill="#603261" toggleGroup="$programExperienceGroup">
                <font>
                   <Font size="17.0" />
                </font>
             </RadioButton>
-            <RadioButton layoutX="332.0" layoutY="503.0" mnemonicParsing="false" text="от 2 до 4 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+            <RadioButton fx:id="peFromTwoToFour" layoutX="332.0" layoutY="503.0" mnemonicParsing="false" text="от 2 до 4 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
                <font>
                   <Font size="17.0" />
                </font>
             </RadioButton>
-            <RadioButton layoutX="332.0" layoutY="541.0" mnemonicParsing="false" text="от 4 до 6 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+            <RadioButton fx:id="peFromFourToSix" layoutX="332.0" layoutY="541.0" mnemonicParsing="false" text="от 4 до 6 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
                <font>
                   <Font size="17.0" />
                </font>
             </RadioButton>
-            <RadioButton layoutX="62.0" layoutY="581.0" mnemonicParsing="false" text="от 1 года до 2 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+            <RadioButton fx:id="peFromOneToTwo" layoutX="62.0" layoutY="581.0" mnemonicParsing="false" text="от 1 года до 2 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
                <font>
                   <Font size="17.0" />
                </font>
             </RadioButton>
-            <RadioButton layoutX="332.0" layoutY="581.0" mnemonicParsing="false" text="больше 6 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+            <RadioButton fx:id="peMoreThanSix" layoutX="332.0" layoutY="581.0" mnemonicParsing="false" text="больше 6 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
                <font>
                   <Font size="17.0" />
                </font>

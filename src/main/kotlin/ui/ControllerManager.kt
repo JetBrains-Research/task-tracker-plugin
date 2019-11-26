@@ -22,4 +22,8 @@ object ControllerManager {
     fun ageNotify(newAge: Int) {
         controllers.forEach { it.ageSlider.value = newAge.toDouble() }
     }
+
+    fun programExperienceNotify(newPE: Int) {
+        controllers.forEach { it.programExperienceButtons[newPE].isSelected = true }
+    }
 }

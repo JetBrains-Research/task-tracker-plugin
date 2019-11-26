@@ -1,5 +1,6 @@
 package ui
 
+import data.ProgramExperience
 import data.UiData
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -24,6 +25,22 @@ class Controller {
 
     @FXML
     lateinit var programExperienceGroup: ToggleGroup
+
+    @FXML
+    lateinit var peLessThanHalf: RadioButton
+    @FXML
+    lateinit var peFromHalfToOne: RadioButton
+    @FXML
+    lateinit var peFromOneToTwo: RadioButton
+    @FXML
+    lateinit var peFromTwoToFour: RadioButton
+    @FXML
+    lateinit var peFromFourToSix: RadioButton
+    @FXML
+    lateinit var peMoreThanSix: RadioButton
+
+    @FXML
+    lateinit var programExperienceButtons: List<RadioButton>
 
     @FXML
     lateinit var clearTask: Button
@@ -65,7 +82,20 @@ class Controller {
     }
 
     private fun initProgramExperienceGroup() {
-        // TODO("not implemented")
+        programExperienceButtons = listOf(
+            peLessThanHalf,
+            peFromHalfToOne,
+            peFromOneToTwo,
+            peFromTwoToFour,
+            peFromFourToSix,
+            peMoreThanSix
+        )
+        programExperienceButtons[uiData.programExperience.number].isSelected = true
+        programExperienceGroup.selectedToggleProperty().addListener { _, old, new ->
+            log.info("program experience changed from $old to $new")
+            uiData.programExperience = ProgramExperience.values()[programExperienceButtons.indexOf(new)]
+        }
+
     }
 
 }
