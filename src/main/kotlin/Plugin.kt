@@ -52,7 +52,7 @@ object Plugin {
         PluginDocumentListener(project).add()
     }
 
-    // check disposable
+    // check disposable?
     fun addProjectManagerListener(project: Project) {
         ProjectManager.getInstance().addProjectManagerListener (project, object : ProjectManagerListener {
             override fun projectClosing(project: Project) {

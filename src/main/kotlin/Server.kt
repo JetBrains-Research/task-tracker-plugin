@@ -7,6 +7,7 @@ interface Server {
     fun sendTrackingData(file: File)
 }
 
+// todo: replace with the real one
 object DummyServer : Server {
     private val log: Logger = Logger.getLogger(javaClass.name)
 

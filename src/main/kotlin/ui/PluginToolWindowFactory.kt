@@ -16,7 +16,6 @@ import javax.swing.JComponent
 class PluginToolWindowFactory : ToolWindowFactory {
     private val log: Logger = Logger.getLogger(javaClass.name)
 
-
     init {
         log.info("init factory")
     }
