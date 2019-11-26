@@ -1,6 +1,7 @@
 package data
 
 import ui.ControllerManager
+import ui.NotifyEvent
 import kotlin.properties.Delegates
 
 class UiData(val tasks: List<String>) {
@@ -9,21 +10,21 @@ class UiData(val tasks: List<String>) {
     var chosenTask: String by Delegates.observable(tasks[0]) { _, _, new ->
         val newSelectedIndex = tasks.indexOf(new)
         if (newSelectedIndex != -1) {
-            controllerManager.chosenTaskNotify(newSelectedIndex)
+            controllerManager.notify(NotifyEvent.CHOSEN_TASK_NOTIFY, newSelectedIndex)
         }
     }
 
     var writtenTask: String by Delegates.observable("") { _, _, new ->
-        controllerManager.writtenTaskNotify(new)
+        controllerManager.notify(NotifyEvent.WRITTEN_TASK_NOTIFY, new)
     }
 
     var age: Int by Delegates.observable(0) { _, _, new ->
-        controllerManager.ageNotify(new)
+        controllerManager.notify(NotifyEvent.AGE_NOTIFY, new)
 
     }
 
     var programExperience: ProgramExperience by Delegates.observable(ProgramExperience.LESS_THAN_HALF_YEAR) { _, _, new ->
-        controllerManager.programExperienceNotify(new.number)
+        controllerManager.notify(NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, new.number)
     }
 
     companion object {
