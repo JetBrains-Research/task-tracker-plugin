@@ -7,14 +7,13 @@ interface Server {
     fun sendTrackingData(file: File)
 }
 
-
-
-object DumbServer : Server {
+object DummyServer : Server {
     private val log: Logger = Logger.getLogger(javaClass.name)
 
     init {
         log.info("init server")
     }
+
     override fun sendTrackingData(file: File) {
         log.info("...sending file ${file.name}")
     }

@@ -1,4 +1,3 @@
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
@@ -6,14 +5,13 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import data.UiData
-import ui.ControllerManager
 import java.util.logging.Logger
 
 
 object Plugin {
     private val log: Logger = Logger.getLogger(javaClass.name)
     private val projectsToListeners: MutableMap<Project, PluginDocumentListener> = HashMap()
+    val server: Server = DummyServer
 
 
     init {
@@ -61,6 +59,7 @@ object Plugin {
                 log.info("close project")
                 projectsToListeners[project]?.logger?.flush()
                 projectsToListeners[project]?.logger?.close()
+                projectsToListeners[project]?.logger?.getFiles()?.forEach { server.sendTrackingData(it) }
                 projectsToListeners[project]?.remove()
 
                 super.projectClosing(project)

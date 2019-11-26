@@ -1,14 +1,11 @@
 package ui
 
 import data.UiData
-import Server
-import DumbServer
 
 object ControllerManager {
     private val controllers : MutableList<Controller> = arrayListOf()
 
-    val server: Server = DumbServer
-    val uiData = UiData(server.getTasks())
+    val uiData = UiData(Plugin.server.getTasks())
 
     fun addController(controller: Controller) = controllers.add(controller)
 
