@@ -18,16 +18,11 @@
          <children>
             <AnchorPane prefHeight="86.0" prefWidth="553.0" style="-fx-background-color: linear-gradient(to left, #E86443, #914E94);">
                <children>
-                  <Label layoutX="198.0" layoutY="14.0" text="CodeTracker" textFill="WHITE">
+                  <Label layoutX="191.0" layoutY="11.0" text="CodeTracker" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="48.0" />
                      </font>
                   </Label>
-                  <Button layoutX="22.0" layoutY="31.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="116.0" style="-fx-background-radius: 20; -fx-background-color: #80AB3B;" text="Включить" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="15.0" />
-                     </font>
-                  </Button>
                </children>
             </AnchorPane>
             <Label layoutX="16.0" layoutY="92.0" text="Задача" textFill="#bb596d">
@@ -46,30 +41,25 @@
                </font>
             </Label>
             <Separator layoutX="16.0" layoutY="303.0" prefHeight="8.0" prefWidth="517.0" />
-            <TextField layoutX="310.0" layoutY="190.0" prefHeight="26.0" prefWidth="221.0" style="-fx-border-radius: 20; -fx-border-color: #FE9966; -fx-background-color: #ffffff;" />
-            <ChoiceBox layoutX="310.0" layoutY="144.0" prefHeight="26.0" prefWidth="221.0" style="-fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: #FE9966; -fx-background-color: #ffffff;" />
-            <Label layoutX="16.0" layoutY="376.0" text="Возраст:" textFill="#603261">
+            <TextField fx:id="taskTextField" layoutX="310.0" layoutY="190.0" prefHeight="26.0" prefWidth="221.0" style="-fx-border-radius: 20; -fx-border-color: #FE9966; -fx-background-color: #ffffff;" />
+            <ChoiceBox fx:id="taskChoiceBox" layoutX="310.0" layoutY="144.0" prefHeight="26.0" prefWidth="221.0" style="-fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: #FE9966; -fx-background-color: #ffffff;" />
+            <Label layoutX="16.0" layoutY="355.0" text="Возраст:" textFill="#603261">
                <font>
                   <Font size="19.0" />
                </font>
             </Label>
-            <Slider layoutX="122.0" layoutY="380.0" majorTickUnit="10.0" max="60.0" minorTickCount="1" prefHeight="16.0" prefWidth="416.0" showTickLabels="true" showTickMarks="true" />
-            <Button fx:id="clearTask" layoutX="152.0" layoutY="246.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="116.0" style="-fx-background-radius: 20; -fx-background-color: #E86443;" text="Очистить" textFill="WHITE">
+            <Slider fx:id="ageSlider" blockIncrement="1.0" cache="true" layoutX="16.0" layoutY="401.0" majorTickUnit="2.0" max="40.0" minorTickCount="1" prefHeight="38.0" prefWidth="517.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+            <Button fx:id="saveTask" layoutX="185.0" layoutY="246.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" style="-fx-background-color: #914E94; -fx-background-radius: 20;" text="Начать решать" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </Button>
-            <Button fx:id="saveTask" layoutX="294.0" layoutY="246.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="116.0" style="-fx-background-color: #914E94; -fx-background-radius: 20;" text="Cохранить" textFill="WHITE">
-               <font>
-                  <Font name="System Bold" size="15.0" />
-               </font>
-            </Button>
-            <Label layoutX="16.0" layoutY="437.0" text="Опыт программирования:" textFill="#603261">
+            <Label layoutX="16.0" layoutY="458.0" text="Опыт программирования:" textFill="#603261">
                <font>
                   <Font size="19.0" />
                </font>
             </Label>
-            <RadioButton layoutX="40.0" layoutY="480.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="221.0" text="меньше 0.5 года" textFill="#603261">
+            <RadioButton layoutX="62.0" layoutY="501.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="221.0" text="меньше 0.5 года" textFill="#603261">
                <toggleGroup>
                   <ToggleGroup fx:id="programExperienceGroup" />
                </toggleGroup>
@@ -77,42 +67,37 @@
                   <Font size="17.0" />
                </font>
             </RadioButton>
-            <RadioButton layoutX="40.0" layoutY="520.0" mnemonicParsing="false" text="от 0.5 до 1 года" textFill="#603261" toggleGroup="$programExperienceGroup">
+            <RadioButton layoutX="62.0" layoutY="541.0" mnemonicParsing="false" text="от 0.5 до 1 года" textFill="#603261" toggleGroup="$programExperienceGroup">
                <font>
                   <Font size="17.0" />
                </font>
             </RadioButton>
-            <RadioButton layoutX="310.0" layoutY="482.0" mnemonicParsing="false" text="от 2 до 4 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+            <RadioButton layoutX="332.0" layoutY="503.0" mnemonicParsing="false" text="от 2 до 4 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
                <font>
                   <Font size="17.0" />
                </font>
             </RadioButton>
-            <RadioButton layoutX="310.0" layoutY="520.0" mnemonicParsing="false" text="от 4 до 6 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+            <RadioButton layoutX="332.0" layoutY="541.0" mnemonicParsing="false" text="от 4 до 6 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
                <font>
                   <Font size="17.0" />
                </font>
             </RadioButton>
-            <RadioButton layoutX="40.0" layoutY="560.0" mnemonicParsing="false" text="от 1 года до 2 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+            <RadioButton layoutX="62.0" layoutY="581.0" mnemonicParsing="false" text="от 1 года до 2 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
                <font>
                   <Font size="17.0" />
                </font>
             </RadioButton>
-            <RadioButton layoutX="310.0" layoutY="560.0" mnemonicParsing="false" text="больше 6 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+            <RadioButton layoutX="332.0" layoutY="581.0" mnemonicParsing="false" text="больше 6 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
                <font>
                   <Font size="17.0" />
                </font>
             </RadioButton>
-            <Label layoutX="16.0" layoutY="327.0" text="Анкета" textFill="#bb596d">
+            <Label layoutX="16.0" layoutY="315.0" text="Анкета" textFill="#bb596d">
                <font>
                   <Font name="System Bold" size="26.0" />
                </font>
             </Label>
-            <Button fx:id="clearInfoForm" layoutX="147.0" layoutY="612.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="116.0" style="-fx-background-radius: 20; -fx-background-color: #E86443;" text="Очистить" textFill="WHITE">
-               <font>
-                  <Font name="System Bold" size="15.0" />
-               </font>
-            </Button>
-            <Button fx:id="saveInfoForm" layoutX="289.0" layoutY="612.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="116.0" style="-fx-background-color: #914E94; -fx-background-radius: 20;" text="Cохранить" textFill="WHITE">
+            <Button fx:id="clearInfoForm" layoutX="185.0" layoutY="627.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" style="-fx-background-radius: 20; -fx-background-color: #E86443;" text="Очистить" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
