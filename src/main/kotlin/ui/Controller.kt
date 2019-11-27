@@ -7,6 +7,7 @@ import javafx.collections.ObservableList
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import java.util.logging.Logger
+import Task
 
 class Controller {
     private val log: Logger = Logger.getLogger(javaClass.name)
@@ -15,7 +16,7 @@ class Controller {
     private val uiData: UiData = ControllerManager.uiData
 
     @FXML
-    lateinit var taskChoiceBox: ChoiceBox<String>
+    lateinit var taskChoiceBox: ChoiceBox<Task>
 
     @FXML
     lateinit var taskTextField: TextField

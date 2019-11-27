@@ -29,6 +29,8 @@ dependencies {
     implementation("org.apache.commons", "commons-csv", "1.7")
     // https://mvnrepository.com/artifact/com.gluonhq/charm-glisten
     implementation("com.gluonhq", "charm-glisten", "6.0.1")
+    implementation("com.google.code.gson", "gson", "2.8.5")
+    implementation("com.squareup.okhttp3", "okhttp", "4.2.2")
 
     testCompile("junit", "junit", "4.12")
 
