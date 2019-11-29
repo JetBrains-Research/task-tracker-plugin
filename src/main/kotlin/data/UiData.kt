@@ -26,6 +26,10 @@ class UiData(val tasks: List<String>) {
         // to be able to set specific ways of logging like logging a task id in case of chosenTask
         open val logValue: String
             get() = uiValue.toString()
+
+        fun setDefault() {
+            uiValue = defaultUiValue
+        }
     }
 
     companion object {
@@ -38,9 +42,9 @@ class UiData(val tasks: List<String>) {
     }
 
     fun getData() = listOf(
-        chosenTask.logValue,
-        writtenTask.logValue,
-        age.logValue,
-        programExperience.logValue
+        chosenTask,
+        writtenTask,
+        age,
+        programExperience
     )
 }

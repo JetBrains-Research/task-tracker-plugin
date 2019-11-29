@@ -2,8 +2,10 @@ package ui
 
 import data.UiData
 import javafx.collections.FXCollections
+import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.scene.control.*
+import javafx.scene.input.MouseEvent
 import java.util.logging.Logger
 
 class Controller {
@@ -41,7 +43,7 @@ class Controller {
     lateinit var experienceButtonByText: Map<String, RadioButton?>
 
     @FXML
-    lateinit var clearTask: Button
+    lateinit var clearInfoForm: Button
 
 
     fun initialize() {
@@ -52,6 +54,8 @@ class Controller {
         initTaskTextField()
         initAgeSlider()
         initProgramExperienceGroup()
+
+        initClearInfoForm()
     }
 
 
@@ -94,13 +98,20 @@ class Controller {
         selectExperienceButton(uiData.programExperience.uiValue)
         programExperienceGroup.selectedToggleProperty().addListener { _, old, new ->
             log.info("program experience changed from $old to $new")
-            uiData.programExperience.uiValue = (new as RadioButton).text
+            uiData.programExperience.uiValue = (new as? RadioButton)?.text ?: "null"
         }
     }
 
     fun selectExperienceButton(text: String) {
         val selectedButton = experienceButtonByText[text]
         programExperienceGroup.selectToggle(selectedButton)
+    }
+
+    private fun initClearInfoForm() {
+        clearInfoForm.addEventHandler(MouseEvent.MOUSE_CLICKED, EventHandler { event ->
+            uiData.age.setDefault()
+            uiData.programExperience.setDefault()
+        })
     }
 
 }
