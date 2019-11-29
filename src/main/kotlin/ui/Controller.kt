@@ -1,9 +1,7 @@
 package ui
 
-import data.ProgramExperience
 import data.UiData
 import javafx.collections.FXCollections
-import javafx.collections.ObservableList
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import java.util.logging.Logger
@@ -40,7 +38,7 @@ class Controller {
     lateinit var peMoreThanSix: RadioButton
 
     @FXML
-    lateinit var programExperienceButtons: List<RadioButton>
+    lateinit var experienceButtonByText: Map<String, RadioButton?>
 
     @FXML
     lateinit var clearTask: Button
@@ -56,46 +54,53 @@ class Controller {
         initProgramExperienceGroup()
     }
 
-    private fun initTaskTextField() {
-        taskTextField.text = uiData.writtenTask
-        taskTextField.textProperty().addListener { _, old, new ->
-            log.info("textfield changed from $old to $new")
-            uiData.writtenTask = new
-        }
-    }
 
     private fun initTaskChoiceBox() {
         taskChoiceBox.items = FXCollections.observableList(uiData.tasks)
-        taskChoiceBox.selectionModel.select(uiData.chosenTask)
+        taskChoiceBox.selectionModel.select(uiData.chosenTask.uiValue)
         taskChoiceBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
             log.info("choicebox changed from $old to $new")
-            uiData.chosenTask = new
+            uiData.chosenTask.uiValue = taskChoiceBox.selectionModel.selectedIndex
+        }
+    }
+
+    private fun initTaskTextField() {
+        taskTextField.text = uiData.writtenTask.uiValue
+        taskTextField.textProperty().addListener { _, old, new ->
+            log.info("textfield changed from $old to $new")
+            uiData.writtenTask.uiValue = new
         }
     }
 
     private fun initAgeSlider() {
-        ageSlider.value = uiData.age.toDouble()
+        ageSlider.value = uiData.age.uiValue
         ageSlider.valueProperty().addListener { _, old, new ->
             log.info("slider changed from $old to $new")
-            uiData.age = new.toInt()
+            uiData.age.uiValue = new.toDouble()
         }
     }
 
     private fun initProgramExperienceGroup() {
-        programExperienceButtons = listOf(
-            peLessThanHalf,
-            peFromHalfToOne,
-            peFromOneToTwo,
-            peFromTwoToFour,
-            peFromFourToSix,
-            peMoreThanSix
+        experienceButtonByText = hashMapOf(
+            "null" to null,
+            peLessThanHalf.text to peLessThanHalf,
+            peFromHalfToOne.text to peFromHalfToOne,
+            peFromOneToTwo.text to peFromOneToTwo,
+            peFromTwoToFour.text to peFromTwoToFour,
+            peFromFourToSix.text to peFromFourToSix,
+            peMoreThanSix.text to peMoreThanSix
         )
-        programExperienceButtons[uiData.programExperience.number].isSelected = true
+
+        selectExperienceButton(uiData.programExperience.uiValue)
         programExperienceGroup.selectedToggleProperty().addListener { _, old, new ->
             log.info("program experience changed from $old to $new")
-            uiData.programExperience = ProgramExperience.values()[programExperienceButtons.indexOf(new)]
+            uiData.programExperience.uiValue = (new as RadioButton).text
         }
+    }
 
+    fun selectExperienceButton(text: String) {
+        val selectedButton = experienceButtonByText[text]
+        programExperienceGroup.selectToggle(selectedButton)
     }
 
 }

@@ -1,30 +1,31 @@
 package data
 
+import javafx.scene.control.RadioButton
+import javafx.scene.control.Toggle
 import ui.ControllerManager
 import ui.NotifyEvent
 import kotlin.properties.Delegates
 
 class UiData(val tasks: List<String>) {
-    private val controllerManager = ControllerManager
+    val chosenTask =  object : UiField<Int>(NotifyEvent.CHOSEN_TASK_NOTIFY, 0) {
+        override val logValue: String
+            get() = tasks[uiValue]
+    }
 
-    var chosenTask: String by Delegates.observable(tasks[0]) { _, _, new ->
-        val newSelectedIndex = tasks.indexOf(new)
-        if (newSelectedIndex != -1) {
-            controllerManager.notify(NotifyEvent.CHOSEN_TASK_NOTIFY, newSelectedIndex)
+    val writtenTask = UiField(NotifyEvent.WRITTEN_TASK_NOTIFY, "")
+
+    val age = UiField(NotifyEvent.AGE_NOTIFY, 0.0)
+
+    val programExperience = UiField<String>(NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, "null")
+
+    open class UiField<T : Any?> (val notifyEvent: NotifyEvent, val defaultUiValue: T) {
+        private val controllerManager = ControllerManager
+        var uiValue: T by Delegates.observable(defaultUiValue) { _, _, new ->
+            controllerManager.notify(notifyEvent, new)
         }
-    }
-
-    var writtenTask: String by Delegates.observable("") { _, _, new ->
-        controllerManager.notify(NotifyEvent.WRITTEN_TASK_NOTIFY, new)
-    }
-
-    var age: Int by Delegates.observable(0) { _, _, new ->
-        controllerManager.notify(NotifyEvent.AGE_NOTIFY, new)
-
-    }
-
-    var programExperience: ProgramExperience by Delegates.observable(ProgramExperience.LESS_THAN_HALF_YEAR) { _, _, new ->
-        controllerManager.notify(NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, new.number)
+        // to be able to set specific ways of logging like logging a task id in case of chosenTask
+        open val logValue: String
+            get() = uiValue.toString()
     }
 
     companion object {
@@ -37,18 +38,9 @@ class UiData(val tasks: List<String>) {
     }
 
     fun getData() = listOf(
-        chosenTask,
-        writtenTask,
-        age,
-        programExperience
-    ).map { it.toString() }
-}
-
-enum class ProgramExperience(val number: Int) {
-    LESS_THAN_HALF_YEAR(0),
-    FROM_HALF_TO_ONE_YEAR(1),
-    FROM_ONE_TO_TWO_YEARS(2),
-    FROM_TWO_TO_FOUR_YEARS(3),
-    FROM_FOUR_TO_SIX_YEARS(4),
-    MORE_THAN_SIX_YEARS(5)
+        chosenTask.logValue,
+        writtenTask.logValue,
+        age.logValue,
+        programExperience.logValue
+    )
 }
