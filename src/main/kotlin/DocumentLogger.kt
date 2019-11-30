@@ -31,7 +31,7 @@ class DocumentLogger(project: Project) {
         val document = event.document
         val printer = documentsToPrinters.getOrPut(document, { initPrinter(document) })
         val change = getDocumentChange(event)
-        printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData())
+        printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData().map { it.logValue })
     }
 
     fun getFiles() : List<File> = documentsToPrinters.values.map { it.file }
@@ -50,7 +50,7 @@ class DocumentLogger(project: Project) {
         val file = createLogFile(document)
         val fileWriter = FileWriter(file)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
-        csvPrinter.printRecord(DocumentChangeData.headers + UiData.headers)
+        csvPrinter.printRecord(DocumentChangeData.headers + ControllerManager.uiData.getData().map { it.header })
         return Printer(csvPrinter, fileWriter, file)
     }
 

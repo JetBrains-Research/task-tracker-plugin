@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="699.0" prefWidth="553.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+  <children>
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="785.0" prefWidth="570.0" style="-fx-background-radius: 20; -fx-background-color: #ffffff;" VBox.vgrow="ALWAYS">
+         <children>
+            <AnchorPane prefHeight="86.0" prefWidth="553.0" style="-fx-background-color: linear-gradient(to left, #E86443, #914E94);">
+               <children>
+                  <Label layoutX="191.0" layoutY="11.0" text="CodeTracker" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="48.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+            <Pane fx:id="taskChooserPane" layoutX="16.0" layoutY="92.0">
+               <children>
+                  <Label text="Задача" textFill="#bb596d">
+                     <font>
+                        <Font name="System Bold" size="26.0" />
+                     </font>
+                  </Label>
+                  <Label layoutY="53.0" text="Выберите задачу из списка:" textFill="#603261">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <Label layoutY="99.0" prefHeight="24.0" prefWidth="296.0" text="Или напишите её название:" textFill="#603261">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="taskTextField" layoutX="294.0" layoutY="98.0" prefHeight="26.0" prefWidth="221.0" style="-fx-border-radius: 20; -fx-border-color: #FE9966; -fx-background-color: #ffffff;" />
+                  <ChoiceBox fx:id="taskChoiceBox" layoutX="294.0" layoutY="52.0" prefHeight="26.0" prefWidth="221.0" style="-fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: #FE9966; -fx-background-color: #ffffff;" />
+                  <Button fx:id="startSolvingButton" layoutX="169.0" layoutY="154.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" style="-fx-background-color: #914E94; -fx-background-radius: 20;" text="Начать решать" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+            <Pane fx:id="taskStatusPane" layoutX="16.0" layoutY="92.0" prefHeight="195.0" prefWidth="515.0">
+               <children>
+                  <Label text="Задача" textFill="#bb596d">
+                     <font>
+                        <Font name="System Bold" size="26.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="continueSolvingButton" layoutX="62.0" layoutY="154.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" style="-fx-background-color: #914E94; -fx-background-radius: 20;" text="Решать дальше" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="endSolvingButton" layoutX="291.0" layoutY="154.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" style="-fx-background-color: #E86443; -fx-background-radius: 20;" text="Закончить " textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Button>
+                  <RadioButton fx:id="taskNotSolved" layoutX="160.0" layoutY="53.0" mnemonicParsing="false" text="задача не решена" textFill="#603261">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                     <toggleGroup>
+                        <ToggleGroup fx:id="taskStatusGroup" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="taskSolved" layoutX="160.0" layoutY="98.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="174.0" text="задача решена" textFill="#603261" toggleGroup="$taskStatusGroup">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </RadioButton>
+               </children>
+            </Pane>
+            <Pane fx:id="taskFinishPane" layoutX="16.0" layoutY="92.0" prefHeight="195.0" prefWidth="515.0">
+               <children>
+                  <Label style="visibility: false;" text="Задача" textFill="#bb596d">
+                     <font>
+                        <Font name="System Bold" size="26.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="startSolvingAgainButton" layoutX="170.0" layoutY="152.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" style="-fx-background-color: #914E94; -fx-background-radius: 20;" text="Решать опять" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Button>
+                  <Label layoutX="143.0" layoutY="47.0" prefHeight="71.0" prefWidth="240.0" text="Отличная работа! " textFill="#603261">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+            <Separator layoutX="16.0" layoutY="303.0" prefHeight="8.0" prefWidth="517.0" />
+            <Pane id="personalFormPane" layoutX="13.0" layoutY="315.0">
+               <children>
+                  <Label layoutX="3.0" layoutY="40.0" text="Возраст:" textFill="#603261">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <Slider fx:id="ageSlider" blockIncrement="1.0" cache="true" layoutX="3.0" layoutY="86.0" majorTickUnit="2.0" max="40.0" minorTickCount="1" prefHeight="38.0" prefWidth="517.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                  <Label layoutX="3.0" layoutY="143.0" text="Опыт программирования:" textFill="#603261">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <RadioButton fx:id="peLessThanHalf" layoutX="49.0" layoutY="186.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="221.0" text="меньше 0.5 года" textFill="#603261">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="programExperienceGroup" />
+                     </toggleGroup>
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </RadioButton>
+                  <RadioButton fx:id="peFromHalfToOne" layoutX="49.0" layoutY="226.0" mnemonicParsing="false" text="от 0.5 до 1 года" textFill="#603261" toggleGroup="$programExperienceGroup">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </RadioButton>
+                  <RadioButton fx:id="peFromTwoToFour" layoutX="319.0" layoutY="188.0" mnemonicParsing="false" text="от 2 до 4 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </RadioButton>
+                  <RadioButton fx:id="peFromFourToSix" layoutX="319.0" layoutY="226.0" mnemonicParsing="false" text="от 4 до 6 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </RadioButton>
+                  <RadioButton fx:id="peFromOneToTwo" layoutX="49.0" layoutY="266.0" mnemonicParsing="false" text="от 1 года до 2 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </RadioButton>
+                  <RadioButton fx:id="peMoreThanSix" layoutX="319.0" layoutY="266.0" mnemonicParsing="false" text="больше 6 лет" textFill="#603261" toggleGroup="$programExperienceGroup">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </RadioButton>
+                  <Label layoutX="3.0" text="Анкета" textFill="#bb596d">
+                     <font>
+                        <Font name="System Bold" size="26.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="clearInfoForm" layoutX="172.0" layoutY="312.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" style="-fx-background-radius: 20; -fx-background-color: #E86443;" text="Очистить" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+         </children>
+    </AnchorPane>
+  </children>
+</VBox>
