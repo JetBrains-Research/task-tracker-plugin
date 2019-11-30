@@ -3,11 +3,12 @@ package data
 import ui.ControllerManager
 import ui.NotifyEvent
 import kotlin.properties.Delegates
+import Task
 
-class UiData(val tasks: List<String>) {
+class UiData(val tasks: List<Task>) {
     private val controllerManager = ControllerManager
 
-    var chosenTask: String by Delegates.observable(tasks[0]) { _, _, new ->
+    var chosenTask: Task by Delegates.observable(tasks[0]) { _, _, new ->
         val newSelectedIndex = tasks.indexOf(new)
         if (newSelectedIndex != -1) {
             controllerManager.notify(NotifyEvent.CHOSEN_TASK_NOTIFY, newSelectedIndex)
