@@ -50,7 +50,7 @@ class DocumentLogger(project: Project) {
         val file = createLogFile(document)
         val fileWriter = FileWriter(file)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
-        csvPrinter.printRecord(DocumentChangeData.headers + UiData.headers)
+        csvPrinter.printRecord(DocumentChangeData.headers + ControllerManager.uiData.getData().map { it.header })
         return Printer(csvPrinter, fileWriter, file)
     }
 

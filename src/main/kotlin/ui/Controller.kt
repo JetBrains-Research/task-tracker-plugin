@@ -153,15 +153,13 @@ class Controller {
     private fun initStartSolvingButton() {
         startSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             ControllerManager.activeTaskPane = taskStatusPane.id
-            uiData.taskStatus.setDefault()
         }
     }
 
     private fun initContinueSolvingButton() {
         continueSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             ControllerManager.activeTaskPane = taskChooserPane.id
-            uiData.chosenTask.setDefault()
-            uiData.writtenTask.setDefault()
+            setTaskDataDefault()
         }
     }
 
@@ -187,8 +185,7 @@ class Controller {
     private fun initStartSolvingAgainButton() {
         startSolvingAgainButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             ControllerManager.activeTaskPane = taskChooserPane.id
-            uiData.chosenTask.setDefault()
-            uiData.writtenTask.setDefault()
+            setTaskDataDefault()
         }
     }
 
@@ -240,6 +237,12 @@ class Controller {
             uiData.age.setDefault()
             uiData.programExperience.setDefault()
         }
+    }
+
+    private fun setTaskDataDefault() {
+        uiData.chosenTask.setDefault()
+        uiData.writtenTask.setDefault()
+        uiData.taskStatus.setDefault()
     }
 
 }
