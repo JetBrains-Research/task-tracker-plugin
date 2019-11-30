@@ -15,8 +15,7 @@ interface Server {
     fun sendTrackingData(file: File)
 }
 
-// todo: replace with the real one
-object DummyServer : Server {
+object PluginServer : Server {
     private val log: Logger = Logger.getLogger(javaClass.name)
     private val client = OkHttpClient()
     private val MEDIA_TYPE_CSV = "text/csv".toMediaType()

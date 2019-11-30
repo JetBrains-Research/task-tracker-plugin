@@ -11,7 +11,7 @@ import java.util.logging.Logger
 object Plugin {
     private val log: Logger = Logger.getLogger(javaClass.name)
     private val projectsToListeners: MutableMap<Project, PluginDocumentListener> = HashMap()
-    val server: Server = DummyServer
+    val server: Server = PluginServer
 
 
     init {
