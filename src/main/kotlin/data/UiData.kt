@@ -18,6 +18,8 @@ class UiData(val tasks: List<String>) {
 
     val programExperience = UiField<String>(NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, "null")
 
+    val taskStatus = UiField(NotifyEvent.TASK_STATUS_NOTIFY, "null")
+
     open class UiField<T : Any?> (val notifyEvent: NotifyEvent, val defaultUiValue: T) {
         private val controllerManager = ControllerManager
         var uiValue: T by Delegates.observable(defaultUiValue) { _, _, new ->

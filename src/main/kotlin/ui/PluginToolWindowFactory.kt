@@ -31,7 +31,7 @@ class PluginToolWindowFactory : ToolWindowFactory {
         val controller = Controller()
         Platform.setImplicitExit(false);
         Platform.runLater {
-            val loader = FXMLLoader(javaClass.classLoader.getResource("simple-form.fxml"))
+            val loader = FXMLLoader(javaClass.classLoader.getResource("ui-form.fxml"))
             loader.setController(controller)
             val root = loader.load<Parent>()
             val scene = Scene(root, Color.ALICEBLUE)
