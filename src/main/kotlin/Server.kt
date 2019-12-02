@@ -1,32 +1,39 @@
 import com.google.gson.GsonBuilder
-import java.io.File
-import java.util.logging.Logger
-import java.net.URL
-import okhttp3.Request
-import okhttp3.OkHttpClient
+import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody
-import okhttp3.MultipartBody
+import java.io.File
+import java.io.IOException
+import java.net.URL
+import java.util.logging.Logger
 
 
 interface Server {
     fun getTasks() : List<Task>
 
     fun sendTrackingData(file: File)
+
+    fun sendData(request: Request): Response
 }
 
 object PluginServer : Server {
     private val log: Logger = Logger.getLogger(javaClass.name)
     private val client = OkHttpClient()
     private val MEDIA_TYPE_CSV = "text/csv".toMediaType()
-    private val baseUrl: String = "https://damp-taiga-50950.herokuapp.com/api/"
-    //private val baseUrl: String = "http://localhost:3000/api/"
+    private const val baseUrl: String = "http://coding-assistant-helper.ru/api/"
+    private const val MAX_COUNT_ATTEMPTS = 5
+
 
     init {
         log.info("init server")
+        log.info("Max count attempt of sending data to server = ${MAX_COUNT_ATTEMPTS}")
+    }
+
+    override fun sendData(request: Request): Response {
+        return client.newCall(request).execute()
     }
 
     override fun sendTrackingData(file: File) {
+        var curCountAttempts = 0
         val currentUrl = baseUrl + "data-item"
         log.info("...sending file ${file.name}")
 
@@ -42,12 +49,17 @@ object PluginServer : Server {
             .post(requestBody)
             .build()
 
-        client.newCall(request).execute().use { response ->
-            if (response.code == 200) {
+        while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
+            log.info("An attempt of sending data to server is number ${curCountAttempts + 1}")
+            val code = sendData(request).code
+            curCountAttempts++;
+            if (code == 200) {
                 log.info("Tracking data successfully received")
-            } else {
-                log.info("Error sending tracking data")
+                break
             }
+            log.info("Error sending tracking data")
+            // wait for 5 seconds
+            Thread.sleep(5_000)
         }
     }
 
