@@ -6,7 +6,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.SystemProperties
 import data.DocumentChangeData
-import data.UiData
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.joda.time.DateTime
@@ -22,6 +21,8 @@ class DocumentLogger(project: Project) {
 
     companion object {
         private val folderPath = "${PathManager.getPluginsPath()}/code-tracker/"
+        private const val MAX_FILE_SIZE = 50 * 1024 * 1024
+        private const val MAX_DIF_SIZE = 300
     }
 
     data class Printer(val csvPrinter: CSVPrinter, val fileWriter: FileWriter, val file: File)
@@ -29,10 +30,21 @@ class DocumentLogger(project: Project) {
     fun log(event: DocumentEvent) {
         log.info("lof $event")
         val document = event.document
-        val printer = documentsToPrinters.getOrPut(document, { initPrinter(document) })
+        var printer = documentsToPrinters.getOrPut(document, { initPrinter(document) })
+        println(printer.file.length())
+        if (isFull(printer.file.length())) {
+            log.info("File ${printer.file.name} is full")
+            sendFile(printer.file)
+            printer = initPrinter(document)
+            log.info("File ${printer.file.name} was cleared")
+        }
         val change = getDocumentChange(event)
         printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData().map { it.logValue })
     }
+
+    private fun isFull(fileSize: Long): Boolean = MAX_FILE_SIZE - fileSize < MAX_DIF_SIZE
+
+    private fun sendFile(file: File) = Plugin.server.sendTrackingData(file)
 
     fun getFiles() : List<File> = documentsToPrinters.values.map { it.file }
 
