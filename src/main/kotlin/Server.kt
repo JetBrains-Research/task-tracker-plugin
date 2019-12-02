@@ -2,7 +2,6 @@ import com.google.gson.GsonBuilder
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import java.io.File
-import java.io.IOException
 import java.net.URL
 import java.util.logging.Logger
 
@@ -18,8 +17,8 @@ interface Server {
 object PluginServer : Server {
     private val log: Logger = Logger.getLogger(javaClass.name)
     private val client = OkHttpClient()
-    private val MEDIA_TYPE_CSV = "text/csv".toMediaType()
-    private const val baseUrl: String = "http://coding-assistant-helper.ru/api/"
+    private val media_type_csv = "text/csv".toMediaType()
+    private const val BASE_URL: String = "http://coding-assistant-helper.ru/api/"
     private const val MAX_COUNT_ATTEMPTS = 5
 
 
@@ -34,14 +33,14 @@ object PluginServer : Server {
 
     override fun sendTrackingData(file: File) {
         var curCountAttempts = 0
-        val currentUrl = baseUrl + "data-item"
+        val currentUrl = BASE_URL + "data-item"
         log.info("...sending file ${file.name}")
 
         val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart(
                 "code", file.name,
-                RequestBody.create(MEDIA_TYPE_CSV, file)
+                RequestBody.create(media_type_csv, file)
             ).build()
 
         val request = Request.Builder()
@@ -64,7 +63,7 @@ object PluginServer : Server {
     }
 
     override fun getTasks(): List<Task> {
-        val currentUrl = URL(baseUrl + "task/all")
+        val currentUrl = URL(BASE_URL + "task/all")
 
         val request = Request.Builder().url(currentUrl).build()
 
