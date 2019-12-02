@@ -27,18 +27,29 @@ object ControllerManager {
             NotifyEvent.CHOSEN_TASK_NOTIFY -> controllers.forEach {
                 it.taskChoiceBox.selectionModel.select(new as Int)
                 it.setWrittenTaskVisibility(uiData.tasks[new] == WRITE_TASK_OPTION)
+                it.setStartSolvingButtonDisability(uiData.tasks[new] == WRITE_TASK_OPTION && uiData.writtenTask.isDefault() )
             }
 
-            NotifyEvent.WRITTEN_TASK_NOTIFY -> controllers.forEach { it.taskTextField.text = new as String }
+            NotifyEvent.WRITTEN_TASK_NOTIFY -> controllers.forEach {
+                it.taskTextField.text = new as String
+                it.setStartSolvingButtonDisability(uiData.tasks[uiData.chosenTask.uiValue] == WRITE_TASK_OPTION && uiData.writtenTask.isDefault(new) )
+            }
 
             NotifyEvent.AGE_NOTIFY -> controllers.forEach {
                 it.ageSlider.value = (new as Double)
                 it.ageLabel.text = new.toInt().toString()
+                it.setInfoFormButtonsDisability(uiData.age.isDefault(new) || uiData.programExperience.isDefault())
             }
 
-            NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY ->  controllers.forEach { it.selectExperienceButton(new as String) }
+            NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY ->  controllers.forEach {
+                it.selectExperienceButton(new as String)
+                it.setInfoFormButtonsDisability(uiData.age.isDefault() || uiData.programExperience.isDefault(new))
+            }
 
-            NotifyEvent.TASK_STATUS_NOTIFY -> controllers.forEach { it.selectTaskStatusButton(new as String) }
+            NotifyEvent.TASK_STATUS_NOTIFY -> controllers.forEach {
+                it.selectTaskStatusButton(new as String)
+                it.setStatusButtonsDisability(uiData.taskStatus.isDefault())
+            }
         }
     }
 

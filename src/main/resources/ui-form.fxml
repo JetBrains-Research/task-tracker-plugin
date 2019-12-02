@@ -68,7 +68,7 @@
                         <Font name="System Bold" size="15.0" />
                      </font>
                   </Button>
-                  <RadioButton fx:id="taskNotSolved" layoutX="160.0" layoutY="53.0" mnemonicParsing="false" text="задача не решена" textFill="#603261">
+                  <RadioButton fx:id="taskNotSolved" layoutX="160.0" layoutY="53.0" mnemonicParsing="false" style="-fx-focus-traversable: false;" text="задача не решена" textFill="#603261">
                      <font>
                         <Font size="17.0" />
                      </font>
@@ -76,7 +76,7 @@
                         <ToggleGroup fx:id="taskStatusGroup" />
                      </toggleGroup>
                   </RadioButton>
-                  <RadioButton fx:id="taskSolved" layoutX="160.0" layoutY="98.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="174.0" text="задача решена" textFill="#603261" toggleGroup="$taskStatusGroup">
+                  <RadioButton fx:id="taskSolved" layoutX="160.0" layoutY="98.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="174.0" style="-fx-focus-traversable: false;" text="задача решена" textFill="#603261" toggleGroup="$taskStatusGroup">
                      <font>
                         <Font size="17.0" />
                      </font>

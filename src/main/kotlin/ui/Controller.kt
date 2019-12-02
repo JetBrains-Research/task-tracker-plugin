@@ -136,6 +136,7 @@ class Controller {
             peMoreThanSix.text to peMoreThanSix
         )
 
+
         taskStatusButtonByText = hashMapOf(
             "null" to null,
             taskNotSolved.text to taskNotSolved,
@@ -160,6 +161,20 @@ class Controller {
             paneByName.values.forEach { it.isVisible = false }
             pane.isVisible = true
         }
+    }
+
+    fun setStatusButtonsDisability(isDisable: Boolean) {
+        endSolvingButton.isDisable = isDisable
+        continueSolvingButton.isDisable = isDisable
+    }
+
+    fun setStartSolvingButtonDisability(isDisable: Boolean) {
+        startSolvingButton.isDisable = isDisable
+    }
+
+    fun setInfoFormButtonsDisability(isDisable: Boolean) {
+        clearInfoFormButton.isDisable = isDisable
+        startInfoFormButton.isDisable = isDisable
     }
 
     fun setWrittenTaskVisibility(isVisible: Boolean) {

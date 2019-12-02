@@ -32,6 +32,14 @@ class UiData(val tasks: List<String>) {
         fun setDefault() {
             uiValue = defaultUiValue
         }
+
+        fun isDefault() : Boolean {
+            return uiValue == defaultUiValue
+        }
+
+        fun isDefault(new: T) : Boolean {
+            return new == defaultUiValue
+        }
     }
 
     fun getData(notifyEvent: NotifyEvent) : List<UiField<out Any>> {
