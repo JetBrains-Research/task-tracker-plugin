@@ -37,7 +37,7 @@
                         <Font size="19.0" />
                      </font>
                   </Label>
-                  <Label layoutY="99.0" prefHeight="24.0" prefWidth="296.0" text="Или напишите её название:" textFill="#603261">
+                  <Label fx:id="taskTextLabel" layoutY="99.0" prefHeight="24.0" prefWidth="296.0" text="Или напишите её название:" textFill="#603261">
                      <font>
                         <Font size="19.0" />
                      </font>

@@ -16,7 +16,7 @@ class UiData(val tasks: List<String>) {
 
     val age = UiField(NotifyEvent.AGE_NOTIFY, 0.0, "age")
 
-    val programExperience = UiField<String>(NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, "null", "programExperience")
+    val programExperience = UiField(NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, "null", "programExperience")
 
     val taskStatus = UiField(NotifyEvent.TASK_STATUS_NOTIFY, "null", "taskStatus")
 
@@ -32,6 +32,10 @@ class UiData(val tasks: List<String>) {
         fun setDefault() {
             uiValue = defaultUiValue
         }
+    }
+
+    fun getData(notifyEvent: NotifyEvent) : List<UiField<out Any>> {
+        return getData().filter { it.notifyEvent == notifyEvent }
     }
 
     fun getData() = listOf(

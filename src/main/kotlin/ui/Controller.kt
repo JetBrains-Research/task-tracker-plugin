@@ -29,6 +29,9 @@ class Controller {
     lateinit var taskChoiceBox: ChoiceBox<String>
 
     @FXML
+    lateinit var taskTextLabel: Label
+
+    @FXML
     lateinit var taskTextField: TextField
 
     @FXML
@@ -103,14 +106,9 @@ class Controller {
 
     fun initialize() {
         log.info("init controller")
-        controllerManager.addController(this)
+        initMaps()
 
-        paneByName = hashMapOf(
-            infoFormPane.id to infoFormPane,
-            taskChooserPane.id to taskChooserPane,
-            taskStatusPane.id to taskStatusPane,
-            taskFinishPane.id to taskFinishPane
-        )
+        controllerManager.addController(this)
 
         initInfoFormPane()
         initTaskChooserPane()
@@ -118,6 +116,31 @@ class Controller {
         initTaskFinishPane()
 
         setActive(ControllerManager.activePane)
+    }
+
+    private fun initMaps() {
+        paneByName = hashMapOf(
+            infoFormPane.id to infoFormPane,
+            taskChooserPane.id to taskChooserPane,
+            taskStatusPane.id to taskStatusPane,
+            taskFinishPane.id to taskFinishPane
+        )
+
+        experienceButtonByText = hashMapOf(
+            "null" to null,
+            peLessThanHalf.text to peLessThanHalf,
+            peFromHalfToOne.text to peFromHalfToOne,
+            peFromOneToTwo.text to peFromOneToTwo,
+            peFromTwoToFour.text to peFromTwoToFour,
+            peFromFourToSix.text to peFromFourToSix,
+            peMoreThanSix.text to peMoreThanSix
+        )
+
+        taskStatusButtonByText = hashMapOf(
+            "null" to null,
+            taskNotSolved.text to taskNotSolved,
+            taskSolved.text to taskSolved
+        )
     }
 
 
@@ -139,8 +162,12 @@ class Controller {
         }
     }
 
+    fun setWrittenTaskVisibility(isVisible: Boolean) {
+        taskTextField.isVisible = isVisible
+        taskTextLabel.isVisible = isVisible
+    }
+
     private fun initInfoFormPane() {
-        initAgeLabel()
         initAgeSlider()
         initProgramExperienceGroup()
         initStartInfoFormButton()
@@ -183,12 +210,6 @@ class Controller {
     }
 
     private fun initTaskStatusGroup() {
-        taskStatusButtonByText = hashMapOf(
-            "null" to null,
-            taskNotSolved.text to taskNotSolved,
-            taskSolved.text to taskSolved
-        )
-        selectTaskStatusButton(uiData.taskStatus.uiValue)
         taskStatusGroup.selectedToggleProperty().addListener { _, old, new ->
             log.info("task status changed from $old to $new")
             uiData.taskStatus.uiValue = (new as? RadioButton)?.text ?: "null"
@@ -204,8 +225,6 @@ class Controller {
     }
 
     private fun initTaskChoiceBox() {
-        taskChoiceBox.items = FXCollections.observableList(uiData.tasks)
-        taskChoiceBox.selectionModel.select(uiData.chosenTask.uiValue)
         taskChoiceBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
             log.info("choicebox changed from $old to $new")
             uiData.chosenTask.uiValue = taskChoiceBox.selectionModel.selectedIndex
@@ -213,38 +232,20 @@ class Controller {
     }
 
     private fun initTaskTextField() {
-        taskTextField.text = uiData.writtenTask.uiValue
         taskTextField.textProperty().addListener { _, old, new ->
             log.info("textfield changed from $old to $new")
             uiData.writtenTask.uiValue = new
         }
     }
 
-    private fun initAgeLabel() {
-        ageLabel.text = uiData.age.uiValue.toInt().toString()
-    }
-
     private fun initAgeSlider() {
-        ageSlider.value = uiData.age.uiValue
         ageSlider.valueProperty().addListener { _, old, new ->
             log.info("slider changed from $old to $new")
             uiData.age.uiValue = new.toDouble()
-            ageLabel.text = new.toInt().toString()
         }
     }
 
     private fun initProgramExperienceGroup() {
-        experienceButtonByText = hashMapOf(
-            "null" to null,
-            peLessThanHalf.text to peLessThanHalf,
-            peFromHalfToOne.text to peFromHalfToOne,
-            peFromOneToTwo.text to peFromOneToTwo,
-            peFromTwoToFour.text to peFromTwoToFour,
-            peFromFourToSix.text to peFromFourToSix,
-            peMoreThanSix.text to peMoreThanSix
-        )
-
-        selectExperienceButton(uiData.programExperience.uiValue)
         programExperienceGroup.selectedToggleProperty().addListener { _, old, new ->
             log.info("program experience changed from $old to $new")
             uiData.programExperience.uiValue = (new as? RadioButton)?.text ?: "null"
@@ -274,5 +275,6 @@ class Controller {
         uiData.age.setDefault()
         uiData.programExperience.setDefault()
     }
+
 
 }
