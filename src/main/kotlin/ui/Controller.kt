@@ -10,12 +10,15 @@ import java.util.logging.Logger
 import Task
 
 class Controller {
+    // todo: separate task and info form logic?
+
     private val log: Logger = Logger.getLogger(javaClass.name)
 
     private val controllerManager = ControllerManager
     private val uiData: UiData = ControllerManager.uiData
 
-    lateinit var taskPaneByName: HashMap<String, Pane>
+    @FXML
+    lateinit var paneByName: HashMap<String, Pane>
 
     /*
     ############################## task chooser pane ########################################
@@ -25,6 +28,9 @@ class Controller {
 
     @FXML
     lateinit var taskChoiceBox: ChoiceBox<String>
+
+    @FXML
+    lateinit var taskTextLabel: Label
 
     @FXML
     lateinit var taskTextField: TextField
@@ -67,6 +73,12 @@ class Controller {
      */
 
     @FXML
+    lateinit var infoFormPane: Pane
+
+    @FXML
+    lateinit var ageLabel: Label
+
+    @FXML
     lateinit var ageSlider: Slider
 
     @FXML
@@ -87,25 +99,50 @@ class Controller {
     lateinit var experienceButtonByText: Map<String, RadioButton?>
 
     @FXML
-    lateinit var clearInfoForm: Button
+    lateinit var clearInfoFormButton: Button
+
+    @FXML
+    lateinit var startInfoFormButton: Button
 
 
     fun initialize() {
         log.info("init controller")
+        initMaps()
+
         controllerManager.addController(this)
 
-        taskPaneByName = hashMapOf(
+        initInfoFormPane()
+        initTaskChooserPane()
+        initTaskStatusPane()
+        initTaskFinishPane()
+
+        setActive(ControllerManager.activePane)
+    }
+
+    private fun initMaps() {
+        paneByName = hashMapOf(
+            infoFormPane.id to infoFormPane,
             taskChooserPane.id to taskChooserPane,
             taskStatusPane.id to taskStatusPane,
             taskFinishPane.id to taskFinishPane
         )
 
-        initTaskChooserPane()
-        initTaskStatusPane()
-        initTaskFinishPane()
-        initInfoFormPane()
+        experienceButtonByText = hashMapOf(
+            "null" to null,
+            peLessThanHalf.text to peLessThanHalf,
+            peFromHalfToOne.text to peFromHalfToOne,
+            peFromOneToTwo.text to peFromOneToTwo,
+            peFromTwoToFour.text to peFromTwoToFour,
+            peFromFourToSix.text to peFromFourToSix,
+            peMoreThanSix.text to peMoreThanSix
+        )
 
-        setActive(ControllerManager.activeTaskPane)
+
+        taskStatusButtonByText = hashMapOf(
+            "null" to null,
+            taskNotSolved.text to taskNotSolved,
+            taskSolved.text to taskSolved
+        )
     }
 
 
@@ -120,11 +157,37 @@ class Controller {
     }
 
     fun setActive(name: String) {
-        val pane = taskPaneByName[name]
+        val pane = paneByName[name]
         if (pane != null) {
-            taskPaneByName.values.forEach { it.isVisible = false }
+            paneByName.values.forEach { it.isVisible = false }
             pane.isVisible = true
         }
+    }
+
+    fun setStatusButtonsDisability(isDisable: Boolean) {
+        endSolvingButton.isDisable = isDisable
+        continueSolvingButton.isDisable = isDisable
+    }
+
+    fun setStartSolvingButtonDisability(isDisable: Boolean) {
+        startSolvingButton.isDisable = isDisable
+    }
+
+    fun setInfoFormButtonsDisability(isDisable: Boolean) {
+        clearInfoFormButton.isDisable = isDisable
+        startInfoFormButton.isDisable = isDisable
+    }
+
+    fun setWrittenTaskVisibility(isVisible: Boolean) {
+        taskTextField.isVisible = isVisible
+        taskTextLabel.isVisible = isVisible
+    }
+
+    private fun initInfoFormPane() {
+        initAgeSlider()
+        initProgramExperienceGroup()
+        initStartInfoFormButton()
+        initClearInfoForm()
     }
 
     private fun initTaskChooserPane() {
@@ -143,38 +206,26 @@ class Controller {
         initStartSolvingAgainButton()
     }
 
-    private fun initInfoFormPane() {
-        initAgeSlider()
-        initProgramExperienceGroup()
-        initClearInfoForm()
-    }
-
     private fun initStartSolvingButton() {
         startSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activeTaskPane = taskStatusPane.id
+            ControllerManager.activePane = taskStatusPane.id
         }
     }
 
     private fun initContinueSolvingButton() {
         continueSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activeTaskPane = taskChooserPane.id
-            setTaskDataDefault()
+            ControllerManager.activePane = taskChooserPane.id
+            setDefaultTaskData()
         }
     }
 
     private fun initEndSolvingButton() {
         endSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activeTaskPane = taskFinishPane.id
+            ControllerManager.activePane = taskFinishPane.id
         }
     }
 
     private fun initTaskStatusGroup() {
-        taskStatusButtonByText = hashMapOf(
-            "null" to null,
-            taskNotSolved.text to taskNotSolved,
-            taskSolved.text to taskSolved
-        )
-        selectTaskStatusButton(uiData.taskStatus.uiValue)
         taskStatusGroup.selectedToggleProperty().addListener { _, old, new ->
             log.info("task status changed from $old to $new")
             uiData.taskStatus.uiValue = (new as? RadioButton)?.text ?: "null"
@@ -183,14 +234,13 @@ class Controller {
 
     private fun initStartSolvingAgainButton() {
         startSolvingAgainButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activeTaskPane = taskChooserPane.id
-            setTaskDataDefault()
+            ControllerManager.activePane = infoFormPane.id
+            setDefaultInfoData()
+            setDefaultTaskData()
         }
     }
 
     private fun initTaskChoiceBox() {
-        taskChoiceBox.items = FXCollections.observableList(uiData.tasks.map { it.name })
-        taskChoiceBox.selectionModel.select(uiData.chosenTask.uiValue)
         taskChoiceBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
             log.info("choicebox changed from $old to $new")
             uiData.chosenTask.uiValue = taskChoiceBox.selectionModel.selectedIndex
@@ -198,7 +248,6 @@ class Controller {
     }
 
     private fun initTaskTextField() {
-        taskTextField.text = uiData.writtenTask.uiValue
         taskTextField.textProperty().addListener { _, old, new ->
             log.info("textfield changed from $old to $new")
             uiData.writtenTask.uiValue = new
@@ -206,7 +255,6 @@ class Controller {
     }
 
     private fun initAgeSlider() {
-        ageSlider.value = uiData.age.uiValue
         ageSlider.valueProperty().addListener { _, old, new ->
             log.info("slider changed from $old to $new")
             uiData.age.uiValue = new.toDouble()
@@ -214,17 +262,6 @@ class Controller {
     }
 
     private fun initProgramExperienceGroup() {
-        experienceButtonByText = hashMapOf(
-            "null" to null,
-            peLessThanHalf.text to peLessThanHalf,
-            peFromHalfToOne.text to peFromHalfToOne,
-            peFromOneToTwo.text to peFromOneToTwo,
-            peFromTwoToFour.text to peFromTwoToFour,
-            peFromFourToSix.text to peFromFourToSix,
-            peMoreThanSix.text to peMoreThanSix
-        )
-
-        selectExperienceButton(uiData.programExperience.uiValue)
         programExperienceGroup.selectedToggleProperty().addListener { _, old, new ->
             log.info("program experience changed from $old to $new")
             uiData.programExperience.uiValue = (new as? RadioButton)?.text ?: "null"
@@ -232,16 +269,26 @@ class Controller {
     }
 
     private fun initClearInfoForm() {
-        clearInfoForm.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+        clearInfoFormButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             uiData.age.setDefault()
             uiData.programExperience.setDefault()
         }
     }
 
-    private fun setTaskDataDefault() {
+    private fun initStartInfoFormButton() {
+        startInfoFormButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+            ControllerManager.activePane = taskChooserPane.id
+        }
+    }
+
+    private fun setDefaultTaskData() {
         uiData.chosenTask.setDefault()
         uiData.writtenTask.setDefault()
         uiData.taskStatus.setDefault()
     }
 
+    private fun setDefaultInfoData() {
+        uiData.age.setDefault()
+        uiData.programExperience.setDefault()
+    }
 }
