@@ -8,7 +8,7 @@ object ControllerManager {
     private const val writeTaskOption = "Написать вручную"
     private val controllers : MutableList<Controller> = arrayListOf()
 
-    var activeTaskPane: String by Delegates.observable("taskChooserPane") { _, old, new ->
+    var activePane: String by Delegates.observable("infoFormPane") { _, old, new ->
         controllers.forEach { it.setActive(new) }
     }
 

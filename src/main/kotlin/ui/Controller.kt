@@ -9,13 +9,15 @@ import javafx.scene.layout.Pane
 import java.util.logging.Logger
 
 class Controller {
+    // todo: separate task and info form logic?
+
     private val log: Logger = Logger.getLogger(javaClass.name)
 
     private val controllerManager = ControllerManager
     private val uiData: UiData = ControllerManager.uiData
 
     @FXML
-    lateinit var taskPaneByName: HashMap<String, Pane>
+    lateinit var paneByName: HashMap<String, Pane>
 
     /*
     ############################## task chooser pane ########################################
@@ -67,6 +69,12 @@ class Controller {
      */
 
     @FXML
+    lateinit var infoFormPane: Pane
+
+    @FXML
+    lateinit var ageLabel: Label
+
+    @FXML
     lateinit var ageSlider: Slider
 
     @FXML
@@ -87,25 +95,29 @@ class Controller {
     lateinit var experienceButtonByText: Map<String, RadioButton?>
 
     @FXML
-    lateinit var clearInfoForm: Button
+    lateinit var clearInfoFormButton: Button
+
+    @FXML
+    lateinit var startInfoFormButton: Button
 
 
     fun initialize() {
         log.info("init controller")
         controllerManager.addController(this)
 
-        taskPaneByName = hashMapOf(
+        paneByName = hashMapOf(
+            infoFormPane.id to infoFormPane,
             taskChooserPane.id to taskChooserPane,
             taskStatusPane.id to taskStatusPane,
             taskFinishPane.id to taskFinishPane
         )
 
+        initInfoFormPane()
         initTaskChooserPane()
         initTaskStatusPane()
         initTaskFinishPane()
-        initInfoFormPane()
 
-        setActive(ControllerManager.activeTaskPane)
+        setActive(ControllerManager.activePane)
     }
 
 
@@ -120,12 +132,19 @@ class Controller {
     }
 
     fun setActive(name: String) {
-        val pane = taskPaneByName[name]
+        val pane = paneByName[name]
         if (pane != null) {
-            taskPaneByName.values.forEach { it.isVisible = false }
+            paneByName.values.forEach { it.isVisible = false }
             pane.isVisible = true
         }
-        taskPaneByName.values.forEach { println(it.isVisible) }
+    }
+
+    private fun initInfoFormPane() {
+        initAgeLabel()
+        initAgeSlider()
+        initProgramExperienceGroup()
+        initStartInfoFormButton()
+        initClearInfoForm()
     }
 
     private fun initTaskChooserPane() {
@@ -144,28 +163,22 @@ class Controller {
         initStartSolvingAgainButton()
     }
 
-    private fun initInfoFormPane() {
-        initAgeSlider()
-        initProgramExperienceGroup()
-        initClearInfoForm()
-    }
-
     private fun initStartSolvingButton() {
         startSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activeTaskPane = taskStatusPane.id
+            ControllerManager.activePane = taskStatusPane.id
         }
     }
 
     private fun initContinueSolvingButton() {
         continueSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activeTaskPane = taskChooserPane.id
-            setTaskDataDefault()
+            ControllerManager.activePane = taskChooserPane.id
+            setDefaultTaskData()
         }
     }
 
     private fun initEndSolvingButton() {
         endSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activeTaskPane = taskFinishPane.id
+            ControllerManager.activePane = taskFinishPane.id
         }
     }
 
@@ -184,8 +197,9 @@ class Controller {
 
     private fun initStartSolvingAgainButton() {
         startSolvingAgainButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activeTaskPane = taskChooserPane.id
-            setTaskDataDefault()
+            ControllerManager.activePane = infoFormPane.id
+            setDefaultInfoData()
+            setDefaultTaskData()
         }
     }
 
@@ -206,11 +220,16 @@ class Controller {
         }
     }
 
+    private fun initAgeLabel() {
+        ageLabel.text = uiData.age.uiValue.toInt().toString()
+    }
+
     private fun initAgeSlider() {
         ageSlider.value = uiData.age.uiValue
         ageSlider.valueProperty().addListener { _, old, new ->
             log.info("slider changed from $old to $new")
             uiData.age.uiValue = new.toDouble()
+            ageLabel.text = new.toInt().toString()
         }
     }
 
@@ -233,16 +252,27 @@ class Controller {
     }
 
     private fun initClearInfoForm() {
-        clearInfoForm.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+        clearInfoFormButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             uiData.age.setDefault()
             uiData.programExperience.setDefault()
         }
     }
 
-    private fun setTaskDataDefault() {
+    private fun initStartInfoFormButton() {
+        startInfoFormButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+            ControllerManager.activePane = taskChooserPane.id
+        }
+    }
+
+    private fun setDefaultTaskData() {
         uiData.chosenTask.setDefault()
         uiData.writtenTask.setDefault()
         uiData.taskStatus.setDefault()
+    }
+
+    private fun setDefaultInfoData() {
+        uiData.age.setDefault()
+        uiData.programExperience.setDefault()
     }
 
 }
