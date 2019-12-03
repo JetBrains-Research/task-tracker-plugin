@@ -78,17 +78,17 @@ object PluginServer : Server {
             while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
                 log.info("An attempt of sending data to server is number ${curCountAttempts + 1}")
                 val code = sendData(request).code
-                curCountAttempts++;
                 if (code == 200) {
                     log.info("Tracking data successfully received")
                     sendNextTime = true
                     break
                 }
+                curCountAttempts++;
                 log.info("Error sending tracking data")
                 // wait for 5 seconds
                 Thread.sleep(5_000)
             }
-            if (!sendNextTime) {
+            if (curCountAttempts == MAX_COUNT_ATTEMPTS) {
                 sendNextTime = false
             }
         }
