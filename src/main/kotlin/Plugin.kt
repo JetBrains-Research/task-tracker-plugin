@@ -29,7 +29,7 @@ object Plugin {
         // Tracking documents changes before to be consistent with activity-tracker plugin
         override fun beforeDocumentChange(event: DocumentEvent) {
             if (isValidChange(event)) {
-                logger.log(event)
+                logger.log(event.document)
             }
         }
 
@@ -57,9 +57,14 @@ object Plugin {
         ProjectManager.getInstance().addProjectManagerListener (project, object : ProjectManagerListener {
             override fun projectClosing(project: Project) {
                 log.info("close project")
-                projectsToListeners[project]?.logger?.flush()
-                projectsToListeners[project]?.logger?.close()
-                projectsToListeners[project]?.logger?.getFiles()?.forEach { server.sendTrackingData(it) }
+                val logger = projectsToListeners[project]?.logger
+                if (logger != null) {
+                    logger.logCurrentDocuments()
+                    logger.flush()
+                    logger.close()
+                    logger.getFiles().forEach { server.sendTrackingData(it) }
+                }
+
                 projectsToListeners[project]?.remove()
 
                 super.projectClosing(project)

@@ -13,6 +13,7 @@ import ui.ControllerManager
 import java.io.File
 import java.io.FileWriter
 import java.util.logging.Logger
+import kotlin.math.abs
 
 
 class DocumentLogger(project: Project) {
@@ -27,8 +28,8 @@ class DocumentLogger(project: Project) {
 
     data class Printer(val csvPrinter: CSVPrinter, val fileWriter: FileWriter, val file: File)
 
-    fun log(event: DocumentEvent) {
-        val document = event.document
+
+    fun log(document: Document) {
         var printer = documentsToPrinters.getOrPut(document, { initPrinter(document) })
         if (isFull(printer.file.length())) {
             log.info("File ${printer.file.name} is full")
@@ -36,13 +37,20 @@ class DocumentLogger(project: Project) {
             printer = initPrinter(document)
             log.info("File ${printer.file.name} was cleared")
         }
-        val change = getDocumentChange(event)
+        val change = document.getChange()
         printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData().map { it.logValue })
     }
 
-    private fun isFull(fileSize: Long): Boolean = MAX_FILE_SIZE - fileSize < MAX_DIF_SIZE
+    fun logCurrentDocuments() {
+        documentsToPrinters.keys.forEach { log(it) }
+    }
 
-    private fun sendFile(file: File) = Plugin.server.sendTrackingData(file)
+
+    private fun isFull(fileSize: Long): Boolean = abs(MAX_FILE_SIZE - fileSize) < MAX_DIF_SIZE
+
+    private fun sendFile(file: File) {
+        Plugin.server.sendTrackingData(file)
+    }
 
     fun getFiles() : List<File> = documentsToPrinters.values.map { it.file }
 
@@ -73,18 +81,19 @@ class DocumentLogger(project: Project) {
         return logFile
     }
 
-    private fun getDocumentChange(event: DocumentEvent) : DocumentChangeData {
+    private fun Document.getChange() : DocumentChangeData {
+
         val time = DateTime.now()
-        val document = event.document
-        val file = FileDocumentManager.getInstance().getFile(document)
+        val file = FileDocumentManager.getInstance().getFile(this)
 
         return DocumentChangeData(
             time,
-            event.document.modificationStamp,
+            this.modificationStamp,
             file?.name,
             file?.hashCode(),
-            document.hashCode(),
-            document.text
+            this.hashCode(),
+            this.text
         )
     }
+
 }
