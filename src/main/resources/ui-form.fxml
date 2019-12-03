@@ -14,7 +14,7 @@
 
 <VBox fillWidth="true" prefHeight="482.0" prefWidth="548.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-    <AnchorPane prefHeight="482.0" prefWidth="538.0" style="-fx-background-color: #ffffff;">
+      <Pane prefHeight="463.0" prefWidth="547.0">
          <children>
             <AnchorPane prefHeight="86.0" prefWidth="553.0" style="-fx-background-color: linear-gradient(to left, #E86443, #914E94);">
                <children>
@@ -171,6 +171,6 @@
                </children>
             </Pane>
          </children>
-    </AnchorPane>
+      </Pane>
   </children>
 </VBox>

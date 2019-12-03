@@ -21,6 +21,7 @@ import javax.swing.Box.createHorizontalGlue
 import javax.swing.text.StyleConstants.getComponent
 import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.openapi.wm.impl.ToolWindowImpl
+import com.intellij.ui.components.JBScrollPane
 
 
 class PluginToolWindowFactory : ToolWindowFactory {
@@ -39,7 +40,6 @@ class PluginToolWindowFactory : ToolWindowFactory {
 
     private fun createContent() : JComponent {
         val panel = JPanel()
-
         val fxPanel = JFXPanel()
         val controller = Controller()
         Platform.setImplicitExit(false);
@@ -54,7 +54,7 @@ class PluginToolWindowFactory : ToolWindowFactory {
 
         panel.background = java.awt.Color.white
         panel.add(fxPanel)
-        return panel
+        return JBScrollPane(panel)
     }
 }
 
