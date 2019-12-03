@@ -8,6 +8,8 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.File
 import java.net.URL
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.logging.Logger
 
 
@@ -18,6 +20,8 @@ interface Server {
 }
 
 object PluginServer : Server {
+    private val daemon = Executors.newSingleThreadExecutor()
+
     private val log: Logger = Logger.getLogger(javaClass.name)
     private val client = OkHttpClient()
     private val media_type_csv = "text/csv".toMediaType()
@@ -25,6 +29,7 @@ object PluginServer : Server {
     private const val MAX_COUNT_ATTEMPTS = 5
     private const val ACTIVITY_TRACKER_FILE = "ide-events.csv"
     private val activityTrackerPath = "${PathManager.getPluginsPath()}/activity-tracker/" + ACTIVITY_TRACKER_FILE
+   // private val activityTrackerPath = "/Users/macbook/Library/Application Support/IntelliJIdea2019.2/activity-tracker/" + ACTIVITY_TRACKER_FILE
     private var activityTrackerKey: String? = null
 
     init {
@@ -62,22 +67,31 @@ object PluginServer : Server {
         }
     }
 
-    private fun sendDataToServer(request: Request): Boolean {
-        var curCountAttempts = 0
+    var sendNextTime = true
 
-        while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
-            log.info("An attempt of sending data to server is number ${curCountAttempts + 1}")
-            val code = sendData(request).code
-            curCountAttempts++;
-            if (code == 200) {
-                log.info("Tracking data successfully received")
-                return true
+    private fun sendDataToServer(request: Request) {
+        if (!sendNextTime) return
+
+        daemon.execute {
+            var curCountAttempts = 0
+
+            while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
+                log.info("An attempt of sending data to server is number ${curCountAttempts + 1}")
+                val code = sendData(request).code
+                curCountAttempts++;
+                if (code == 200) {
+                    log.info("Tracking data successfully received")
+                    sendNextTime = true
+                    break
+                }
+                log.info("Error sending tracking data")
+                // wait for 5 seconds
+                Thread.sleep(5_000)
             }
-            log.info("Error sending tracking data")
-            // wait for 5 seconds
-            Thread.sleep(5_000)
+            if (!sendNextTime) {
+                sendNextTime = false
+            }
         }
-        return false
     }
 
     private fun sendActivityTrackerData() {
@@ -124,10 +138,12 @@ object PluginServer : Server {
             .post(requestBody.build())
             .build()
 
-        val success = sendDataToServer(request)
-        if (success) {
+        sendDataToServer(request)
+        if (sendNextTime) {
             sendActivityTrackerData()
         }
+
+        sendNextTime = true
     }
 
     override fun getTasks(): List<Task> {

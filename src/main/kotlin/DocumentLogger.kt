@@ -31,7 +31,6 @@ class DocumentLogger(project: Project) {
         log.info("lof $event")
         val document = event.document
         var printer = documentsToPrinters.getOrPut(document, { initPrinter(document) })
-        println(printer.file.length())
         if (isFull(printer.file.length())) {
             log.info("File ${printer.file.name} is full")
             sendFile(printer.file)
