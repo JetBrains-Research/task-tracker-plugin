@@ -71,7 +71,6 @@ class DocumentLogger(project: Project) {
         return DocumentChangeData(
             time,
             event.document.modificationStamp,
-            SystemProperties.getUserName(),
             file?.name,
             file?.hashCode(),
             document.hashCode(),

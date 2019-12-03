@@ -5,7 +5,6 @@ import org.joda.time.DateTime
 data class DocumentChangeData(
     var date: DateTime,
     var timestamp: Long,
-    var userName: String,
     var fileName: String?,
     var fileHashCode: Int?,
     var documentHashCode: Int,
@@ -16,7 +15,6 @@ data class DocumentChangeData(
         val headers = listOf(
             "date",
             "timestamp",
-            "userName",
             "fileName",
             "fileHashCode",
             "documentHashCode",
@@ -27,7 +25,6 @@ data class DocumentChangeData(
         return listOf(
             date,
             timestamp,
-            userName,
             fileName,
             fileHashCode,
             documentHashCode,
