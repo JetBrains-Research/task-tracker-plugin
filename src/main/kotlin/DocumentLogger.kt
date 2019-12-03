@@ -27,7 +27,6 @@ class DocumentLogger(project: Project) {
     data class Printer(val csvPrinter: CSVPrinter, val fileWriter: FileWriter, val file: File)
 
     fun log(event: DocumentEvent) {
-        log.info("lof $event")
         val document = event.document
         val printer = documentsToPrinters.getOrPut(document, { initPrinter(document) })
         val change = getDocumentChange(event)

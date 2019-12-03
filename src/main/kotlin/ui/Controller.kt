@@ -147,11 +147,13 @@ class Controller {
 
 
     fun selectExperienceButton(text: String) {
+        log.info("select experience button: $text")
         val selectedButton = experienceButtonByText[text]
         programExperienceGroup.selectToggle(selectedButton)
     }
 
     fun selectTaskStatusButton(text: String) {
+        log.info("select status button: $text")
         val selectedButton = taskStatusButtonByText[text]
         taskStatusGroup.selectToggle(selectedButton)
     }
@@ -159,6 +161,7 @@ class Controller {
     fun setActive(name: String) {
         val pane = paneByName[name]
         if (pane != null) {
+            log.info("set active panel: $name")
             paneByName.values.forEach { it.isVisible = false }
             pane.isVisible = true
         }
