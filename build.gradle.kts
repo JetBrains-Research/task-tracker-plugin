@@ -53,9 +53,9 @@ dependencies {
  /*
     Uncomment for testing with Intellij IDEA
  */
-intellij {
-    version = "2019.2.2"
-}
+//intellij {
+//    version = "2019.2.2"
+//}
 
 
  /*
@@ -67,22 +67,18 @@ intellij {
 //}
 
 
-//intellij {
-//    val ideVersion = System.getenv().getOrDefault(
-//        "CODE_TRACKER_IDEA_VERSION",
-//        "192.5728.98"
-////			"LATEST-EAP-SNAPSHOT"
-//    )
-//    println("Using ide version: ${ideVersion}")
-//    version = ideVersion
-//            // The artifact name is deliberately not "activity-tracker" because
-//            // *.csv files are stored in the "activity-tracker" directory.
-//            // If plugin archive has the same name, the directory will be deleted on plugin update.
-//    pluginName = "code-tracker-plugin"
-//    downloadSources = true
-//    sameSinceUntilBuild = false
-//    updateSinceUntilBuild = false
-//}
+intellij {
+    val ideVersion = System.getenv().getOrDefault(
+        "CODE_TRACKER_IDEA_VERSION",
+        "192.5728.98"
+    )
+    println("Using ide version: ${ideVersion}")
+    version = ideVersion
+    pluginName = "code-tracker-plugin"
+    downloadSources = true
+    sameSinceUntilBuild = false
+    updateSinceUntilBuild = false
+}
 
 javafx {
     version = "11"
