@@ -62,7 +62,7 @@ object Plugin {
                     logger.logCurrentDocuments()
                     logger.flush()
                     logger.close()
-                    logger.getFiles().forEach { server.sendTrackingData(it) }
+                    logger.getFiles().forEach { server.sendTrackingData(it); it.deleteOnExit() }
                 }
 
                 projectsToListeners[project]?.remove()
