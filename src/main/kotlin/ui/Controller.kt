@@ -45,6 +45,9 @@ class Controller {
     lateinit var taskStatusPane: Pane
 
     @FXML
+    lateinit var taskNameLabel: Label
+
+    @FXML
     lateinit var taskStatusGroup: ToggleGroup
     @FXML
     lateinit var taskNotSolved: RadioButton
@@ -184,6 +187,12 @@ class Controller {
     fun setWrittenTaskVisibility(isVisible: Boolean) {
         taskTextField.isVisible = isVisible
         taskTextLabel.isVisible = isVisible
+    }
+
+    fun setTaskNameLabelIf(condition: Boolean, name: String) {
+        if (condition) {
+            taskNameLabel.text = name
+        }
     }
 
     private fun initInfoFormPane() {

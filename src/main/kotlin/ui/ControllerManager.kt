@@ -29,13 +29,18 @@ object ControllerManager {
         when(event) {
             NotifyEvent.CHOSEN_TASK_NOTIFY -> controllers.forEach {
                 it.taskChoiceBox.selectionModel.select(new as Int)
-                it.setWrittenTaskVisibility(uiData.tasks[new].name == writeTask.name)
-                it.setStartSolvingButtonDisability(uiData.tasks[new].name == writeTask.name && uiData.writtenTask.isDefault() )
+                val name = uiData.tasks[new].name
+                it.setWrittenTaskVisibility(name == writeTask.name)
+                it.setStartSolvingButtonDisability(name == writeTask.name && uiData.writtenTask.isDefault())
+
+                // todo: change during UI refactoring
+                it.setTaskNameLabelIf(name != writeTask.name, name)
             }
 
             NotifyEvent.WRITTEN_TASK_NOTIFY -> controllers.forEach {
                 it.taskTextField.text = new as String
-                it.setStartSolvingButtonDisability(uiData.tasks[uiData.chosenTask.uiValue].name == writeTask.name && uiData.writtenTask.isDefault(new) )
+                it.setStartSolvingButtonDisability(uiData.tasks[uiData.chosenTask.uiValue].name == writeTask.name && uiData.writtenTask.isDefault(new))
+                it.setTaskNameLabelIf(uiData.tasks[uiData.chosenTask.uiValue].name == writeTask.name && !uiData.writtenTask.isDefault(new), new)
             }
 
             NotifyEvent.AGE_NOTIFY -> controllers.forEach {
