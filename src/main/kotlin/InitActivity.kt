@@ -7,12 +7,13 @@ class InitActivity : StartupActivity {
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
     init {
+
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: startup activity")
+        Plugin.startTracking()
     }
 
     override fun runActivity(project: Project) {
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: run activity")
         Plugin.addProjectManagerListener(project)
-        Plugin.startTracking(project)
     }
 }

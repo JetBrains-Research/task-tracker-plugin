@@ -11,20 +11,19 @@ import com.intellij.openapi.project.ProjectManagerListener
 object Plugin {
     const val PLUGIN_ID = "codetracker"
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
-    private val projectsToListeners: MutableMap<Project, PluginDocumentListener> = HashMap()
+    private lateinit var listener: PluginDocumentListener
     val server: Server = PluginServer
-
+    val logger = DocumentLogger
 
     init {
         diagnosticLogger.info("${PLUGIN_ID}: init plugin")
     }
 
-    private class PluginDocumentListener(private val project: Project) : DocumentListener {
+    private class PluginDocumentListener : DocumentListener {
         private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
-        val logger = DocumentLogger(project)
 
         init {
-            diagnosticLogger.info("${PLUGIN_ID}: init document listener")
+            diagnosticLogger.info("${PLUGIN_ID}: init documents listener")
         }
 
         // Tracking documents changes before to be consistent with activity-tracker plugin
@@ -34,40 +33,40 @@ object Plugin {
             }
         }
 
+        // To avoid completion events with IntellijIdeaRulezzz sign
         private fun isValidChange(event: DocumentEvent) : Boolean {
             return EditorFactory.getInstance().getEditors(event.document).isNotEmpty() && FileDocumentManager.getInstance().getFile(event.document) != null
         }
 
+        // EditorFactory.eventMulticaster sets listeners to all documents in all open projects
         fun add() {
-            projectsToListeners[project] = this
             EditorFactory.getInstance().eventMulticaster.addDocumentListener(this)
         }
 
         fun remove() {
-            projectsToListeners.remove(project, this)
             EditorFactory.getInstance().eventMulticaster.removeDocumentListener(this)
         }
     }
 
-    fun startTracking(project: Project) {
-        PluginDocumentListener(project).add()
+    fun startTracking() {
+        listener = PluginDocumentListener()
+        listener.add()
     }
 
-    // check disposable?
+    // todo: find the other way for capturing the last project closing
     fun addProjectManagerListener(project: Project) {
         ProjectManager.getInstance().addProjectManagerListener (project, object : ProjectManagerListener {
             override fun projectClosing(project: Project) {
-                diagnosticLogger.info("${PLUGIN_ID}: close project")
-                val logger = projectsToListeners[project]?.logger
-                if (logger != null) {
+                if (ProjectManager.getInstance().openProjects.size == 1) {
+                    diagnosticLogger.info("${PLUGIN_ID}: close project")
                     diagnosticLogger.info("${PLUGIN_ID}: prepare for sending ${logger.getFiles().joinToString { it.name } }")
                     logger.logCurrentDocuments()
                     logger.flush()
                     logger.close()
-                    logger.getFiles().forEach { server.sendTrackingData(it); it.deleteOnExit() }
-                }
+                    logger.getFiles().forEach { server.sendTrackingData(it, true) }
 
-                projectsToListeners[project]?.remove()
+                    listener.remove()
+                }
 
                 super.projectClosing(project)
             }

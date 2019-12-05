@@ -2,7 +2,6 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import data.DocumentChangeData
 import org.apache.commons.csv.CSVFormat
@@ -14,18 +13,15 @@ import java.io.FileWriter
 import kotlin.math.abs
 
 
-class DocumentLogger(project: Project) {
+object DocumentLogger {
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
     private val documentsToPrinters: HashMap<Document, Printer> = HashMap()
 
-    companion object {
-        private val folderPath = "${PathManager.getPluginsPath()}/code-tracker/"
-        private const val MAX_FILE_SIZE = 50 * 1024 * 1024
-        private const val MAX_DIF_SIZE = 300
-    }
+    private val folderPath = "${PathManager.getPluginsPath()}/code-tracker/"
+    private const val MAX_FILE_SIZE = 50 * 1024 * 1024
+    private const val MAX_DIF_SIZE = 300
 
     data class Printer(val csvPrinter: CSVPrinter, val fileWriter: FileWriter, val file: File)
-
 
     fun log(document: Document) {
         var printer = documentsToPrinters.getOrPut(document, { initPrinter(document) })
@@ -47,7 +43,7 @@ class DocumentLogger(project: Project) {
     private fun isFull(fileSize: Long): Boolean = abs(MAX_FILE_SIZE - fileSize) < MAX_DIF_SIZE
 
     private fun sendFile(file: File) {
-        Plugin.server.sendTrackingData(file)
+        Plugin.server.sendTrackingData(file, false)
     }
 
     fun getFiles() : List<File> = documentsToPrinters.values.map { it.file }

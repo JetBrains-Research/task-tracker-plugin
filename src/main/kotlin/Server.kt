@@ -1,21 +1,18 @@
 import com.google.gson.GsonBuilder
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
+import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
 import java.io.File
 import java.net.URL
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 
 
 interface Server {
     fun getTasks() : List<Task>
 
-    fun sendTrackingData(file: File)
+    fun sendTrackingData(file: File, deleteAfter: Boolean)
 }
 
 object PluginServer : Server {
@@ -68,10 +65,13 @@ object PluginServer : Server {
 
     var sendNextTime = true
 
-    private fun sendDataToServer(request: Request) {
-        if (!sendNextTime) return
+    private fun sendDataToServer(request: Request) : CompletableFuture<Void>  {
 
-        daemon.execute {
+        if (!sendNextTime) {
+            return CompletableFuture.completedFuture(null)
+        }
+
+        return CompletableFuture.runAsync(Runnable {
             var curCountAttempts = 0
 
             while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
@@ -85,7 +85,7 @@ object PluginServer : Server {
                     sendNextTime = true
                     break
                 }
-                curCountAttempts++;
+                curCountAttempts++
                 diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error sending tracking data")
                 // wait for 5 seconds
                 Thread.sleep(5_000)
@@ -93,7 +93,7 @@ object PluginServer : Server {
             if (curCountAttempts == MAX_COUNT_ATTEMPTS) {
                 sendNextTime = false
             }
-        }
+        }, daemon)
     }
 
     private fun sendActivityTrackerData() {
@@ -120,7 +120,8 @@ object PluginServer : Server {
         }
     }
 
-    override fun sendTrackingData(file: File) {
+    // if deleteAfter is true, the file will be deleted
+    override fun sendTrackingData(file: File, deleteAfter: Boolean) {
         val currentUrl = BASE_URL + "data-item"
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
 
@@ -140,7 +141,15 @@ object PluginServer : Server {
             .post(requestBody.build())
             .build()
 
-        sendDataToServer(request)
+        val future = sendDataToServer(request)
+
+        if (deleteAfter) {
+            future.thenRun {
+                diagnosticLogger.info("${Plugin.PLUGIN_ID}: delete file ${file.name}")
+                file.deleteOnExit()
+            }
+            future.get()
+        }
 
         // todo: redundant if? cause sendActivityTrackerData calls sendDataToServer which also checks sendNextTime
         if (sendNextTime) {
