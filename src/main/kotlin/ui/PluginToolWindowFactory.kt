@@ -1,38 +1,30 @@
 package ui
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.openapi.wm.impl.ToolWindowImpl
+import com.intellij.ui.components.JBScrollPane
 import javafx.application.Platform
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.paint.Color
-import java.awt.BorderLayout
-import java.awt.Dimension
-import java.awt.GridBagConstraints
-import java.awt.GridLayout
-import java.util.logging.Logger
-import javax.swing.*
-import javax.swing.Box.createVerticalGlue
-import javax.swing.Box.createHorizontalGlue
-import javax.swing.text.StyleConstants.getComponent
-import com.intellij.openapi.wm.ex.ToolWindowEx
-import com.intellij.openapi.wm.impl.ToolWindowImpl
-import com.intellij.ui.components.JBScrollPane
+import javax.swing.JComponent
+import javax.swing.JPanel
 
 
 class PluginToolWindowFactory : ToolWindowFactory {
-    private val log: Logger = Logger.getLogger(javaClass.name)
+    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
     init {
-        log.info("init factory")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: init factory")
     }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        log.info("create tool window")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: create tool window")
         val content = createContent()
         toolWindow.component.parent.add(content)
         toolWindow as ToolWindowImpl

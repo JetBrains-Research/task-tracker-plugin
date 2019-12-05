@@ -1,3 +1,4 @@
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
@@ -5,25 +6,25 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import java.util.logging.Logger
 
 
 object Plugin {
-    private val log: Logger = Logger.getLogger(javaClass.name)
+    const val PLUGIN_ID = "codetracker"
+    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
     private val projectsToListeners: MutableMap<Project, PluginDocumentListener> = HashMap()
     val server: Server = PluginServer
 
 
     init {
-        log.info("init plugin")
+        diagnosticLogger.info("${PLUGIN_ID}: init plugin")
     }
 
     private class PluginDocumentListener(private val project: Project) : DocumentListener {
-        private val log: Logger = Logger.getLogger(javaClass.name)
+        private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
         val logger = DocumentLogger(project)
 
         init {
-            log.info("init document listener")
+            diagnosticLogger.info("${PLUGIN_ID}: init document listener")
         }
 
         // Tracking documents changes before to be consistent with activity-tracker plugin
@@ -56,9 +57,10 @@ object Plugin {
     fun addProjectManagerListener(project: Project) {
         ProjectManager.getInstance().addProjectManagerListener (project, object : ProjectManagerListener {
             override fun projectClosing(project: Project) {
-                log.info("close project")
+                diagnosticLogger.info("${PLUGIN_ID}: close project")
                 val logger = projectsToListeners[project]?.logger
                 if (logger != null) {
+                    diagnosticLogger.info("${PLUGIN_ID}: prepare for sending ${logger.getFiles().joinToString { it.name } }")
                     logger.logCurrentDocuments()
                     logger.flush()
                     logger.close()

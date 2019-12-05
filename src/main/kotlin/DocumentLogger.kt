@@ -1,10 +1,9 @@
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.util.SystemProperties
 import data.DocumentChangeData
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
@@ -12,12 +11,11 @@ import org.joda.time.DateTime
 import ui.ControllerManager
 import java.io.File
 import java.io.FileWriter
-import java.util.logging.Logger
 import kotlin.math.abs
 
 
 class DocumentLogger(project: Project) {
-    private val log = Logger.getLogger(javaClass.name)
+    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
     private val documentsToPrinters: HashMap<Document, Printer> = HashMap()
 
     companion object {
@@ -32,10 +30,10 @@ class DocumentLogger(project: Project) {
     fun log(document: Document) {
         var printer = documentsToPrinters.getOrPut(document, { initPrinter(document) })
         if (isFull(printer.file.length())) {
-            log.info("File ${printer.file.name} is full")
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} is full")
             sendFile(printer.file)
             printer = initPrinter(document)
-            log.info("File ${printer.file.name} was cleared")
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} was cleared")
         }
         val change = document.getChange()
         printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData().map { it.logValue })
@@ -55,12 +53,12 @@ class DocumentLogger(project: Project) {
     fun getFiles() : List<File> = documentsToPrinters.values.map { it.file }
 
     fun flush() {
-        log.info("flush loggers")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: flush loggers")
         documentsToPrinters.values.forEach { it.csvPrinter.flush() }
     }
 
     fun close() {
-        log.info("close loggers")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: close loggers")
         documentsToPrinters.values.forEach { it.csvPrinter.close(); it.fileWriter.close() }
     }
 

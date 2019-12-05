@@ -1,5 +1,6 @@
 import com.google.gson.GsonBuilder
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.diagnostic.Logger
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -8,9 +9,7 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.File
 import java.net.URL
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.logging.Logger
 
 
 interface Server {
@@ -22,7 +21,7 @@ interface Server {
 object PluginServer : Server {
     private val daemon = Executors.newSingleThreadExecutor()
 
-    private val log: Logger = Logger.getLogger(javaClass.name)
+    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
     private val client = OkHttpClient()
     private val media_type_csv = "text/csv".toMediaType()
     private const val BASE_URL: String = "http://coding-assistant-helper.ru/api/"
@@ -33,8 +32,8 @@ object PluginServer : Server {
     private var activityTrackerKey: String? = null
 
     init {
-        log.info("init server")
-        log.info("Max count attempt of sending data to server = ${MAX_COUNT_ATTEMPTS}")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: init server")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: Max count attempt of sending data to server = ${MAX_COUNT_ATTEMPTS}")
         initActivityTrackerInfo()
     }
 
@@ -43,14 +42,14 @@ object PluginServer : Server {
     }
 
     private fun initActivityTrackerInfo() {
-        log.info("Activity tracker is working...")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: Activity tracker is working...")
         generateActivityTrackerKey()
     }
 
     private fun generateActivityTrackerKey() {
         val currentUrl = URL(BASE_URL + "activity-tracker-item")
 
-        log.info("...generating activity tracker key")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: ...generating activity tracker key")
 
         val request = Request.Builder()
             .url(currentUrl)
@@ -59,10 +58,10 @@ object PluginServer : Server {
 
         client.newCall(request).execute().use { response ->
             if (response.code == 200) {
-                log.info("Activity tracker key was generated successfully")
+                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Activity tracker key was generated successfully")
                 activityTrackerKey = response.body!!.string()
             } else {
-                log.info("Generating activity tracker key error")
+                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Generating activity tracker key error")
             }
         }
     }
@@ -76,15 +75,18 @@ object PluginServer : Server {
             var curCountAttempts = 0
 
             while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
-                log.info("An attempt of sending data to server is number ${curCountAttempts + 1}")
+                diagnosticLogger.info("${Plugin.PLUGIN_ID}: An attempt of sending data to server is number ${curCountAttempts + 1}")
                 val code = sendData(request).code
+                diagnosticLogger.info("${Plugin.PLUGIN_ID}: HTTP status code is $code")
+
+                //todo: replace with sendData(request).isSuccessful ?
                 if (code == 200) {
-                    log.info("Tracking data successfully received")
+                    diagnosticLogger.info("${Plugin.PLUGIN_ID}: Tracking data successfully received")
                     sendNextTime = true
                     break
                 }
                 curCountAttempts++;
-                log.info("Error sending tracking data")
+                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error sending tracking data")
                 // wait for 5 seconds
                 Thread.sleep(5_000)
             }
@@ -100,7 +102,7 @@ object PluginServer : Server {
         if (fileExists) {
             val currentUrl = BASE_URL + "activity-tracker-item/" + activityTrackerKey
 
-            log.info("...sending file ${file.name}")
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
 
             val requestBody = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -120,7 +122,7 @@ object PluginServer : Server {
 
     override fun sendTrackingData(file: File) {
         val currentUrl = BASE_URL + "data-item"
-        log.info("...sending file ${file.name}")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
 
         val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
@@ -139,6 +141,8 @@ object PluginServer : Server {
             .build()
 
         sendDataToServer(request)
+
+        // todo: redundant if? cause sendActivityTrackerData calls sendDataToServer which also checks sendNextTime
         if (sendNextTime) {
             sendActivityTrackerData()
         }
@@ -153,11 +157,11 @@ object PluginServer : Server {
 
         client.newCall(request).execute().use { response ->
             return if (response.code == 200) {
-                log.info("All tasks successfully received")
+                diagnosticLogger.info("${Plugin.PLUGIN_ID}: All tasks successfully received")
                 val gson = GsonBuilder().create()
                 gson.fromJson(response.body!!.string(), Array<Task>::class.java).toList()
             } else {
-                log.info("Error getting tasks")
+                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error getting tasks")
                 emptyList()
             }
         }

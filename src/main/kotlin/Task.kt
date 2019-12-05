@@ -1,10 +1,10 @@
-import java.util.logging.Logger
+import com.intellij.openapi.diagnostic.Logger
 
 data class Task(var key: String, var name: String) {
-    private val log: Logger = Logger.getLogger(javaClass.name)
+    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
     init {
-        log.info("Task ${key} initialized getting")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: Task ${key} initialized getting")
     }
 
     override fun toString(): String {
