@@ -15,6 +15,9 @@ object ControllerManager {
 
     var activePane: String by Delegates.observable("infoFormPane") { _, old, new ->
         controllers.forEach { it.setActive(new) }
+
+        // log current state to store uiData change
+        DocumentLogger.logCurrentDocuments()
     }
 
     val uiData = UiData(Plugin.server.getTasks() + writeTask)
