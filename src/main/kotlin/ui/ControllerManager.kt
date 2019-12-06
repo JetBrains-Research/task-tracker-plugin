@@ -1,6 +1,8 @@
 package ui
 
 import Task
+import data.PE
+import data.TaskStatus
 import data.UiData
 import javafx.collections.FXCollections
 import kotlin.properties.Delegates
@@ -50,12 +52,12 @@ object ControllerManager {
             }
 
             NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY ->  controllers.forEach {
-                it.selectExperienceButton(new as String)
+                it.selectExperienceButton(new as PE)
                 it.setInfoFormButtonsDisability(uiData.age.isDefault() || uiData.programExperience.isDefault(new))
             }
 
             NotifyEvent.TASK_STATUS_NOTIFY -> controllers.forEach {
-                it.selectTaskStatusButton(new as String)
+                it.selectTaskStatusButton(new as TaskStatus)
                 it.setStatusButtonsDisability(uiData.taskStatus.isDefault())
             }
         }

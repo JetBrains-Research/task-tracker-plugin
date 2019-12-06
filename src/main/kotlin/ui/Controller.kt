@@ -1,6 +1,8 @@
 package ui
 
 import com.intellij.openapi.diagnostic.Logger
+import data.PE
+import data.TaskStatus
 import data.UiData
 import javafx.fxml.FXML
 import javafx.scene.control.*
@@ -52,7 +54,7 @@ class Controller {
     @FXML
     lateinit var taskSolved: RadioButton
     @FXML
-    lateinit var taskStatusButtonByText: HashMap<String, RadioButton?>
+    lateinit var taskStatusButtonByTS: HashMap<TaskStatus, RadioButton?>
 
     @FXML
     lateinit var endSolvingButton: Button
@@ -97,7 +99,7 @@ class Controller {
     @FXML
     lateinit var peMoreThanSix: RadioButton
     @FXML
-    lateinit var experienceButtonByText: Map<String, RadioButton?>
+    lateinit var experienceButtonByPE: Map<PE, RadioButton?>
 
     @FXML
     lateinit var clearInfoFormButton: Button
@@ -128,34 +130,34 @@ class Controller {
             taskFinishPane.id to taskFinishPane
         )
 
-        experienceButtonByText = hashMapOf(
-            "null" to null,
-            peLessThanHalf.text to peLessThanHalf,
-            peFromHalfToOne.text to peFromHalfToOne,
-            peFromOneToTwo.text to peFromOneToTwo,
-            peFromTwoToFour.text to peFromTwoToFour,
-            peFromFourToSix.text to peFromFourToSix,
-            peMoreThanSix.text to peMoreThanSix
+        experienceButtonByPE = hashMapOf(
+            PE.NULL to null,
+            PE.LESS_THAN_HALF_YEAR to peLessThanHalf,
+            PE.FROM_HALF_TO_ONE_YEAR to peFromHalfToOne,
+            PE.FROM_ONE_TO_TWO_YEARS to peFromOneToTwo,
+            PE.FROM_TWO_TO_FOUR_YEARS to peFromTwoToFour,
+            PE.FROM_FOUR_TO_SIX_YEARS to peFromFourToSix,
+            PE.MORE_THAN_SIX to peMoreThanSix
         )
 
 
-        taskStatusButtonByText = hashMapOf(
-            "null" to null,
-            taskNotSolved.text to taskNotSolved,
-            taskSolved.text to taskSolved
+        taskStatusButtonByTS = hashMapOf(
+            TaskStatus.NULL to null,
+            TaskStatus.NOT_SOLVED to taskNotSolved,
+            TaskStatus.SOLVED to taskSolved
         )
     }
 
 
-    fun selectExperienceButton(text: String) {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: select experience button: $text")
-        val selectedButton = experienceButtonByText[text]
+    fun selectExperienceButton(experience: PE) {
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: select experience button: $experience")
+        val selectedButton = experienceButtonByPE[experience]
         programExperienceGroup.selectToggle(selectedButton)
     }
 
-    fun selectTaskStatusButton(text: String) {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: select status button: $text")
-        val selectedButton = taskStatusButtonByText[text]
+    fun selectTaskStatusButton(status: TaskStatus) {
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: select status button: $status")
+        val selectedButton = taskStatusButtonByTS[status]
         taskStatusGroup.selectToggle(selectedButton)
     }
 
@@ -238,7 +240,7 @@ class Controller {
     private fun initTaskStatusGroup() {
         taskStatusGroup.selectedToggleProperty().addListener { _, old, new ->
             diagnosticLogger.info("${Plugin.PLUGIN_ID}: task status changed from $old to $new")
-            uiData.taskStatus.uiValue = (new as? RadioButton)?.text ?: "null"
+            uiData.taskStatus.uiValue = taskStatusButtonByTS.filterValues { it == new }.keys.elementAtOrElse(0) { TaskStatus.NULL }
         }
     }
 
@@ -274,7 +276,7 @@ class Controller {
     private fun initProgramExperienceGroup() {
         programExperienceGroup.selectedToggleProperty().addListener { _, old, new ->
             diagnosticLogger.info("${Plugin.PLUGIN_ID}: program experience changed from $old to $new")
-            uiData.programExperience.uiValue = (new as? RadioButton)?.text ?: "null"
+            uiData.programExperience.uiValue = experienceButtonByPE.filterValues { it == new }.keys.elementAtOrElse(0) { PE.NULL }
         }
     }
 

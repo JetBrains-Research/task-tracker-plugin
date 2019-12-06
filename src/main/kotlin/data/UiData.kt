@@ -17,9 +17,9 @@ class UiData(val tasks: List<Task>) {
 
     val age = UiField(NotifyEvent.AGE_NOTIFY, 0.0, "age")
 
-    val programExperience = UiField(NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, "null", "programExperience")
+    val programExperience = UiField(NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, PE.NULL, "programExperience")
 
-    val taskStatus = UiField(NotifyEvent.TASK_STATUS_NOTIFY, "null", "taskStatus")
+    val taskStatus = UiField(NotifyEvent.TASK_STATUS_NOTIFY, TaskStatus.NULL, "taskStatus")
 
     open class UiField<T : Any?> (val notifyEvent: NotifyEvent, val defaultUiValue: T, val header: String) {
         private val controllerManager = ControllerManager
@@ -54,4 +54,20 @@ class UiData(val tasks: List<Task>) {
         programExperience,
         taskStatus
     )
+}
+
+enum class PE {
+    NULL,
+    LESS_THAN_HALF_YEAR,
+    FROM_HALF_TO_ONE_YEAR,
+    FROM_ONE_TO_TWO_YEARS,
+    FROM_TWO_TO_FOUR_YEARS,
+    FROM_FOUR_TO_SIX_YEARS,
+    MORE_THAN_SIX
+}
+
+enum class TaskStatus {
+    NULL,
+    NOT_SOLVED,
+    SOLVED
 }
