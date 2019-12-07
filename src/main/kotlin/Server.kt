@@ -25,7 +25,7 @@ object PluginServer : Server {
     private const val MAX_COUNT_ATTEMPTS = 5
     private const val ACTIVITY_TRACKER_FILE = "ide-events.csv"
     private val activityTrackerPath = "${PathManager.getPluginsPath()}/activity-tracker/" + ACTIVITY_TRACKER_FILE
-   // private val activityTrackerPath = "/Users/macbook/Library/Application Support/IntelliJIdea2019.2/activity-tracker/" + ACTIVITY_TRACKER_FILE
+    // private val activityTrackerPath = "/Users/macbook/Library/Application Support/IntelliJIdea2019.2/activity-tracker/" + ACTIVITY_TRACKER_FILE
     private var activityTrackerKey: String? = null
 
     init {
@@ -145,14 +145,15 @@ object PluginServer : Server {
 
         val future = sendDataToServer(request)
 
-        if (deleteAfter) {
-            future.thenRun {
+        future.thenRun {
+            if(deleteAfter) {
                 diagnosticLogger.info("${Plugin.PLUGIN_ID}: delete file ${file.name}")
                 file.delete()
-                postActivity()
             }
-            future.get()
+            postActivity()
         }
+        future.get()
+
 
         // todo: redundant if? cause sendActivityTrackerData calls sendDataToServer which also checks sendNextTime
         if (sendNextTime) {
