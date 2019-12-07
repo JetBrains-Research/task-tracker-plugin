@@ -14,6 +14,7 @@ internal object ControllerManager {
     private val writeTask = Task("WRITE_TASK", "Написать вручную")
     private val selectTask = Task("NULL", "--Не выбрано--")
     private val controllers : MutableList<Controller> = arrayListOf()
+    private var lastId: Int = 0
 
     var activePane: String by Delegates.observable("infoFormPane") { _, old, new ->
         controllers.forEach { it.setActive(new) }
@@ -27,7 +28,7 @@ internal object ControllerManager {
 
     fun addController(controller: Controller) {
         controllers.add(controller)
-        controller.id = controllers.size
+        controller.id = lastId++
 
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: add new controller${controller.id} for project \"${controller.project.name}\", total sum is ${controllers.size}")
 

@@ -21,8 +21,10 @@ class UiData(val tasks: List<Task>) {
 
     open class UiField<T : Any?> (val notifyEvent: NotifyEvent, val defaultUiValue: T, val header: String) {
 
-        var uiValue: T by Delegates.observable(defaultUiValue) { _, _, new ->
-            ControllerManager.notify(notifyEvent, new)
+        var uiValue: T by Delegates.observable(defaultUiValue) { _, old, new ->
+            if (old != new) {
+                ControllerManager.notify(notifyEvent, new)
+            }
         }
         // to be able to set specific ways of logging like logging a task id in case of chosenTask
         open val logValue: String
