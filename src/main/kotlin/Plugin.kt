@@ -54,7 +54,7 @@ object Plugin {
     }
 
     fun stopTracking() {
-        diagnosticLogger.info("${PLUGIN_ID}: close project")
+        diagnosticLogger.info("${PLUGIN_ID}: close IDE")
         diagnosticLogger.info("${PLUGIN_ID}: prepare fo sending ${logger.getFiles().size} files")
         if (logger.getFiles().isNotEmpty()) {
             logger.logCurrentDocuments()

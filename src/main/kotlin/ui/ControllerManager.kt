@@ -8,7 +8,7 @@ import data.UiData
 import javafx.collections.FXCollections
 import kotlin.properties.Delegates
 
-object ControllerManager {
+internal object ControllerManager {
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
     private val writeTask = Task("-1", "Написать вручную")
@@ -23,16 +23,17 @@ object ControllerManager {
 
     val uiData = UiData(Plugin.server.getTasks() + writeTask)
 
-    fun addController(controller: Controller){
+    fun addController(controller: Controller) {
         controllers.add(controller)
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: add new controller for project ${controller.project.name}, total sum is ${controllers.size}")
+        controller.id = controllers.size
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: add new controller${controller.id} for project \"${controller.project.name}\", total sum is ${controllers.size}")
         controller.taskChoiceBox.items = FXCollections.observableList(uiData.tasks.map { it.name })
         uiData.getData().forEach { notify(it.notifyEvent, it.uiValue, arrayListOf(controller)) }
     }
 
     fun removeController(controller: Controller) {
         controllers.remove(controller)
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: remove controller for project ${controller.project.name}, total sum is ${controllers.size}")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: remove controller${controller.id} for project \"${controller.project.name}\", total sum is ${controllers.size}")
     }
 
     fun notify(event: NotifyEvent, new: Any?, controllers: MutableList<Controller> = this.controllers) {

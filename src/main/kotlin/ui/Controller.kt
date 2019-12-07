@@ -1,7 +1,10 @@
 package ui
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.util.Disposer
 import data.PE
 import data.TaskStatus
 import data.UiData
@@ -15,7 +18,6 @@ class Controller(val project: Project) {
 
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
-    private val controllerManager = ControllerManager
     private val uiData: UiData = ControllerManager.uiData
 
     @FXML
@@ -107,13 +109,19 @@ class Controller(val project: Project) {
 
     @FXML
     lateinit var startInfoFormButton: Button
+    
+    internal var id: Int = -1
 
 
     fun initialize() {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: init controller")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: init controller")
+        Disposer.register(project, Disposable {
+            ControllerManager.removeController(this)
+        })
+
         initMaps()
 
-        controllerManager.addController(this)
+        ControllerManager.addController(this)
 
         initInfoFormPane()
         initTaskChooserPane()
@@ -151,13 +159,13 @@ class Controller(val project: Project) {
 
 
     fun selectExperienceButton(experience: PE) {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: select experience button: $experience")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: select experience button: $experience")
         val selectedButton = experienceButtonByPE[experience]
         programExperienceGroup.selectToggle(selectedButton)
     }
 
     fun selectTaskStatusButton(status: TaskStatus) {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: select status button: $status")
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: select status button: $status")
         val selectedButton = taskStatusButtonByTS[status]
         taskStatusGroup.selectToggle(selectedButton)
     }
@@ -165,7 +173,7 @@ class Controller(val project: Project) {
     fun setActive(name: String) {
         val pane = paneByName[name]
         if (pane != null) {
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}: set active panel: $name")
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: set active panel: $name")
             paneByName.values.forEach { it.isVisible = false }
             pane.isVisible = true
         }
@@ -240,7 +248,7 @@ class Controller(val project: Project) {
 
     private fun initTaskStatusGroup() {
         taskStatusGroup.selectedToggleProperty().addListener { _, old, new ->
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}: task status changed from $old to $new")
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: task status changed from $old to $new")
             uiData.taskStatus.uiValue = taskStatusButtonByTS.filterValues { it == new }.keys.elementAtOrElse(0) { TaskStatus.NULL }
         }
     }
@@ -255,28 +263,28 @@ class Controller(val project: Project) {
 
     private fun initTaskChoiceBox() {
         taskChoiceBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}: choicebox changed from $old to $new")
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: choicebox changed from $old to $new")
             uiData.chosenTask.uiValue = taskChoiceBox.selectionModel.selectedIndex
         }
     }
 
     private fun initTaskTextField() {
         taskTextField.textProperty().addListener { _, old, new ->
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}: textfield changed from $old to $new")
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: textfield changed from $old to $new")
             uiData.writtenTask.uiValue = new
         }
     }
 
     private fun initAgeSlider() {
         ageSlider.valueProperty().addListener { _, old, new ->
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}: slider changed from $old to $new")
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: slider changed from $old to $new")
             uiData.age.uiValue = new.toDouble()
         }
     }
 
     private fun initProgramExperienceGroup() {
         programExperienceGroup.selectedToggleProperty().addListener { _, old, new ->
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}: program experience changed from $old to $new")
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: program experience changed from $old to $new")
             uiData.programExperience.uiValue = experienceButtonByPE.filterValues { it == new }.keys.elementAtOrElse(0) { PE.NULL }
         }
     }
