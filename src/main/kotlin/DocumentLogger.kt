@@ -36,6 +36,7 @@ object DocumentLogger {
     }
 
     fun logCurrentDocuments() {
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: log current documents: ${documentsToPrinters.keys.size}")
         documentsToPrinters.keys.forEach { log(it) }
     }
 

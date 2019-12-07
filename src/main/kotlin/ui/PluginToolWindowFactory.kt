@@ -25,15 +25,15 @@ class PluginToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: create tool window")
-        val content = createContent()
+        val content = createContent(project)
         toolWindow.component.parent.add(content)
         toolWindow as ToolWindowImpl
     }
 
-    private fun createContent() : JComponent {
+    private fun createContent(project: Project) : JComponent {
         val panel = JPanel()
         val fxPanel = JFXPanel()
-        val controller = Controller()
+        val controller = Controller(project)
         Platform.setImplicitExit(false);
         Platform.runLater {
             val loader = FXMLLoader(javaClass.classLoader.getResource("ui-form.fxml"))

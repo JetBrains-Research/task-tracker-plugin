@@ -22,9 +22,9 @@ class UiData(val tasks: List<Task>) {
     val taskStatus = UiField(NotifyEvent.TASK_STATUS_NOTIFY, TaskStatus.NULL, "taskStatus")
 
     open class UiField<T : Any?> (val notifyEvent: NotifyEvent, val defaultUiValue: T, val header: String) {
-        private val controllerManager = ControllerManager
+
         var uiValue: T by Delegates.observable(defaultUiValue) { _, _, new ->
-            controllerManager.notify(notifyEvent, new)
+            ControllerManager.notify(notifyEvent, new)
         }
         // to be able to set specific ways of logging like logging a task id in case of chosenTask
         open val logValue: String

@@ -1,6 +1,7 @@
 package ui
 
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
 import data.PE
 import data.TaskStatus
 import data.UiData
@@ -9,7 +10,7 @@ import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 
-class Controller {
+class Controller(val project: Project) {
     // todo: separate task and info form logic?
 
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)

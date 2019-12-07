@@ -1,6 +1,7 @@
 package ui
 
 import Task
+import com.intellij.openapi.diagnostic.Logger
 import data.PE
 import data.TaskStatus
 import data.UiData
@@ -8,9 +9,9 @@ import javafx.collections.FXCollections
 import kotlin.properties.Delegates
 
 object ControllerManager {
+    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
     private val writeTask = Task("-1", "Написать вручную")
-
     private val controllers : MutableList<Controller> = arrayListOf()
 
     var activePane: String by Delegates.observable("infoFormPane") { _, old, new ->
@@ -24,13 +25,17 @@ object ControllerManager {
 
     fun addController(controller: Controller){
         controllers.add(controller)
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: add new controller for project ${controller.project.name}, total sum is ${controllers.size}")
         controller.taskChoiceBox.items = FXCollections.observableList(uiData.tasks.map { it.name })
-        uiData.getData().forEach { notify(it.notifyEvent, it.uiValue) }
+        uiData.getData().forEach { notify(it.notifyEvent, it.uiValue, arrayListOf(controller)) }
     }
 
-    fun removeController(controller: Controller) = controllers.remove(controller)
+    fun removeController(controller: Controller) {
+        controllers.remove(controller)
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: remove controller for project ${controller.project.name}, total sum is ${controllers.size}")
+    }
 
-    fun notify(event: NotifyEvent, new: Any?) {
+    fun notify(event: NotifyEvent, new: Any?, controllers: MutableList<Controller> = this.controllers) {
         when(event) {
             NotifyEvent.CHOSEN_TASK_NOTIFY -> controllers.forEach {
                 it.taskChoiceBox.selectionModel.select(new as Int)
