@@ -55,11 +55,14 @@ object Plugin {
 
     fun stopTracking() {
         diagnosticLogger.info("${PLUGIN_ID}: close project")
-        diagnosticLogger.info("${PLUGIN_ID}: prepare for sending ${logger.getFiles().joinToString { it.name } }")
-        logger.logCurrentDocuments()
-        logger.flush()
-        logger.getFiles().forEach { server.sendTrackingData(it, true) }
-        logger.close()
+        diagnosticLogger.info("${PLUGIN_ID}: prepare fo sending ${logger.getFiles().size} files")
+        if (logger.getFiles().isNotEmpty()) {
+            logger.logCurrentDocuments()
+            logger.flush()
+            logger.documentsToPrinters.forEach { (d, p) ->
+                server.sendTrackingData(p.file, true) { logger.close(d, p) }
+            }
+        }
         listener.remove()
     }
 

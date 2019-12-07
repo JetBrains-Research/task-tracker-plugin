@@ -12,7 +12,7 @@ import java.util.concurrent.Executors
 interface Server {
     fun getTasks() : List<Task>
 
-    fun sendTrackingData(file: File, deleteAfter: Boolean)
+    fun sendTrackingData(file: File, deleteAfter: Boolean,  postActivity: () -> Unit = { } )
 }
 
 object PluginServer : Server {
@@ -123,7 +123,7 @@ object PluginServer : Server {
     }
 
     // if deleteAfter is true, the file will be deleted
-    override fun sendTrackingData(file: File, deleteAfter: Boolean) {
+    override fun sendTrackingData(file: File, deleteAfter: Boolean, postActivity: () -> Unit) {
         val currentUrl = BASE_URL + "data-item"
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
 
@@ -149,6 +149,7 @@ object PluginServer : Server {
             future.thenRun {
                 diagnosticLogger.info("${Plugin.PLUGIN_ID}: delete file ${file.name}")
                 file.delete()
+                postActivity()
             }
             future.get()
         }

@@ -15,7 +15,8 @@ import kotlin.math.abs
 
 object DocumentLogger {
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
-    private val documentsToPrinters: HashMap<Document, Printer> = HashMap()
+
+    val documentsToPrinters: HashMap<Document, Printer> = HashMap()
 
     private val folderPath = "${PathManager.getPluginsPath()}/code-tracker/"
     private const val MAX_FILE_SIZE = 50 * 1024 * 1024
@@ -52,6 +53,18 @@ object DocumentLogger {
     fun flush() {
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: flush loggers")
         documentsToPrinters.values.forEach { it.csvPrinter.flush() }
+    }
+
+    fun close(document: Document, printer: Printer) : Boolean {
+        printer.csvPrinter.close()
+        printer.fileWriter.close()
+        val closed = documentsToPrinters.remove(document, printer)
+        if (closed) {
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}: close ${printer.file.name}")
+        } else {
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}: cannot close ${printer.file.name}")
+        }
+        return closed
     }
 
     fun close() {
