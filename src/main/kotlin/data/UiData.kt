@@ -1,11 +1,9 @@
 package data
 
-import javafx.scene.control.RadioButton
-import javafx.scene.control.Toggle
+import Task
 import ui.ControllerManager
 import ui.NotifyEvent
 import kotlin.properties.Delegates
-import Task
 
 class UiData(val tasks: List<Task>) {
     val chosenTask =  object : UiField<Int>(NotifyEvent.CHOSEN_TASK_NOTIFY, 0, "chosenTask") {
@@ -42,6 +40,9 @@ class UiData(val tasks: List<Task>) {
             return new == defaultUiValue
         }
     }
+
+    fun tasksNames() : List<String> = tasks.map { it.name }
+
 
     fun getData(notifyEvent: NotifyEvent) : List<UiField<out Any>> {
         return getData().filter { it.notifyEvent == notifyEvent }

@@ -180,26 +180,31 @@ class Controller(val project: Project) {
     }
 
     fun setStatusButtonsDisability(isDisable: Boolean) {
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: set status buttons disability: $isDisable")
         endSolvingButton.isDisable = isDisable
         continueSolvingButton.isDisable = isDisable
     }
 
     fun setStartSolvingButtonDisability(isDisable: Boolean) {
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: set solving button disability: $isDisable")
         startSolvingButton.isDisable = isDisable
     }
 
     fun setInfoFormButtonsDisability(isDisable: Boolean) {
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: set info form buttons disability: $isDisable")
         clearInfoFormButton.isDisable = isDisable
         startInfoFormButton.isDisable = isDisable
     }
 
     fun setWrittenTaskVisibility(isVisible: Boolean) {
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: set written task visibility: $isVisible")
         taskTextField.isVisible = isVisible
         taskTextLabel.isVisible = isVisible
     }
 
     fun setTaskNameLabelIf(condition: Boolean, name: String) {
         if (condition) {
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: set task name label: $name")
             taskNameLabel.text = name
         }
     }
