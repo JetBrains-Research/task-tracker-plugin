@@ -127,8 +127,6 @@ class Controller(val project: Project) {
         initTaskChooserPane()
         initTaskStatusPane()
         initTaskFinishPane()
-
-        setActive(ControllerManager.activePane)
     }
 
     private fun initMaps() {
@@ -234,20 +232,38 @@ class Controller(val project: Project) {
 
     private fun initStartSolvingButton() {
         startSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activePane = taskStatusPane.id
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
+
+            uiData.activePane.uiValue = taskStatusPane.id
+
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
         }
     }
 
     private fun initContinueSolvingButton() {
         continueSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activePane = taskChooserPane.id
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
+
+            uiData.activePane.uiValue = taskChooserPane.id
             setDefaultTaskData()
+
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
         }
     }
 
     private fun initEndSolvingButton() {
         endSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activePane = taskFinishPane.id
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
+
+            uiData.activePane.uiValue = taskFinishPane.id
+
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
         }
     }
 
@@ -260,9 +276,15 @@ class Controller(val project: Project) {
 
     private fun initStartSolvingAgainButton() {
         startSolvingAgainButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activePane = infoFormPane.id
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
+
+            uiData.activePane.uiValue = infoFormPane.id
             setDefaultInfoData()
             setDefaultTaskData()
+
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
         }
     }
 
@@ -303,7 +325,13 @@ class Controller(val project: Project) {
 
     private fun initStartInfoFormButton() {
         startInfoFormButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            ControllerManager.activePane = taskChooserPane.id
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
+
+            uiData.activePane.uiValue = taskChooserPane.id
+
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
         }
     }
 

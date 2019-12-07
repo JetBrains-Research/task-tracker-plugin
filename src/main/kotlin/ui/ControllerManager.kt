@@ -16,12 +16,9 @@ internal object ControllerManager {
     private val controllers : MutableList<Controller> = arrayListOf()
     private var lastId: Int = 0
 
-    var activePane: String by Delegates.observable("infoFormPane") { _, old, new ->
-        controllers.forEach { it.setActive(new) }
 
-        // log current state to store uiData change
-        DocumentLogger.logCurrentDocuments()
-    }
+        //controllers.forEach { it.setActive(new) }
+
 
     // todo: check for unique keys
     val uiData = UiData(listOf(selectTask) + Plugin.server.getTasks() + writeTask)
@@ -50,6 +47,10 @@ internal object ControllerManager {
 
                 val itsWrittenTask = task.key == writeTask.key
 
+                // to prevent simultaneous written name and chosen task
+                if (!itsWrittenTask) {
+                    uiData.writtenTask.setDefault()
+                }
                 it.setWrittenTaskVisibility(itsWrittenTask)
                 it.setStartSolvingButtonDisability(uiData.chosenTask.isDefault() || (itsWrittenTask && uiData.writtenTask.isDefault()))
                 it.setTaskNameLabelIf(!itsWrittenTask, task.name)
@@ -78,6 +79,10 @@ internal object ControllerManager {
                 it.selectTaskStatusButton(new as TaskStatus)
                 it.setStatusButtonsDisability(uiData.taskStatus.isDefault())
             }
+
+            NotifyEvent.ACTIVE_PANE_NOTIFY -> controllers.forEach {
+                it.setActive(new as String)
+            }
         }
     }
 }
@@ -87,5 +92,6 @@ enum class NotifyEvent {
     WRITTEN_TASK_NOTIFY,
     AGE_NOTIFY,
     PROGRAM_EXPERIENCE_NOTIFY,
-    TASK_STATUS_NOTIFY
+    TASK_STATUS_NOTIFY,
+    ACTIVE_PANE_NOTIFY
 }

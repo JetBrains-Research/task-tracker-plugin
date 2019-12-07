@@ -19,6 +19,10 @@ class UiData(val tasks: List<Task>) {
 
     val taskStatus = UiField(NotifyEvent.TASK_STATUS_NOTIFY, TaskStatus.NULL, "taskStatus")
 
+    val activePane = UiField(NotifyEvent.ACTIVE_PANE_NOTIFY, "infoFormPane","activePane")
+
+
+
     open class UiField<T : Any?> (val notifyEvent: NotifyEvent, val defaultUiValue: T, val header: String) {
 
         var uiValue: T by Delegates.observable(defaultUiValue) { _, old, new ->
@@ -55,7 +59,8 @@ class UiData(val tasks: List<Task>) {
         writtenTask,
         age,
         programExperience,
-        taskStatus
+        taskStatus,
+        activePane
     )
 }
 

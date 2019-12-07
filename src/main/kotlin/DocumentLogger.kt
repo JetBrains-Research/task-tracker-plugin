@@ -93,7 +93,6 @@ object DocumentLogger {
     }
 
     private fun Document.getChange() : DocumentChangeData {
-
         val time = DateTime.now()
         val file = FileDocumentManager.getInstance().getFile(this)
 
