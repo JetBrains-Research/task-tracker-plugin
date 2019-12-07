@@ -56,9 +56,11 @@ object DocumentLogger {
     fun close() {
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: close loggers")
         documentsToPrinters.values.forEach { it.csvPrinter.close(); it.fileWriter.close() }
+        documentsToPrinters.clear()
     }
 
     private fun initPrinter(document: Document) : Printer {
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: init printer")
         val file = createLogFile(document)
         val fileWriter = FileWriter(file)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
@@ -70,6 +72,7 @@ object DocumentLogger {
     private fun createLogFile(document: Document): File {
         File(folderPath).mkdirs()
         val file = FileDocumentManager.getInstance().getFile(document)
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: create log file for file ${file?.name}")
         val logFile = File("$folderPath${file?.nameWithoutExtension}_${file.hashCode()}_${document.hashCode()}.csv")
         FileUtil.createIfDoesntExist(logFile)
         return logFile

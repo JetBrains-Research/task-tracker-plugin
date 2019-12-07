@@ -13,10 +13,6 @@
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="InitActivity"></postStartupActivity>
         <toolWindow id="codetracker" anchor="right" factoryClass="ui.PluginToolWindowFactory"/>
-
     </extensions>
 
-    <actions>
-
-    </actions>
 </idea-plugin>

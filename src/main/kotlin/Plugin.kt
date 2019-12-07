@@ -53,19 +53,22 @@ object Plugin {
         listener.add()
     }
 
+    fun stopTracking() {
+        diagnosticLogger.info("${PLUGIN_ID}: close project")
+        diagnosticLogger.info("${PLUGIN_ID}: prepare for sending ${logger.getFiles().joinToString { it.name } }")
+        logger.logCurrentDocuments()
+        logger.flush()
+        logger.getFiles().forEach { server.sendTrackingData(it, true) }
+        logger.close()
+        listener.remove()
+    }
+
     // todo: find the other way for capturing the last project closing
     fun addProjectManagerListener(project: Project) {
         ProjectManager.getInstance().addProjectManagerListener (project, object : ProjectManagerListener {
             override fun projectClosing(project: Project) {
                 if (ProjectManager.getInstance().openProjects.size == 1) {
-                    diagnosticLogger.info("${PLUGIN_ID}: close project")
-                    diagnosticLogger.info("${PLUGIN_ID}: prepare for sending ${logger.getFiles().joinToString { it.name } }")
-                    logger.logCurrentDocuments()
-                    logger.flush()
-                    logger.close()
-                    logger.getFiles().forEach { server.sendTrackingData(it, true) }
-
-                    listener.remove()
+                    stopTracking()
                 }
 
                 super.projectClosing(project)

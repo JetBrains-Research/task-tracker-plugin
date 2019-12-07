@@ -117,6 +117,8 @@ object PluginServer : Server {
                 .build()
 
             sendDataToServer(request)
+        } else {
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}: activity-tracker file doesn't exist")
         }
     }
 
@@ -146,7 +148,7 @@ object PluginServer : Server {
         if (deleteAfter) {
             future.thenRun {
                 diagnosticLogger.info("${Plugin.PLUGIN_ID}: delete file ${file.name}")
-                file.deleteOnExit()
+                file.delete()
             }
             future.get()
         }
