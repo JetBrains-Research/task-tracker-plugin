@@ -27,6 +27,13 @@ object PluginServer : Server {
     private val activityTrackerPath = "${PathManager.getPluginsPath()}/activity-tracker/" + ACTIVITY_TRACKER_FILE
     // private val activityTrackerPath = "/Users/macbook/Library/Application Support/IntelliJIdea2019.2/activity-tracker/" + ACTIVITY_TRACKER_FILE
     private var activityTrackerKey: String? = null
+    private const val SLEEP_TIME = 5_000L
+    private enum class FileSendingState {
+        NOT_SENT, SENT
+    }
+    private enum class FileTypes {
+        CODE_TRACKER, ACTIVITY_TRACKER
+    }
 
     init {
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: init server")
@@ -53,21 +60,31 @@ object PluginServer : Server {
             .post(RequestBody.create(null, ByteArray(0)))
             .build()
 
-        client.newCall(request).execute().use { response ->
-            if (response.code == 200) {
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Activity tracker key was generated successfully")
-                activityTrackerKey = response.body!!.string()
-            } else {
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Generating activity tracker key error")
+        CompletableFuture.runAsync(Runnable {
+            var curCountAttempts = 0
+
+            while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
+                val response = client.newCall(request).execute()
+                while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
+                    if (response.isSuccessful) {
+                        diagnosticLogger.info("${Plugin.PLUGIN_ID}: Activity tracker key was generated successfully")
+                        activityTrackerKey = response.body!!.string()
+                        break
+                    } else {
+                        diagnosticLogger.info("${Plugin.PLUGIN_ID}: Generating activity tracker key error")
+                        curCountAttempts++
+                        Thread.sleep(SLEEP_TIME)
+                    }
+                }
             }
-        }
+        }, daemon)
     }
 
-    var sendNextTime = true
+    private var currentState = FileSendingState.NOT_SENT
 
-    private fun sendDataToServer(request: Request) : CompletableFuture<Void>  {
+    private fun sendDataToServer(request: Request, currentFileType: FileTypes) : CompletableFuture<Void>  {
 
-        if (!sendNextTime) {
+        if (currentState == FileSendingState.NOT_SENT && currentFileType == FileTypes.ACTIVITY_TRACKER) {
             return CompletableFuture.completedFuture(null)
         }
 
@@ -76,22 +93,20 @@ object PluginServer : Server {
 
             while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
                 diagnosticLogger.info("${Plugin.PLUGIN_ID}: An attempt of sending data to server is number ${curCountAttempts + 1}")
-                val code = sendData(request).code
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: HTTP status code is $code")
+                val response = sendData(request)
+                diagnosticLogger.info("${Plugin.PLUGIN_ID}: HTTP status code is ${response.code}")
 
-                //todo: replace with sendData(request).isSuccessful ?
-                if (code == 200) {
+                if (response.isSuccessful) {
                     diagnosticLogger.info("${Plugin.PLUGIN_ID}: Tracking data successfully received")
-                    sendNextTime = true
+                    currentState = FileSendingState.SENT
                     break
                 }
                 curCountAttempts++
                 diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error sending tracking data")
-                // wait for 5 seconds
-                Thread.sleep(5_000)
+                Thread.sleep(SLEEP_TIME)
             }
             if (curCountAttempts == MAX_COUNT_ATTEMPTS) {
-                sendNextTime = false
+                currentState = FileSendingState.NOT_SENT
             }
         }, daemon)
     }
@@ -116,7 +131,7 @@ object PluginServer : Server {
                 .put(requestBody.build())
                 .build()
 
-            sendDataToServer(request)
+            sendDataToServer(request, FileTypes.ACTIVITY_TRACKER)
         } else {
             diagnosticLogger.info("${Plugin.PLUGIN_ID}: activity-tracker file doesn't exist")
         }
@@ -143,24 +158,20 @@ object PluginServer : Server {
             .post(requestBody.build())
             .build()
 
-        val future = sendDataToServer(request)
+        val future = sendDataToServer(request, FileTypes.CODE_TRACKER)
 
         future.thenRun {
+            //TOdo: maybe if(currentState == FileSendingState.SENT)
             if(deleteAfter) {
                 diagnosticLogger.info("${Plugin.PLUGIN_ID}: delete file ${file.name}")
                 file.delete()
             }
+            if (currentState == FileSendingState.SENT) {
+                sendActivityTrackerData()
+            }
             postActivity()
         }
         future.get()
-
-
-        // todo: redundant if? cause sendActivityTrackerData calls sendDataToServer which also checks sendNextTime
-        if (sendNextTime) {
-            sendActivityTrackerData()
-        }
-
-        sendNextTime = true
     }
 
     override fun getTasks(): List<Task> {
@@ -169,7 +180,7 @@ object PluginServer : Server {
         val request = Request.Builder().url(currentUrl).build()
 
         client.newCall(request).execute().use { response ->
-            return if (response.code == 200) {
+            return if (response.isSuccessful) {
                 diagnosticLogger.info("${Plugin.PLUGIN_ID}: All tasks successfully received")
                 val gson = GsonBuilder().create()
                 gson.fromJson(response.body!!.string(), Array<Task>::class.java).toList()
