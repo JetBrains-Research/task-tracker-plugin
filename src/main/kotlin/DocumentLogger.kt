@@ -55,16 +55,10 @@ object DocumentLogger {
         documentsToPrinters.values.forEach { it.csvPrinter.flush() }
     }
 
-    fun close(document: Document, printer: Printer) : Boolean {
+    fun close(document: Document, printer: Printer)  {
         printer.csvPrinter.close()
         printer.fileWriter.close()
-        val closed = documentsToPrinters.remove(document, printer)
-        if (closed) {
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}: close ${printer.file.name}")
-        } else {
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}: cannot close ${printer.file.name}")
-        }
-        return closed
+        diagnosticLogger.info("${Plugin.PLUGIN_ID}: close ${printer.file.name}")
     }
 
     fun close() {
