@@ -5,8 +5,10 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import java.io.File
 import java.net.URL
+import java.net.UnknownHostException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 
 interface Server {
@@ -19,19 +21,33 @@ object PluginServer : Server {
     private val daemon = Executors.newSingleThreadExecutor()
 
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
-    private val client = OkHttpClient()
     private val media_type_csv = "text/csv".toMediaType()
     private const val BASE_URL: String = "http://coding-assistant-helper.ru/api/"
     private const val MAX_COUNT_ATTEMPTS = 5
     private const val ACTIVITY_TRACKER_FILE = "ide-events.csv"
+    private var client: OkHttpClient
     private val activityTrackerPath = "${PathManager.getPluginsPath()}/activity-tracker/" + ACTIVITY_TRACKER_FILE
     // private val activityTrackerPath = "/Users/macbook/Library/Application Support/IntelliJIdea2019.2/activity-tracker/" + ACTIVITY_TRACKER_FILE
     private var activityTrackerKey: String? = null
+    private const val SLEEP_TIME = 5_000L
+    private enum class FileSendingState {
+        NOT_SENT, SENT
+    }
+    private enum class FileTypes {
+        CODE_TRACKER, ACTIVITY_TRACKER
+    }
 
     init {
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: init server")
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: Max count attempt of sending data to server = ${MAX_COUNT_ATTEMPTS}")
+        client = OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
+
         initActivityTrackerInfo()
+
     }
 
     private fun sendData(request: Request): Response {
@@ -53,45 +69,57 @@ object PluginServer : Server {
             .post(RequestBody.create(null, ByteArray(0)))
             .build()
 
-        client.newCall(request).execute().use { response ->
-            if (response.code == 200) {
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Activity tracker key was generated successfully")
-                activityTrackerKey = response.body!!.string()
-            } else {
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Generating activity tracker key error")
+        CompletableFuture.runAsync(Runnable {
+            try {
+                var curCountAttempts = 0
+                while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
+                    val response = client.newCall(request).execute()
+                    if (response.isSuccessful) {
+                        diagnosticLogger.info("${Plugin.PLUGIN_ID}: Activity tracker key was generated successfully")
+                        activityTrackerKey = response.body!!.string()
+                        break
+                    } else {
+                        diagnosticLogger.info("${Plugin.PLUGIN_ID}: Generating activity tracker key error")
+                        curCountAttempts++
+                        Thread.sleep(SLEEP_TIME)
+                    }
+                }
+            } catch (e: UnknownHostException) {
+                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Generating activity tracker key error: no internet connection")
             }
-        }
+        }, daemon)
     }
 
-    var sendNextTime = true
+    private var currentState = FileSendingState.NOT_SENT
 
-    private fun sendDataToServer(request: Request) : CompletableFuture<Void>  {
+    private fun sendDataToServer(request: Request, currentFileType: FileTypes) : CompletableFuture<Void>  {
 
-        if (!sendNextTime) {
+        if (currentState == FileSendingState.NOT_SENT && currentFileType == FileTypes.ACTIVITY_TRACKER) {
             return CompletableFuture.completedFuture(null)
         }
 
         return CompletableFuture.runAsync(Runnable {
-            var curCountAttempts = 0
+            try {
+                var curCountAttempts = 0
+                while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
+                    diagnosticLogger.info("${Plugin.PLUGIN_ID}: An attempt of sending data to server is number ${curCountAttempts + 1}")
+                    val response = sendData(request)
+                    diagnosticLogger.info("${Plugin.PLUGIN_ID}: HTTP status code is ${response.code}")
 
-            while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: An attempt of sending data to server is number ${curCountAttempts + 1}")
-                val code = sendData(request).code
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: HTTP status code is $code")
-
-                //todo: replace with sendData(request).isSuccessful ?
-                if (code == 200) {
-                    diagnosticLogger.info("${Plugin.PLUGIN_ID}: Tracking data successfully received")
-                    sendNextTime = true
-                    break
+                    if (response.isSuccessful) {
+                        diagnosticLogger.info("${Plugin.PLUGIN_ID}: Tracking data successfully received")
+                        currentState = FileSendingState.SENT
+                        break
+                    }
+                    curCountAttempts++
+                    diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error sending tracking data")
+                    Thread.sleep(SLEEP_TIME)
                 }
-                curCountAttempts++
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error sending tracking data")
-                // wait for 5 seconds
-                Thread.sleep(5_000)
-            }
-            if (curCountAttempts == MAX_COUNT_ATTEMPTS) {
-                sendNextTime = false
+                if (curCountAttempts == MAX_COUNT_ATTEMPTS) {
+                    currentState = FileSendingState.NOT_SENT
+                }
+            } catch (e: UnknownHostException) {
+                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error sending tracking data: no internet connection")
             }
         }, daemon)
     }
@@ -116,7 +144,7 @@ object PluginServer : Server {
                 .put(requestBody.build())
                 .build()
 
-            sendDataToServer(request)
+            sendDataToServer(request, FileTypes.ACTIVITY_TRACKER)
         } else {
             diagnosticLogger.info("${Plugin.PLUGIN_ID}: activity-tracker file doesn't exist")
         }
@@ -143,24 +171,19 @@ object PluginServer : Server {
             .post(requestBody.build())
             .build()
 
-        val future = sendDataToServer(request)
+        val future = sendDataToServer(request, FileTypes.CODE_TRACKER)
 
         future.thenRun {
             if(deleteAfter) {
                 diagnosticLogger.info("${Plugin.PLUGIN_ID}: delete file ${file.name}")
                 file.delete()
             }
+            if (currentState == FileSendingState.SENT) {
+                sendActivityTrackerData()
+            }
             postActivity()
         }
         future.get()
-
-
-        // todo: redundant if? cause sendActivityTrackerData calls sendDataToServer which also checks sendNextTime
-        if (sendNextTime) {
-            sendActivityTrackerData()
-        }
-
-        sendNextTime = true
     }
 
     override fun getTasks(): List<Task> {
@@ -168,15 +191,20 @@ object PluginServer : Server {
 
         val request = Request.Builder().url(currentUrl).build()
 
-        client.newCall(request).execute().use { response ->
-            return if (response.code == 200) {
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: All tasks successfully received")
-                val gson = GsonBuilder().create()
-                gson.fromJson(response.body!!.string(), Array<Task>::class.java).toList()
-            } else {
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error getting tasks")
-                emptyList()
+        try {
+            client.newCall(request).execute().use { response ->
+                return if (response.isSuccessful) {
+                    diagnosticLogger.info("${Plugin.PLUGIN_ID}: All tasks successfully received")
+                    val gson = GsonBuilder().create()
+                    gson.fromJson(response.body!!.string(), Array<Task>::class.java).toList()
+                } else {
+                    diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error getting tasks")
+                    emptyList()
+                }
             }
+        } catch (e: UnknownHostException) {
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error getting tasks: no internet connection")
+            return emptyList()
         }
     }
 
