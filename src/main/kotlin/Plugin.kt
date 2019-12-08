@@ -60,7 +60,7 @@ object Plugin {
             logger.logCurrentDocuments()
             logger.flush()
             logger.documentsToPrinters.forEach { (d, p) ->
-                server.sendTrackingData(p.file, true) { logger.close(d, p) }
+                server.sendTrackingData(p.file, { server.checkSuccessful()}) { logger.close(d, p) }
             }
         }
         listener.remove()
