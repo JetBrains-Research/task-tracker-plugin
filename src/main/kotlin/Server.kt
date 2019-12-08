@@ -14,7 +14,9 @@ import java.util.concurrent.TimeUnit
 interface Server {
     fun getTasks() : List<Task>
 
-    fun sendTrackingData(file: File, deleteAfter: Boolean,  postActivity: () -> Unit = { } )
+    fun sendTrackingData(file: File, deleteAfter: () -> Boolean,  postActivity: () -> Unit = { } )
+
+    fun checkSuccessful(): Boolean
 }
 
 object PluginServer : Server {
@@ -36,6 +38,7 @@ object PluginServer : Server {
     private enum class FileTypes {
         CODE_TRACKER, ACTIVITY_TRACKER
     }
+    private var isLastSuccessful : Boolean = false
 
     init {
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: init server")
@@ -48,6 +51,12 @@ object PluginServer : Server {
 
         initActivityTrackerInfo()
 
+    }
+
+    override fun checkSuccessful(): Boolean = isLastSuccessful
+
+    private fun setIsLastSuccessful(value: Boolean) {
+        isLastSuccessful = value
     }
 
     private fun sendData(request: Request): Response {
@@ -68,6 +77,7 @@ object PluginServer : Server {
             .url(currentUrl)
             .post(RequestBody.create(null, ByteArray(0)))
             .build()
+        setIsLastSuccessful(false)
 
         CompletableFuture.runAsync(Runnable {
             try {
@@ -76,6 +86,7 @@ object PluginServer : Server {
                     val response = client.newCall(request).execute()
                     if (response.isSuccessful) {
                         diagnosticLogger.info("${Plugin.PLUGIN_ID}: Activity tracker key was generated successfully")
+                        setIsLastSuccessful(true)
                         activityTrackerKey = response.body!!.string()
                         break
                     } else {
@@ -100,6 +111,7 @@ object PluginServer : Server {
 
         return CompletableFuture.runAsync(Runnable {
             try {
+                setIsLastSuccessful(false)
                 var curCountAttempts = 0
                 while (curCountAttempts < MAX_COUNT_ATTEMPTS) {
                     diagnosticLogger.info("${Plugin.PLUGIN_ID}: An attempt of sending data to server is number ${curCountAttempts + 1}")
@@ -108,6 +120,7 @@ object PluginServer : Server {
 
                     if (response.isSuccessful) {
                         diagnosticLogger.info("${Plugin.PLUGIN_ID}: Tracking data successfully received")
+                        setIsLastSuccessful(true)
                         currentState = FileSendingState.SENT
                         break
                     }
@@ -151,7 +164,7 @@ object PluginServer : Server {
     }
 
     // if deleteAfter is true, the file will be deleted
-    override fun sendTrackingData(file: File, deleteAfter: Boolean, postActivity: () -> Unit) {
+    override fun sendTrackingData(file: File, deleteAfter: () -> Boolean, postActivity: () -> Unit) {
         val currentUrl = BASE_URL + "data-item"
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
 
@@ -174,7 +187,7 @@ object PluginServer : Server {
         val future = sendDataToServer(request, FileTypes.CODE_TRACKER)
 
         future.thenRun {
-            if(deleteAfter) {
+            if(deleteAfter()) {
                 diagnosticLogger.info("${Plugin.PLUGIN_ID}: delete file ${file.name}")
                 file.delete()
             }
@@ -192,9 +205,11 @@ object PluginServer : Server {
         val request = Request.Builder().url(currentUrl).build()
 
         try {
+            setIsLastSuccessful(false)
             client.newCall(request).execute().use { response ->
                 return if (response.isSuccessful) {
                     diagnosticLogger.info("${Plugin.PLUGIN_ID}: All tasks successfully received")
+                    setIsLastSuccessful(true)
                     val gson = GsonBuilder().create()
                     gson.fromJson(response.body!!.string(), Array<Task>::class.java).toList()
                 } else {
