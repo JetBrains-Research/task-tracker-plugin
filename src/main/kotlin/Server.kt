@@ -20,25 +20,27 @@ interface Server {
 }
 
 object PluginServer : Server {
-    private val daemon = Executors.newSingleThreadExecutor()
-
-    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
-    private val media_type_csv = "text/csv".toMediaType()
-    private const val BASE_URL: String = "http://coding-assistant-helper.ru/api/"
-    private const val MAX_COUNT_ATTEMPTS = 5
-    private const val ACTIVITY_TRACKER_FILE = "ide-events.csv"
-    private var client: OkHttpClient
-    private val activityTrackerPath = "${PathManager.getPluginsPath()}/activity-tracker/" + ACTIVITY_TRACKER_FILE
-    // private val activityTrackerPath = "/Users/macbook/Library/Application Support/IntelliJIdea2019.2/activity-tracker/" + ACTIVITY_TRACKER_FILE
-    private var activityTrackerKey: String? = null
-    private const val SLEEP_TIME = 5_000L
     private enum class FileSendingState {
         NOT_SENT, SENT
     }
     private enum class FileTypes {
         CODE_TRACKER, ACTIVITY_TRACKER
     }
+
+    private const val BASE_URL: String = "http://coding-assistant-helper.ru/api/"
+    private const val MAX_COUNT_ATTEMPTS = 5
+    private const val ACTIVITY_TRACKER_FILE = "ide-events.csv"
+    private const val SLEEP_TIME = 5_000L
+
+    private val daemon = Executors.newSingleThreadExecutor()
+    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
+
+    private var activityTrackerKey: String? = null
     private var isLastSuccessful : Boolean = false
+
+    private var client: OkHttpClient
+    private val media_type_csv = "text/csv".toMediaType()
+    private val activityTrackerPath = "${PathManager.getPluginsPath()}/activity-tracker/" + ACTIVITY_TRACKER_FILE
 
     init {
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: init server")
@@ -95,8 +97,12 @@ object PluginServer : Server {
                         Thread.sleep(SLEEP_TIME)
                     }
                 }
-            } catch (e: UnknownHostException) {
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Generating activity tracker key error: no internet connection")
+            } catch(ex:Exception) {
+                when(ex) {
+                    is UnknownHostException ->
+                        diagnosticLogger.info("${Plugin.PLUGIN_ID}: Generating activity tracker key error: no internet connection")
+                    else -> diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error sending tracking data: internet connection exception")
+                }
             }
         }, daemon)
     }
@@ -131,8 +137,12 @@ object PluginServer : Server {
                 if (curCountAttempts == MAX_COUNT_ATTEMPTS) {
                     currentState = FileSendingState.NOT_SENT
                 }
-            } catch (e: UnknownHostException) {
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error sending tracking data: no internet connection")
+            } catch(ex:Exception) {
+                when(ex) {
+                    is UnknownHostException ->
+                        diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error sending tracking data: no internet connection")
+                    else -> diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error sending tracking data: internet connection exception")
+                }
             }
         }, daemon)
     }
@@ -217,8 +227,12 @@ object PluginServer : Server {
                     emptyList()
                 }
             }
-        } catch (e: UnknownHostException) {
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error getting tasks: no internet connection")
+        } catch(ex:Exception) {
+            when(ex) {
+                is UnknownHostException ->
+                    diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error getting tasks: no internet connection")
+                else -> diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error getting tasks: internet connection exception")
+            }
             return emptyList()
         }
     }
