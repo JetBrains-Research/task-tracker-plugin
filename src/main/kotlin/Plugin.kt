@@ -6,6 +6,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
+import ui.ServerDialogWrapper
 
 
 object Plugin {
@@ -61,6 +62,9 @@ object Plugin {
             logger.flush()
             logger.documentsToPrinters.forEach { (d, p) ->
                 server.sendTrackingData(p.file, { server.checkSuccessful()}) { logger.close(d, p) }
+            }
+            if (!server.checkSuccessful()) {
+                ServerDialogWrapper().show()
             }
         }
         listener.remove()
