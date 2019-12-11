@@ -58,12 +58,12 @@
                         <Font name="System Bold" size="26.0" />
                      </font>
                   </Label>
-                  <Button fx:id="continueSolvingButton" layoutX="62.0" layoutY="154.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" style="-fx-background-color: #914E94; -fx-background-radius: 20;" text="Решать дальше" textFill="WHITE">
+                  <Button fx:id="continueSolvingButton" layoutX="35.0" layoutY="154.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="210.0" style="-fx-background-color: #914E94; -fx-background-radius: 20;" text="Следующая задача" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font>
                   </Button>
-                  <Button fx:id="endSolvingButton" layoutX="291.0" layoutY="154.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" style="-fx-background-color: #E86443; -fx-background-radius: 20;" text="Закончить " textFill="WHITE">
+                  <Button fx:id="endSolvingButton" layoutX="276.0" layoutY="154.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="210.0" style="-fx-background-color: #E86443; -fx-background-radius: 20;" text="Закончить работу" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font>
@@ -90,12 +90,12 @@
             </Pane>
             <Pane fx:id="taskFinishPane" layoutX="16.0" layoutY="92.0" prefHeight="195.0" prefWidth="515.0">
                <children>
-                  <Label style="visibility: false;" text="Задача" textFill="#bb596d">
+                  <Button fx:id="goToTaskChooser" layoutX="35.0" layoutY="155.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="210.0" style="-fx-background-color: #914E94; -fx-background-radius: 20;" text="Вернуться к анкете" textFill="WHITE">
                      <font>
-                        <Font name="System Bold" size="26.0" />
+                        <Font name="System Bold" size="15.0" />
                      </font>
-                  </Label>
-                  <Button fx:id="startSolvingAgainButton" layoutX="170.0" layoutY="154.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="175.0" style="-fx-background-color: #914E94; -fx-background-radius: 20;" text="Решать опять" textFill="WHITE">
+                  </Button>
+                  <Button fx:id="goToInfoForm" layoutX="276.0" layoutY="155.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="210.0" style="-fx-background-color: #E86443; -fx-background-radius: 20;" text="Вернуться к задачам" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font>

@@ -3,7 +3,6 @@ package ui
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.Disposer
 import data.PE
 import data.TaskStatus
@@ -72,7 +71,10 @@ class Controller(val project: Project) {
     lateinit var taskFinishPane: Pane
 
     @FXML
-    lateinit var startSolvingAgainButton: Button
+    lateinit var goToInfoForm: Button
+
+    @FXML
+    lateinit var goToTaskChooser: Button
 
     /*
     ############################## info form pane ########################################
@@ -109,7 +111,7 @@ class Controller(val project: Project) {
 
     @FXML
     lateinit var startInfoFormButton: Button
-    
+
     internal var id: Int = -1
 
 
@@ -227,7 +229,8 @@ class Controller(val project: Project) {
     }
 
     private fun initTaskFinishPane() {
-        initStartSolvingAgainButton()
+        initGoToInfoFormButton()
+        initGoToTaskChooserButton()
     }
 
     private fun initStartSolvingButton() {
@@ -274,19 +277,32 @@ class Controller(val project: Project) {
         }
     }
 
-    private fun initStartSolvingAgainButton() {
-        startSolvingAgainButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+    private fun initGoToInfoFormButton() {
+        goToInfoForm.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             // log current state to store uiData change
             DocumentLogger.logCurrentDocuments()
 
             uiData.activePane.uiValue = infoFormPane.id
-            setDefaultInfoData()
             setDefaultTaskData()
 
             // log current state to store uiData change
             DocumentLogger.logCurrentDocuments()
         }
     }
+
+    private fun initGoToTaskChooserButton() {
+        goToTaskChooser.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
+
+            uiData.activePane.uiValue = taskChooserPane.id
+            setDefaultTaskData()
+
+            // log current state to store uiData change
+            DocumentLogger.logCurrentDocuments()
+        }
+    }
+
 
     private fun initTaskChoiceBox() {
         taskChoiceBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
