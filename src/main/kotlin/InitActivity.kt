@@ -4,6 +4,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.util.Disposer
+import ui.ServerDialogWrapper
 
 
 class InitActivity : StartupActivity {
@@ -15,7 +16,11 @@ class InitActivity : StartupActivity {
             ApplicationManager.getApplication(),
             Disposable {
                 diagnosticLogger.info("${Plugin.PLUGIN_ID}: dispose startup activity")
-                Plugin.stopTracking()
+                if(!Plugin.stopTracking()){
+                    ApplicationManager.getApplication().invokeAndWait {
+                        ServerDialogWrapper().show()
+                    }
+                }
             })
         Plugin.startTracking()
     }

@@ -1,3 +1,4 @@
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
@@ -54,7 +55,7 @@ object Plugin {
         listener.add()
     }
 
-    fun stopTracking() {
+    fun stopTracking(): Boolean{
         diagnosticLogger.info("${PLUGIN_ID}: close IDE")
         diagnosticLogger.info("${PLUGIN_ID}: prepare fo sending ${logger.getFiles().size} files")
         if (logger.getFiles().isNotEmpty()) {
@@ -63,11 +64,9 @@ object Plugin {
             logger.documentsToPrinters.forEach { (d, p) ->
                 server.sendTrackingData(p.file, { server.checkSuccessful()}) { logger.close(d, p) }
             }
-            if (!server.checkSuccessful()) {
-                ServerDialogWrapper().show()
-            }
         }
         listener.remove()
+        return server.checkSuccessful()
     }
 
     // todo: find the other way for capturing the last project closing
