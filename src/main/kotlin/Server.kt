@@ -1,6 +1,7 @@
-import com.google.gson.GsonBuilder
+import kotlinx.serialization.json.*
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
+import kotlinx.serialization.builtins.list
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import java.io.File
@@ -209,6 +210,7 @@ object PluginServer : Server {
         future.get()
     }
 
+
     override fun getTasks(): List<Task> {
         val currentUrl = URL(BASE_URL + "task/all")
 
@@ -220,8 +222,9 @@ object PluginServer : Server {
                 return if (response.isSuccessful) {
                     diagnosticLogger.info("${Plugin.PLUGIN_ID}: All tasks successfully received")
                     setIsLastSuccessful(true)
-                    val gson = GsonBuilder().create()
-                    gson.fromJson(response.body!!.string(), Array<Task>::class.java).toList()
+                    val json = Json(JsonConfiguration.Stable)
+                    json.parse(Task.serializer().list, response.body!!.string())
+
                 } else {
                     diagnosticLogger.info("${Plugin.PLUGIN_ID}: Error getting tasks")
                     emptyList()

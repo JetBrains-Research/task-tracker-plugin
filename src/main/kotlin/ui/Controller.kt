@@ -1,16 +1,26 @@
 package ui
 
+import DocumentLogger
+import Example
+import Plugin
+import Task
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import data.PE
-import data.TaskStatus
 import data.UiData
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
+import javafx.scene.text.Text
+import javafx.scene.text.TextFlow
+import javafx.util.converter.IntegerStringConverter
+import java.util.function.UnaryOperator
+
+
+//todo test csv writing
 
 class Controller(val project: Project) {
     // todo: separate task and info form logic?
@@ -29,13 +39,7 @@ class Controller(val project: Project) {
     lateinit var taskChooserPane: Pane
 
     @FXML
-    lateinit var taskChoiceBox: ChoiceBox<String>
-
-    @FXML
-    lateinit var taskTextLabel: Label
-
-    @FXML
-    lateinit var taskTextField: TextField
+    lateinit var taskComboBox: ComboBox<String>
 
     @FXML
     lateinit var startSolvingButton: Button
@@ -47,22 +51,35 @@ class Controller(val project: Project) {
     lateinit var taskStatusPane: Pane
 
     @FXML
-    lateinit var taskNameLabel: Label
+    lateinit var taskFlow: TextFlow
+    @FXML
+    lateinit var taskNameText: Text
+    @FXML
+    lateinit var taskDescriptionText: Text
+    @FXML
+    lateinit var taskInputText: Text
+    @FXML
+    lateinit var taskOutputText: Text
 
     @FXML
-    lateinit var taskStatusGroup: ToggleGroup
+    lateinit var firstExampleInput: TextArea
     @FXML
-    lateinit var taskNotSolved: RadioButton
+    lateinit var secondExampleInput: TextArea
     @FXML
-    lateinit var taskSolved: RadioButton
+    lateinit var thirdExampleInput: TextArea
     @FXML
-    lateinit var taskStatusButtonByTS: HashMap<TaskStatus, RadioButton?>
+    lateinit var firstExampleOutput: TextArea
+    @FXML
+    lateinit var secondExampleOutput: TextArea
+    @FXML
+    lateinit var thirdExampleOutput: TextArea
 
     @FXML
     lateinit var endSolvingButton: Button
 
     @FXML
     lateinit var continueSolvingButton: Button
+
 
     /*
     ############################## task finish pane ########################################
@@ -84,10 +101,7 @@ class Controller(val project: Project) {
     lateinit var infoFormPane: Pane
 
     @FXML
-    lateinit var ageLabel: Label
-
-    @FXML
-    lateinit var ageSlider: Slider
+    lateinit var ageField: TextField
 
     @FXML
     lateinit var programExperienceGroup: ToggleGroup
@@ -105,9 +119,6 @@ class Controller(val project: Project) {
     lateinit var peMoreThanSix: RadioButton
     @FXML
     lateinit var experienceButtonByPE: Map<PE, RadioButton?>
-
-    @FXML
-    lateinit var clearInfoFormButton: Button
 
     @FXML
     lateinit var startInfoFormButton: Button
@@ -149,12 +160,6 @@ class Controller(val project: Project) {
             PE.MORE_THAN_SIX to peMoreThanSix
         )
 
-
-        taskStatusButtonByTS = hashMapOf(
-            TaskStatus.NULL to null,
-            TaskStatus.NOT_SOLVED to taskNotSolved,
-            TaskStatus.SOLVED to taskSolved
-        )
     }
 
 
@@ -162,12 +167,6 @@ class Controller(val project: Project) {
         diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: select experience button: $experience")
         val selectedButton = experienceButtonByPE[experience]
         programExperienceGroup.selectToggle(selectedButton)
-    }
-
-    fun selectTaskStatusButton(status: TaskStatus) {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: select status button: $status")
-        val selectedButton = taskStatusButtonByTS[status]
-        taskStatusGroup.selectToggle(selectedButton)
     }
 
     fun setActive(name: String) {
@@ -192,38 +191,37 @@ class Controller(val project: Project) {
 
     fun setInfoFormButtonsDisability(isDisable: Boolean) {
         diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: set info form buttons disability: $isDisable")
-        clearInfoFormButton.isDisable = isDisable
         startInfoFormButton.isDisable = isDisable
     }
 
-    fun setWrittenTaskVisibility(isVisible: Boolean) {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: set written task visibility: $isVisible")
-        taskTextField.isVisible = isVisible
-        taskTextLabel.isVisible = isVisible
+    fun setTaskInfo(task: Task) {
+        taskNameText.text = task.name
+        taskDescriptionText.text = task.description
+        taskInputText.text = task.input
+        taskOutputText.text = task.output
+
+        setExample(task.example_1, firstExampleInput, firstExampleOutput)
+        setExample(task.example_2, secondExampleInput, secondExampleOutput)
+        setExample(task.example_3, thirdExampleInput, thirdExampleOutput)
     }
 
-    fun setTaskNameLabelIf(condition: Boolean, name: String) {
-        if (condition) {
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: set task name label: $name")
-            taskNameLabel.text = name
-        }
+    private fun setExample(example: Example, exampleInput: TextArea, exampleOutput: TextArea) {
+        exampleInput.text = example.input
+        exampleOutput.text = example.output
     }
 
     private fun initInfoFormPane() {
-        initAgeSlider()
+        initAgeField()
         initProgramExperienceGroup()
         initStartInfoFormButton()
-        initClearInfoForm()
     }
 
     private fun initTaskChooserPane() {
         initTaskChoiceBox()
-        initTaskTextField()
         initStartSolvingButton()
     }
 
     private fun initTaskStatusPane() {
-        initTaskStatusGroup()
         initEndSolvingButton()
         initContinueSolvingButton()
     }
@@ -270,12 +268,6 @@ class Controller(val project: Project) {
         }
     }
 
-    private fun initTaskStatusGroup() {
-        taskStatusGroup.selectedToggleProperty().addListener { _, old, new ->
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: task status changed from $old to $new")
-            uiData.taskStatus.uiValue = taskStatusButtonByTS.filterValues { it == new }.keys.elementAtOrElse(0) { TaskStatus.NULL }
-        }
-    }
 
     private fun initGoToInfoFormButton() {
         goToInfoForm.addEventHandler(MouseEvent.MOUSE_CLICKED) {
@@ -305,23 +297,27 @@ class Controller(val project: Project) {
 
 
     private fun initTaskChoiceBox() {
-        taskChoiceBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
+        taskComboBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
             diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: choicebox changed from $old to $new")
-            uiData.chosenTask.uiValue = taskChoiceBox.selectionModel.selectedIndex
+            uiData.chosenTask.uiValue = taskComboBox.selectionModel.selectedIndex
         }
     }
 
-    private fun initTaskTextField() {
-        taskTextField.textProperty().addListener { _, old, new ->
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: textfield changed from $old to $new")
-            uiData.writtenTask.uiValue = new
+    private fun initAgeField() {
+        val filter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@ { change: TextFormatter.Change? ->
+            val text: String? = change?.controlNewText
+            if (text != null && (text.length < 3) &&(text.isEmpty() || text.matches(Regex("[1-9]+[0-9]*")))) {
+                return@label change
+            }
+            null
         }
-    }
 
-    private fun initAgeSlider() {
-        ageSlider.valueProperty().addListener { _, old, new ->
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: slider changed from $old to $new")
-            uiData.age.uiValue = new.toDouble()
+        val converter = IntegerStringConverter()
+        ageField.textFormatter = TextFormatter(TextFormatter.IDENTITY_STRING_CONVERTER, "", filter)
+
+        ageField.textProperty().addListener { _, old, new ->
+            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: age has changed from $old to $new")
+            uiData.age.uiValue = converter.fromString(new) ?: uiData.age.defaultUiValue
         }
     }
 
@@ -329,13 +325,6 @@ class Controller(val project: Project) {
         programExperienceGroup.selectedToggleProperty().addListener { _, old, new ->
             diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: program experience changed from $old to $new")
             uiData.programExperience.uiValue = experienceButtonByPE.filterValues { it == new }.keys.elementAtOrElse(0) { PE.NULL }
-        }
-    }
-
-    private fun initClearInfoForm() {
-        clearInfoFormButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            uiData.age.setDefault()
-            uiData.programExperience.setDefault()
         }
     }
 

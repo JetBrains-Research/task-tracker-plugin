@@ -3,25 +3,22 @@ package ui
 import Task
 import com.intellij.openapi.diagnostic.Logger
 import data.PE
-import data.TaskStatus
 import data.UiData
 import javafx.collections.FXCollections
-import kotlin.properties.Delegates
 
 internal object ControllerManager {
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
-    private val writeTask = Task("WRITE_TASK", "Написать вручную")
     private val selectTask = Task("NULL", "--Не выбрано--")
     private val controllers : MutableList<Controller> = arrayListOf()
     private var lastId: Int = 0
 
 
-        //controllers.forEach { it.setActive(new) }
+    //controllers.forEach { it.setActive(new) }
 
 
     // todo: check for unique keys
-    val uiData = UiData(listOf(selectTask) + Plugin.server.getTasks() + writeTask)
+    val uiData = UiData(listOf(selectTask) + Plugin.server.getTasks())
 
     fun addController(controller: Controller) {
         controllers.add(controller)
@@ -29,7 +26,7 @@ internal object ControllerManager {
 
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: add new controller${controller.id} for project \"${controller.project.name}\", total sum is ${controllers.size}")
 
-        controller.taskChoiceBox.items = FXCollections.observableList(uiData.tasksNames())
+        controller.taskComboBox.items = FXCollections.observableList(uiData.tasksNames())
         uiData.getData().forEach { notify(it.notifyEvent, it.uiValue, arrayListOf(controller)) }
     }
 
@@ -42,32 +39,25 @@ internal object ControllerManager {
     fun notify(event: NotifyEvent, new: Any?, controllers: MutableList<Controller> = this.controllers) {
         when(event) {
             NotifyEvent.CHOSEN_TASK_NOTIFY -> controllers.forEach {
-                it.taskChoiceBox.selectionModel.select(new as Int)
+                it.taskComboBox.selectionModel.select(new as Int)
                 val task = uiData.tasks[new]
 
-                val itsWrittenTask = task.key == writeTask.key
-
-                // to prevent simultaneous written name and chosen task
-                if (!itsWrittenTask) {
-                    uiData.writtenTask.setDefault()
-                }
-                it.setWrittenTaskVisibility(itsWrittenTask)
-                it.setStartSolvingButtonDisability(uiData.chosenTask.isDefault() || (itsWrittenTask && uiData.writtenTask.isDefault()))
-                it.setTaskNameLabelIf(!itsWrittenTask, task.name)
+                it.setStartSolvingButtonDisability(uiData.chosenTask.isDefault())
+                it.setTaskInfo(task)
             }
 
             NotifyEvent.WRITTEN_TASK_NOTIFY -> controllers.forEach {
-                it.taskTextField.text = new as String
-                val itsWrittenTask = uiData.tasks[uiData.chosenTask.uiValue].key == writeTask.key
-
-                it.setStartSolvingButtonDisability(uiData.chosenTask.isDefault() || (itsWrittenTask && uiData.writtenTask.isDefault(new)))
-                it.setTaskNameLabelIf(itsWrittenTask && !uiData.writtenTask.isDefault(new), new)
+//                Do nothing since written task was removed
             }
 
             NotifyEvent.AGE_NOTIFY -> controllers.forEach {
-                it.ageSlider.value = (new as Double)
-                it.ageLabel.text = new.toInt().toString()
-                it.setInfoFormButtonsDisability(uiData.age.isDefault(new) || uiData.programExperience.isDefault())
+                it.setInfoFormButtonsDisability(uiData.age.isDefault(new as Int) || uiData.programExperience.isDefault())
+
+                if (uiData.age.isDefault(new as Int)) {
+                    it.ageField.text = ""
+                } else {
+                    it.ageField.text = new.toString()
+                }
             }
 
             NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY ->  controllers.forEach {
@@ -76,8 +66,7 @@ internal object ControllerManager {
             }
 
             NotifyEvent.TASK_STATUS_NOTIFY -> controllers.forEach {
-                it.selectTaskStatusButton(new as TaskStatus)
-                it.setStatusButtonsDisability(uiData.taskStatus.isDefault())
+//                Do nothing since task status buttons were removed
             }
 
             NotifyEvent.ACTIVE_PANE_NOTIFY -> controllers.forEach {

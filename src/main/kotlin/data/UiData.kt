@@ -13,14 +13,13 @@ class UiData(val tasks: List<Task>) {
 
     val writtenTask = UiField(NotifyEvent.WRITTEN_TASK_NOTIFY, "", "writtenTask")
 
-    val age = UiField(NotifyEvent.AGE_NOTIFY, 0.0, "age")
+    val age = UiField(NotifyEvent.AGE_NOTIFY, 0, "age")
 
     val programExperience = UiField(NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, PE.NULL, "programExperience")
 
     val taskStatus = UiField(NotifyEvent.TASK_STATUS_NOTIFY, TaskStatus.NULL, "taskStatus")
 
     val activePane = UiField(NotifyEvent.ACTIVE_PANE_NOTIFY, "infoFormPane","activePane")
-
 
 
     open class UiField<T : Any?> (val notifyEvent: NotifyEvent, val defaultUiValue: T, val header: String) {
@@ -48,11 +47,6 @@ class UiData(val tasks: List<Task>) {
     }
 
     fun tasksNames() : List<String> = tasks.map { it.name }
-
-
-    fun getData(notifyEvent: NotifyEvent) : List<UiField<out Any>> {
-        return getData().filter { it.notifyEvent == notifyEvent }
-    }
 
     fun getData() = listOf(
         chosenTask,

@@ -1,0 +1,79 @@
+.root{
+    -fx-accent: #C6ADD0;
+    -fx-focus-color: #C6ADD0;
+}
+.button {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+.radio-button .radio{
+    -fx-background-insets: 0;
+    -fx-background-color: transparent, white, transparent, white;
+    -fx-background-radius: 0, 0, 0, 0;
+    -fx-box-border: none;
+    -fx-focus-color: -fx-control-inner-background;
+    -fx-faint-focus-color: -fx-control-inner-background;
+    -fx-text-box-border: -fx-control-inner-background;
+    -fx-border-width: -1;
+}
+.text-field {
+    -fx-background-insets: 0;
+    -fx-background-color: none;
+    -fx-box-border: none;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-text-box-border: transparent;
+    -fx-border-width: 1;
+    -fx-background-radius: 100;
+    -fx-border-radius: 100;
+}
+.text-field .content {
+    -fx-background-color: transparent, white, transparent, white;
+}
+
+.text-field:focused .content {
+    -fx-background-color: transparent, white, transparent, white;
+}
+
+.combo-box .list-cell
+{
+    -fx-background: white;
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
+
+.combo-box-popup .list-view
+{
+    -fx-background-color: white, white;
+    -fx-effect: none;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
+
+.combo-box-popup .list-view .list-cell
+{
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
+
+.combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover
+{
+    -fx-background-color: -fx-selection-bar;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover
+{
+    -fx-background-color: -fx-selection-bar;
+    -fx-text-fill: white;
+    -fx-opacity: .5;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
