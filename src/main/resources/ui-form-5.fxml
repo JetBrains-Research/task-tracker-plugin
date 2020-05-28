@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+
+<Pane fx:id="mainPane" prefHeight="${840.0 * height}" prefWidth="${560.0 * height}"
+      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      stylesheets="@style.css">
+   <Pane layoutX="${8.0 * height}" layoutY="${10.0 * height}" prefHeight="${840.0 * height}"
+         prefWidth="${560.0 * height}">
+      <Pane fx:id="infoFormPane" layoutY="${80.0 * height}" prefHeight="${760.0 * height}"
+            prefWidth="${560.0 * height}" visible="false">
+         <Polygon fx:id="pol_3" fill="#f5d590" layoutX="${552.0 * height}" layoutY="${64.0 * height}"
+                  opacity="0.35" points="-552.0, -64.0, -552.0, 110.0, 8.0, -22.0, 8.0, -64.0" stroke="WHITE"
+                  strokeType="INSIDE"/>
+         <Rectangle fx:id="rect" arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="${235.0 * height}"
+                    layoutY="${360.0 * height}" opacity="${0.25 * height}" stroke="WHITE" strokeType="INSIDE"
+                    width="${560.0 * height}"/>
+         <Polygon fx:id="pol_2" fill="#7abaf5" layoutX="${45.0 * height}" layoutY="${238.0 * height}"
+                  opacity="0.25" points="-45.0, 76.0, 514.0, 345.0, 514.0, -102.0, -45.0, -102.0" stroke="WHITE"
+                  strokeType="INSIDE"/>
+         <Label layoutX="${25.0 * height}" layoutY="${174.0 * height}" text="опыт программирования:"
+                styleClass="sanserif-bold-20"/>
+         <RadioButton fx:id="peLessThanHalf" layoutX="${78.0 * height}" layoutY="${227.0 * height}"
+                      mnemonicParsing="false" prefHeight="${26.0 * height}" prefWidth="${221.0 * height}"
+                      text="меньше 0.5 года" styleClass="sanserif-15">
+            <toggleGroup>
+               <ToggleGroup fx:id="programExperienceGroup"/>
+            </toggleGroup>
+         </RadioButton>
+         <RadioButton fx:id="peFromHalfToOne" layoutX="${78.0 * height}" layoutY="${267.0 * height}"
+                      mnemonicParsing="false" text="от 0.5 до 1 года" toggleGroup="$programExperienceGroup"
+                      styleClass="sanserif-15"/>
+         <RadioButton fx:id="peFromOneToTwo" layoutX="${78.0 * height}" layoutY="${307.0 * height}"
+                      mnemonicParsing="false" text="от 1 года до 2 лет" toggleGroup="$programExperienceGroup"
+                      styleClass="sanserif-15"/>
+         <RadioButton fx:id="peFromTwoToFour" layoutX="${338.0 * height}" layoutY="${227.0 * height}"
+                      mnemonicParsing="false" text="от 2 до 4 лет" toggleGroup="$programExperienceGroup"
+                      styleClass="sanserif-15"/>
+         <RadioButton fx:id="peFromFourToSix" layoutX="${338.0 * height}" layoutY="${267.0 * height}"
+                      mnemonicParsing="false" text="от 4 до 6 лет" toggleGroup="$programExperienceGroup"
+                      styleClass="sanserif-15"/>
+         <RadioButton fx:id="peMoreThanSix" layoutX="${338.0 * height}" layoutY="${307.0 * height}"
+                      mnemonicParsing="false" text="больше 6 лет" toggleGroup="$programExperienceGroup"
+                      styleClass="sanserif-15"/>
+         <Button fx:id="startInfoFormButton" layoutX="${461.0 * height}" layoutY="${373.0 * height}"
+                 mnemonicParsing="false" prefHeight="${43.0 * height}" prefWidth="${64.0 * height}"
+                 textFill="WHITE">
+            <graphic>
+               <ImageView fitHeight="${33.0 * height}" fitWidth="${74.0 * height}" pickOnBounds="true"
+                          preserveRatio="true">
+                  <Image url="@next.png"/>
+               </ImageView>
+            </graphic>
+         </Button>
+         <TextField fx:id="ageField" layoutX="${149.0 * height}" layoutY="${49.0 * height}"
+                    prefHeight="${26.0 * height}" prefWidth="${164.0 * height}"/>
+         <Label layoutX="${30.0 * height}" layoutY="${49.0 * height}" text="возраст:"
+                styleClass="sanserif-bold-20"/>
+         <Line endX="${76.0 * height}" layoutX="${236.0 * height}" layoutY="${73.0 * height}"
+               startX="${-87.0 * height}"/>
+      </Pane>
+      <Pane fx:id="taskChooserPane" layoutY="${80.0 * height}" prefHeight="${760.0 * height}"
+            prefWidth="${560.0 * height}">
+         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="${341.0 * height}"
+                    layoutY="${188.0 * height}" opacity="0.25" stroke="WHITE" strokeType="INSIDE"
+                    width="${560.0 * height}"/>
+         <Polygon fx:id="pol_5" fill="#7abaf5" layoutX="${72.0 * height}" layoutY="${60.0 * height}" opacity="0.25"
+                  points="-79.0, -60.0, -72.0, 400.0, 488.0, -60.0" stroke="WHITE" strokeType="INSIDE"/>
+         <Button fx:id="startSolvingButton" layoutX="${461.0 * height}" layoutY="${297.0 * height}"
+                 mnemonicParsing="false" prefHeight="${49.0 * height}" prefWidth="${41.0 * height}"
+                 textFill="WHITE">
+            <graphic>
+               <ImageView fitHeight="${33.0 * height}" fitWidth="${74.0 * height}" pickOnBounds="true"
+                          preserveRatio="true">
+                  <Image url="@next.png"/>
+               </ImageView>
+            </graphic>
+         </Button>
+         <Polygon fx:id="pol_1" fill="#f5d590" layoutX="${58.0 * height}" layoutY="${369.0 * height}"
+                  opacity="0.3" points="502.0, 390.0, 502.0, 158.0, -58.0, -65.0, -58.0, 26.0" stroke="WHITE"/>
+         <ComboBox fx:id="taskComboBox" layoutX="${38.0 * height}" layoutY="${229.0 * height}"
+                   prefHeight="${26.0 * height}" prefWidth="${482.0 * height}"/>
+         <Label layoutX="${39.0 * height}" layoutY="${152.0 * height}" text="выберите задачу:"
+                styleClass="sanserif-bold-20"/>
+      </Pane>
+      <Pane fx:id="taskStatusPane" layoutY="${80.0 * height}" prefHeight="${760.0 * height}"
+            prefWidth="${560.0 * height}" visible="false">
+         <Polygon fx:id="pol_6" fill="#fff782" layoutX="${56.0 * height}" layoutY="${711.0 * height}" opacity="0.3"
+                  points="225.0, -311.0, 504.0, 50.0, 504.0, -491.0" stroke="WHITE" strokeType="INSIDE"/>
+         <Polygon fx:id="pol_4" fill="#f5d590" layoutX="${281.0 * height}" layoutY="${460.0 * height}"
+                  opacity="0.4" points="-281.0, 300.0, 280.0, 300.0, 9.0, -54.0, -281.0, 119.0" stroke="WHITE"
+                  strokeType="INSIDE"/>
+         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="${49.0 * height}"
+                    layoutY="${-7.0 * height}" opacity="0.3" stroke="WHITE" strokeType="INSIDE"
+                    width="${560.0 * height}"/>
+         <Polygon fx:id="pol_7" fill="#7abaf5" layoutX="${28.0 * height}" layoutY="${61.0 * height}" opacity="0.25"
+                  points="532.0, 700.0, 532.0, -21.0, -28.0, -21.0" stroke="WHITE" strokeType="INSIDE"/>
+         <Button fx:id="continueSolvingButton" layoutX="${465.0 * height}" layoutY="${695.0 * height}"
+                 mnemonicParsing="false" prefHeight="${43.0 * height}" prefWidth="${64.0 * height}"
+                 textFill="WHITE">
+            <graphic>
+               <ImageView fitHeight="${33.0 * height}" fitWidth="${74.0 * height}" pickOnBounds="true"
+                          preserveRatio="true">
+                  <Image url="@next.png"/>
+               </ImageView>
+            </graphic>
+         </Button>
+         <Button fx:id="endSolvingButton" layoutX="${27.0 * height}" layoutY="${692.0 * height}"
+                 mnemonicParsing="false" prefHeight="${46.0 * height}" prefWidth="${47.0 * height}"
+                 textFill="WHITE">
+            <graphic>
+               <ImageView fitHeight="${30.0 * height}" fitWidth="${33.0 * height}" pickOnBounds="true"
+                          preserveRatio="true">
+                  <Image url="@close.png"/>
+               </ImageView>
+            </graphic>
+         </Button>
+         <TextFlow fx:id="taskFlow" layoutX="${39.0 * height}" layoutY="${4.0 * height}"
+                   prefHeight="${315.0 * height}" prefWidth="${490.0 * height}">
+            <Text fx:id="taskNameText" strokeType="OUTSIDE" strokeWidth="${0.0 * height}"
+                  styleClass="sanserif-bold-20"/>
+            <Text strokeType="OUTSIDE" strokeWidth="${0.0 * height}" text="&#10;&#10;"
+                  styleClass="sanserif-bold-20"/>
+            <Text fx:id="taskDescriptionText" strokeType="OUTSIDE" strokeWidth="${0.0 * height}"
+                  wrappingWidth="${493.3779296875 * height}" styleClass="sanserif-15"/>
+            <Text strokeType="OUTSIDE" strokeWidth="${0.0 * height}" text="&#10;&#10;входные данные:&#10;"
+                  styleClass="sanserif-bold-20"/>
+            <Text fx:id="taskInputText" strokeType="OUTSIDE" strokeWidth="${0.0 * height}"
+                  styleClass="sanserif-15"/>
+            <Text strokeType="OUTSIDE" strokeWidth="${0.0 * height}" text="&#10;&#10;выходные данные:&#10;"
+                  wrappingWidth="${207.900390625 * height}" styleClass="sanserif-bold-20"/>
+            <Text fx:id="taskOutputText" strokeType="OUTSIDE" strokeWidth="${0.0 * height}"
+                  styleClass="sanserif-15"/>
+         </TextFlow>
+         <Label layoutX="${39.0 * height}" layoutY="${319.0 * height}" text="входные данные"
+                styleClass="sanserif-bold-20"/>
+         <TextArea fx:id="firstExampleInput" editable="false" focusTraversable="false" layoutX="${20.0 * height}"
+                   layoutY="${358.0 * height}" prefHeight="${100.0 * height}" prefWidth="${260.0 * height}"
+                   styleClass="text-field" wrapText="true"/>
+         <TextArea fx:id="firstExampleOutput" editable="false" focusTraversable="false"
+                   layoutX="${280.0 * height}" layoutY="${358.0 * height}" prefHeight="${100.0 * height}"
+                   prefWidth="${260.0 * height}" styleClass="text-field" wrapText="true"/>
+         <TextArea fx:id="secondExampleInput" editable="false" focusTraversable="false" layoutX="${20.0 * height}"
+                   layoutY="${458.0 * height}" prefHeight="${100.0 * height}" prefWidth="${260.0 * height}"
+                   styleClass="text-field" wrapText="true"/>
+         <TextArea fx:id="thirdExampleInput" editable="false" focusTraversable="false" layoutX="${20.0 * height}"
+                   layoutY="${558.0 * height}" prefHeight="${100.0 * height}" prefWidth="${260.0 * height}"
+                   styleClass="text-field" wrapText="true"/>
+         <TextArea fx:id="secondExampleOutput" editable="false" focusTraversable="false"
+                   layoutX="${280.0 * height}" layoutY="${458.0 * height}" prefHeight="${100.0 * height}"
+                   prefWidth="${260.0 * height}" styleClass="text-field" wrapText="true"/>
+         <TextArea fx:id="thirdExampleOutput" editable="false" focusTraversable="false"
+                   layoutX="${280.0 * height}" layoutY="${558.0 * height}" prefHeight="${100.0 * height}"
+                   prefWidth="${260.0 * height}" styleClass="text-field" wrapText="true"/>
+         <Label layoutX="${320.0 * height}" layoutY="${323.0 * height}" text="выходные данные"
+                styleClass="sanserif-bold-20"/>
+      </Pane>
+      <Pane fx:id="taskFinishPane" layoutY="${80.0 * height}" prefHeight="${760.0 * height}"
+            prefWidth="${560.0 * height}" visible="false">
+         <Polygon fx:id="pol_8" fill="#f5d590" layoutX="${60.0 * height}" layoutY="${314.0 * height}" opacity="0.41"
+                  points="-60.0, -13.0, 500.0, -314.0, -60.0, -314.0" stroke="WHITE" strokeType="INSIDE"/>
+         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7abaf5" height="${185.0 * height}"
+                    layoutY="${210.0 * height}" opacity="0.25" stroke="WHITE" strokeType="INSIDE"
+                    width="${560.0 * height}"/>
+         <Polygon fx:id="pol_9" fill="#fff782" layoutX="${87.0 * height}" layoutY="${439.0 * height}" opacity="0.3"
+                  points="-93.0, 9.0, 473.0, 135.0, 473.0, -162.0" stroke="WHITE" strokeType="INSIDE"/>
+         <Button fx:id="goToInfoForm" layoutX="${85.0 * height}" layoutY="${269.0 * height}"
+                 mnemonicParsing="false" prefHeight="${107.0 * height}" prefWidth="${116.0 * height}"
+                 textFill="WHITE">
+            <graphic>
+               <StackPane alignment="TOP_CENTER" prefHeight="${234.0 * height}" prefWidth="${141.0 * height}">
+                  <ImageView fitHeight="${33.0 * height}" fitWidth="${74.0 * height}" pickOnBounds="true"
+                             preserveRatio="true" style="-fx-rotate: 180;">
+                     <Image url="@next.png"/>
+                  </ImageView>
+                  <Label alignment="BOTTOM_CENTER" prefHeight="${84.0 * height}" prefWidth="${108.0 * height}"
+                         text="вернуться&#10; к анкете" textAlignment="JUSTIFY"
+                         styleClass="sanserif-bold-15"/>
+               </StackPane>
+            </graphic>
+         </Button>
+         <Button fx:id="goToTaskChooser" layoutX="${369.0 * height}" layoutY="${269.0 * height}"
+                 mnemonicParsing="false" prefHeight="${107.0 * height}" prefWidth="${116.0 * height}">
+            <graphic>
+               <StackPane alignment="TOP_CENTER" prefHeight="${112.0 * height}" prefWidth="${103.0 * height}">
+                  <ImageView fitHeight="${33.0 * height}" fitWidth="${74.0 * height}" pickOnBounds="true"
+                             preserveRatio="true">
+                     <Image url="@next.png"/>
+                  </ImageView>
+                  <Label alignment="BOTTOM_CENTER" prefHeight="${88.0 * height}" prefWidth="${105.0 * height}"
+                         text="вернуться&#10;к задачам" textAlignment="JUSTIFY"
+                         styleClass="sanserif-bold-15"/>
+               </StackPane>
+            </graphic>
+         </Button>
+         <Label layoutX="${160.0 * height}" layoutY="${154.0 * height}" prefHeight="${71.0 * height}"
+                prefWidth="${280.0 * height}" text="отличная работа! " styleClass="sanserif-bold-24"/>
+      </Pane>
+      <Pane prefHeight="${80.0 * height}" prefWidth="${560.0 * height}">
+         <Label layoutX="${193.0 * height}" layoutY="${11.0 * height}" text="CodeTracker"
+                styleClass="codetracker-sign"/>
+      </Pane>
+   </Pane>
+</Pane>
+
