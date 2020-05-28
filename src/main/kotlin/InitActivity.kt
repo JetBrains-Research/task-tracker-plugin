@@ -19,6 +19,7 @@ class InitActivity : StartupActivity {
                 if(!Plugin.stopTracking()){
 //                    Todo: don't run it there....
                     ApplicationManager.getApplication().invokeAndWait {
+
                         ServerDialogWrapper().show()
                     }
                 }

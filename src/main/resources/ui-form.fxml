@@ -26,7 +26,7 @@
          <children>
             <Pane fx:id="infoFormPane" layoutY="80.0" prefHeight="760.0" prefWidth="560.0" stylesheets="@style.css" visible="false">
                <children>
-                  <Polygon fill="#f5d590" layoutX="552.0" layoutY="64.0" opacity="0.35" points="-552.0, -64.0, -552.0, 110.0, 278.0, -72.0" stroke="WHITE" strokeType="INSIDE" />
+                  <Polygon fill="#f5d590" layoutX="552.0" layoutY="64.0" opacity="0.35" points="-552.0, -64.0, -552.0, 110.0, 278.0, -72.0, 0.0, 0.0" stroke="WHITE" strokeType="INSIDE" />
                   <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="235.0" layoutY="360.0" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="560.0" />
                   <Polygon fill="#7abaf5" layoutX="45.0" layoutY="238.0" opacity="0.25" points="-404.0, -102.0, 514.0, 345.0, 514.0, -102.0" stroke="WHITE" strokeType="INSIDE" />
                   <Label layoutX="25.0" layoutY="174.0" text="опыт программирования:">

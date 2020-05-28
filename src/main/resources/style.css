@@ -1,7 +1,9 @@
 .root{
     -fx-accent: #C6ADD0;
     -fx-focus-color: #C6ADD0;
+    -fx-background-color: #ffffff;
 }
+
 .button {
     -fx-border-color: transparent;
     -fx-border-width: 0;
@@ -19,13 +21,14 @@
     -fx-border-width: -1;
 }
 .text-field {
+    -fx-font-size: 17em;
     -fx-background-insets: 0;
     -fx-background-color: none;
     -fx-box-border: none;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-text-box-border: transparent;
-    -fx-border-width: 1;
+    -fx-border-width: 1em;
     -fx-background-radius: 100;
     -fx-border-radius: 100;
 }
@@ -37,8 +40,17 @@
     -fx-background-color: transparent, white, transparent, white;
 }
 
+.combo-box {
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-border-color: #000000;
+    -fx-background-color: #ffffff;
+    -fx-border-width: 2em;
+}
+
 .combo-box .list-cell
 {
+    -fx-font-size: 17em;
     -fx-background: white;
     -fx-background-color: transparent;
     -fx-text-fill: -fx-text-base-color;
@@ -76,4 +88,38 @@
     -fx-opacity: .5;
     -fx-background-radius: 20;
     -fx-border-radius: 20;
+}
+
+.codetracker-sign {
+    -fx-font-family: SansSerif;
+    -fx-font-weight: bold;
+    -fx-font-size: 48em;
+}
+
+.sanserif-bold-20 {
+    -fx-font-family: SansSerif;
+    -fx-font-weight: bold;
+    -fx-font-size: 20em;
+}
+
+.sanserif-bold-15 {
+    -fx-font-family: SansSerif;
+    -fx-font-weight: bold;
+    -fx-font-size: 15em;
+}
+
+.sanserif-15 {
+    -fx-font-family: SansSerif;
+    -fx-font-size: 15em;
+}
+
+.sanserif-17 {
+    -fx-font-family: SansSerif;
+    -fx-font-size: 15em;
+}
+
+.sanserif-bold-24 {
+    -fx-font-family: SansSerif;
+    -fx-font-weight: bold;
+    -fx-font-size: 24em;
 }

@@ -13,11 +13,14 @@ import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.paint.Color
+import java.awt.Toolkit
 import javax.swing.JComponent
 import javax.swing.JPanel
 
 
 class PluginToolWindowFactory : ToolWindowFactory {
+    private val SCREEN_HEIGHT = 1080.0
+
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
     init {
@@ -34,20 +37,33 @@ class PluginToolWindowFactory : ToolWindowFactory {
     private fun createContent(project: Project) : JComponent {
         val panel = JPanel()
         val fxPanel = JFXPanel()
-        val controller = Controller(project)
-        Platform.setImplicitExit(false);
+
+        val screenSize = Toolkit.getDefaultToolkit().screenSize
+        diagnosticLogger.info("Screen size: $screenSize")
+        println("Screen size: $screenSize")
+        var height = screenSize.height / SCREEN_HEIGHT
+        diagnosticLogger.info("Height: $height")
+
+        val controller = Controller(project, height)
+        Platform.setImplicitExit(false)
+
+
         Platform.runLater {
-            val loader = FXMLLoader(javaClass.classLoader.getResource("ui-form.fxml"))
+            val loader = FXMLLoader()
+            loader.namespace["height"] = height
+            loader.location = javaClass.classLoader.getResource("ui-form-5.fxml")
             loader.setController(controller)
             val root = loader.load<Parent>()
             val scene = Scene(root, Color.WHITE)
             fxPanel.scene = scene
             fxPanel.background = java.awt.Color.white
+
         }
 
         panel.background = java.awt.Color.white
         panel.add(fxPanel)
-        return JBScrollPane(panel)
+        val scrollPane = JBScrollPane(panel)
+        return scrollPane
     }
 }
 

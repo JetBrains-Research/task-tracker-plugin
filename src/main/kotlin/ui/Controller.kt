@@ -10,24 +10,41 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import data.PE
 import data.UiData
+import javafx.beans.binding.Bindings
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
+import javafx.scene.shape.Polygon
+import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
+import javafx.scene.transform.Scale;
 import javafx.util.converter.IntegerStringConverter
 import java.util.function.UnaryOperator
 
 
 //todo test csv writing
 
-class Controller(val project: Project) {
+class Controller(val project: Project, val scale: Double) {
     // todo: separate task and info form logic?
+
+
+    private val SCREEN_WIDTH = 1920.0
+    private val SCREEN_HEIGHT = 1200.0
 
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
     private val uiData: UiData = ControllerManager.uiData
+
+//    For scaling components
+//    @FXML
+//    lateinit var s: Rectangle
+
+
+
+    @FXML
+    lateinit var mainPane: Pane
 
     @FXML
     lateinit var paneByName: HashMap<String, Pane>
@@ -126,7 +143,40 @@ class Controller(val project: Project) {
     internal var id: Int = -1
 
 
+    @FXML
+    lateinit var pol_1: Polygon
+    @FXML
+    lateinit var pol_2: Polygon
+    @FXML
+    lateinit var pol_3: Polygon
+    @FXML
+    lateinit var pol_4: Polygon
+    @FXML
+    lateinit var pol_5: Polygon
+    @FXML
+    lateinit var pol_6: Polygon
+    @FXML
+    lateinit var pol_7: Polygon
+    @FXML
+    lateinit var pol_8: Polygon
+    @FXML
+    lateinit var pol_9: Polygon
+
+
+
+
+
     fun initialize() {
+        mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
+        val polygons = arrayListOf(pol_1, pol_2, pol_3, pol_4, pol_5, pol_6, pol_7, pol_8, pol_9)
+
+        val polygonScale = Scale()
+        polygonScale.x = scale
+        polygonScale.y = scale
+        polygonScale.pivotX = 0.0
+        polygonScale.pivotY = 0.0
+        polygons.forEach { it.transforms.addAll(polygonScale)}
+
         diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: init controller")
         Disposer.register(project, Disposable {
             ControllerManager.removeController(this)
