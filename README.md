@@ -8,7 +8,7 @@ This plugin writes changes in all open documents in a .csv files and sends them 
 
 ### Problems solving
 
-Plugin's ui is designed for choosing different problems to solve and see correct examples of problem's behaviour. All data about problems is received from the server when the plugin starts. 
+Plugin's ui is designed for choosing different problems to solve and seeing correct examples of problem's behaviour. All data about problems is received from the server when the plugin starts. 
 It is also possible for user to set their age and programming experience. Currently, it's only available on russian language. 
 
 
