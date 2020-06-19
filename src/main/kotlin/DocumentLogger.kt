@@ -45,7 +45,7 @@ object DocumentLogger {
     private fun isFull(fileSize: Long): Boolean = abs(MAX_FILE_SIZE - fileSize) < MAX_DIF_SIZE
 
     private fun sendFile(file: File) {
-        Plugin.server.sendTrackingData(file, {false})
+        Plugin.server.trackerQueryExecutor.sendCodeTrackerData(file)
     }
 
     fun getFiles() : List<File> = documentsToPrinters.values.map { it.file }

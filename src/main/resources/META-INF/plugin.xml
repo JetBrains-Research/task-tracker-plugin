@@ -13,6 +13,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="InitActivity"></postStartupActivity>
         <toolWindow id="codetracker" anchor="right" factoryClass="ui.PluginToolWindowFactory"/>
+        <registryKey key="codetracker.server.url" defaultValue="http://localhost:3000/api/" description="Base url for the codetracker server"/>
     </extensions>
 
 </idea-plugin>

@@ -7,10 +7,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.psi.PsiDirectory
-import com.intellij.psi.PsiFileFactory
 import models.Language
 import models.Task
+import server.PluginServer
 import java.io.File
 
 
@@ -18,7 +17,7 @@ object Plugin {
     const val PLUGIN_ID = "codetracker"
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
     private lateinit var listener: PluginDocumentListener
-    val server: Server = PluginServer
+    val server: PluginServer = PluginServer()
     val logger = DocumentLogger
 
     init {
@@ -66,11 +65,11 @@ object Plugin {
             logger.logCurrentDocuments()
             logger.flush()
             logger.documentsToPrinters.forEach { (d, p) ->
-                server.sendTrackingData(p.file, { server.checkSuccessful()}) { logger.close(d, p) }
+                server.trackerQueryExecutor.sendCodeTrackerData(p.file, { server.trackerQueryExecutor.checkSuccessful()}) { logger.close(d, p) }
             }
         }
         listener.remove()
-        return server.checkSuccessful()
+        return server.trackerQueryExecutor.checkSuccessful()
     }
 
     // todo: find the other way for capturing the last project closing
@@ -87,7 +86,7 @@ object Plugin {
     }
 
     fun createFile(task: Task, language: Language): File {
-        // Todo: use other path
+        // Todo: use root of the project
         val file = File("./${task.key}${language.getExtensionByLanguage().ext}")
         FileUtil.createIfDoesntExist(file)
         return file

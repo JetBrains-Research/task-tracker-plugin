@@ -5,6 +5,7 @@ import com.intellij.openapi.diagnostic.Logger
 import data.PE
 import data.UiData
 import javafx.collections.FXCollections
+import kotlinx.serialization.ImplicitReflectionSerializer
 
 internal object ControllerManager {
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
