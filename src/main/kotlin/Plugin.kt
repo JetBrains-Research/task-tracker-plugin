@@ -85,11 +85,4 @@ object Plugin {
         } )
     }
 
-    fun createFile(task: Task, language: Language): File {
-        // Todo: use root of the project
-        val file = File("./${task.key}${language.getExtensionByLanguage().ext}")
-        FileUtil.createIfDoesntExist(file)
-        return file
-    }
-
 }
