@@ -1,9 +1,9 @@
 package ui
 
 import DocumentLogger
-import Example
+import models.Example
 import Plugin
-import Task
+import models.Task
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -16,7 +16,6 @@ import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 import javafx.scene.shape.Polygon
-import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
 import javafx.scene.transform.Scale;
@@ -245,14 +244,15 @@ class Controller(val project: Project, val scale: Double) {
     }
 
     fun setTaskInfo(task: Task) {
-        taskNameText.text = task.name
-        taskDescriptionText.text = task.description
-        taskInputText.text = task.input
-        taskOutputText.text = task.output
+        // Todo: get real info
+        taskNameText.text = "pies"
+        taskDescriptionText.text = "pies"
+        taskInputText.text = "pies"
+        taskOutputText.text = "pies"
 
-        setExample(task.example_1, firstExampleInput, firstExampleOutput)
-        setExample(task.example_2, secondExampleInput, secondExampleOutput)
-        setExample(task.example_3, thirdExampleInput, thirdExampleOutput)
+//        setExample(task.example_1, firstExampleInput, firstExampleOutput)
+//        setExample(task.example_2, secondExampleInput, secondExampleOutput)
+//        setExample(task.example_3, thirdExampleInput, thirdExampleOutput)
     }
 
     private fun setExample(example: Example, exampleInput: TextArea, exampleOutput: TextArea) {

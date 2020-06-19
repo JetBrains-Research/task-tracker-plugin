@@ -19,7 +19,6 @@ class InitActivity : StartupActivity {
                 if(!Plugin.stopTracking()){
 //                    Todo: don't run it there....
                     ApplicationManager.getApplication().invokeAndWait {
-
                         ServerDialogWrapper().show()
                     }
                 }
@@ -30,5 +29,4 @@ class InitActivity : StartupActivity {
     override fun runActivity(project: Project) {
         diagnosticLogger.info("${Plugin.PLUGIN_ID}: run activity")
     }
-
 }

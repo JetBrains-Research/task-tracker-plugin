@@ -1,6 +1,6 @@
 package ui
 
-import Task
+import models.Task
 import com.intellij.openapi.diagnostic.Logger
 import data.PE
 import data.UiData
@@ -9,7 +9,8 @@ import javafx.collections.FXCollections
 internal object ControllerManager {
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
-    private val selectTask = Task("NULL", "--Не выбрано--")
+    // Todo:
+    private val selectTask = Task("NULL", -1)
     private val controllers : MutableList<Controller> = arrayListOf()
     private var lastId: Int = 0
 

@@ -1,4 +1,3 @@
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
@@ -7,7 +6,12 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import ui.ServerDialogWrapper
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.psi.PsiDirectory
+import com.intellij.psi.PsiFileFactory
+import models.Language
+import models.Task
+import java.io.File
 
 
 object Plugin {
@@ -80,6 +84,13 @@ object Plugin {
                 super.projectClosing(project)
             }
         } )
+    }
+
+    fun createFile(task: Task, language: Language): File {
+        // Todo: use other path
+        val file = File("./${task.key}${language.getExtensionByLanguage().ext}")
+        FileUtil.createIfDoesntExist(file)
+        return file
     }
 
 }

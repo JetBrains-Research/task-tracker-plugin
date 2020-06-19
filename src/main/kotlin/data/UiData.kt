@@ -1,6 +1,6 @@
 package data
 
-import Task
+import models.Task
 import ui.ControllerManager
 import ui.NotifyEvent
 import kotlin.properties.Delegates
@@ -46,7 +46,8 @@ class UiData(val tasks: List<Task>) {
         }
     }
 
-    fun tasksNames() : List<String> = tasks.map { it.name }
+    // Todo: get real list by language
+    fun tasksNames() : List<String> = mutableListOf("pies")
 
     fun getData() = listOf(
         chosenTask,
