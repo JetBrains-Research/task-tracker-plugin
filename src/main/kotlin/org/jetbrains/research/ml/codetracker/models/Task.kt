@@ -1,4 +1,4 @@
-package models
+package org.jetbrains.research.ml.codetracker.models
 
 import kotlinx.serialization.Serializable
 

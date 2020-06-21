@@ -1,12 +1,12 @@
-package ui
+package org.jetbrains.research.ml.codetracker.ui
 
-import Plugin
+import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.diagnostic.Logger
-import data.PE
-import data.UiData
+import org.jetbrains.research.ml.codetracker.data.PE
+import org.jetbrains.research.ml.codetracker.data.UiData
 import javafx.collections.FXCollections
-import models.Task
-import server.PluginServer
+import org.jetbrains.research.ml.codetracker.models.Task
+import org.jetbrains.research.ml.codetracker.server.PluginServer
 
 internal object ControllerManager {
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)

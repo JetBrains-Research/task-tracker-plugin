@@ -1,14 +1,17 @@
+package org.jetbrains.research.ml.codetracker
+
+import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.io.FileUtil
-import data.DocumentChangeData
+import org.jetbrains.research.ml.codetracker.data.DocumentChangeData
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.joda.time.DateTime
-import server.TrackerQueryExecutor
-import ui.ControllerManager
+import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
+import org.jetbrains.research.ml.codetracker.ui.ControllerManager
 import java.io.File
 import java.io.FileWriter
 import kotlin.math.abs
@@ -29,7 +32,9 @@ object DocumentLogger {
     private const val MAX_DIF_SIZE = 300
 
     fun log(document: Document) {
-        var printer = myDocumentsToPrinters.getOrPut(document, { initPrinter(document) })
+        var printer = myDocumentsToPrinters.getOrPut(document, {
+            initPrinter(document)
+        })
         if (isFull(printer.file.length())) {
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} is full")
             sendFile(printer.file)
@@ -43,7 +48,11 @@ object DocumentLogger {
 
     fun logCurrentDocuments() {
         logger.info("${Plugin.PLUGIN_ID}: log current documents: ${myDocumentsToPrinters.keys.size}")
-        myDocumentsToPrinters.keys.forEach { log(it) }
+        myDocumentsToPrinters.keys.forEach {
+            log(
+                it
+            )
+        }
     }
 
 
@@ -78,7 +87,11 @@ object DocumentLogger {
         val fileWriter = FileWriter(file)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
         csvPrinter.printRecord(DocumentChangeData.headers + ControllerManager.uiData.getData().map { it.header })
-        return Printer(csvPrinter, fileWriter, file)
+        return Printer(
+            csvPrinter,
+            fileWriter,
+            file
+        )
     }
 
 

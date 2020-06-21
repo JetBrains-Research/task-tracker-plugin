@@ -1,4 +1,4 @@
-package server
+package org.jetbrains.research.ml.codetracker.server
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.list
@@ -11,9 +11,8 @@ import java.net.URL
 object CollectionsQueryExecutor : QueryExecutor() {
 
     inline fun <reified T : Any> parseResponse(response: Response?, serializer: KSerializer<T>): List<T> {
-        if (response?.isSuccessful == true) {
-
-            return Json(JsonConfiguration.Stable).parse(serializer.list, response.body?.string() ?: "")
+        if (isSuccess(response)) {
+            return Json(JsonConfiguration.Stable).parse(serializer.list, response?.body?.string() ?: "")
         }
         return emptyList()
     }

@@ -11,9 +11,9 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="InitActivity"></postStartupActivity>
-        <toolWindow id="codetracker" anchor="right" factoryClass="ui.PluginToolWindowFactory"/>
-        <registryKey key="codetracker.server.url" defaultValue="http://localhost:3000/api/" description="Base url for the codetracker server"/>
+        <postStartupActivity implementation="org.jetbrains.research.ml.codetracker.InitActivity"></postStartupActivity>
+        <toolWindow id="codetracker" anchor="right" factoryClass="org.jetbrains.research.ml.codetracker.ui.PluginToolWindowFactory"/>
+        <registryKey key="codetracker.org.jetbrains.research.ml.codetracker.server.url" defaultValue="http://localhost:3000/api/" description="Base url for the codetracker org.jetbrains.research.ml.codetracker.server"/>
     </extensions>
 
 </idea-plugin>

@@ -1,8 +1,8 @@
-package data
+package org.jetbrains.research.ml.codetracker.data
 
-import models.Task
-import ui.ControllerManager
-import ui.NotifyEvent
+import org.jetbrains.research.ml.codetracker.models.Task
+import org.jetbrains.research.ml.codetracker.ui.ControllerManager
+import org.jetbrains.research.ml.codetracker.ui.NotifyEvent
 import kotlin.properties.Delegates
 
 class UiData(val tasks: List<Task>) {

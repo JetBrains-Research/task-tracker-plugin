@@ -1,7 +1,7 @@
-package server
+package org.jetbrains.research.ml.codetracker.server
 
 import kotlinx.serialization.builtins.serializer
-import models.Task
+import org.jetbrains.research.ml.codetracker.models.Task
 
 object PluginServer {
     // Todo: get genders, countries and experiences

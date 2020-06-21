@@ -1,4 +1,4 @@
-package data
+package org.jetbrains.research.ml.codetracker.data
 
 import org.joda.time.DateTime
 

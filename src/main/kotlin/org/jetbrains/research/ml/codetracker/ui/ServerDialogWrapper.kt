@@ -1,4 +1,4 @@
-package ui
+package org.jetbrains.research.ml.codetracker.ui
 
 
 import com.intellij.openapi.ui.DialogWrapper

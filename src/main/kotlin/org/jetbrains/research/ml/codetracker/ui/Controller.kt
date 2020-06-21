@@ -1,13 +1,13 @@
-package ui
+package org.jetbrains.research.ml.codetracker.ui
 
-import DocumentLogger
-import Plugin
+import org.jetbrains.research.ml.codetracker.DocumentLogger
+import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import data.PE
-import data.UiData
+import org.jetbrains.research.ml.codetracker.data.PE
+import org.jetbrains.research.ml.codetracker.data.UiData
 import javafx.beans.binding.Bindings
 import javafx.fxml.FXML
 import javafx.scene.control.*
@@ -18,8 +18,8 @@ import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
 import javafx.scene.transform.Scale
 import javafx.util.converter.IntegerStringConverter
-import models.Example
-import models.Task
+import org.jetbrains.research.ml.codetracker.models.Example
+import org.jetbrains.research.ml.codetracker.models.Task
 import java.util.function.UnaryOperator
 
 

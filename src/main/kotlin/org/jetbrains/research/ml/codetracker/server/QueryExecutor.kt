@@ -1,6 +1,6 @@
-package server
+package org.jetbrains.research.ml.codetracker.server
 
-import Plugin
+import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.registry.Registry
 import okhttp3.OkHttpClient
@@ -23,7 +23,7 @@ abstract class QueryExecutor {
     protected val logger: Logger = Logger.getInstance(javaClass)
 
     private val client: OkHttpClient by lazy {
-        logger.info("${Plugin.PLUGIN_ID}: init server. API base url is ${baseUrl}. Max count attempt of sending data to server = ${MAX_COUNT_ATTEMPTS}\"")
+        logger.info("${Plugin.PLUGIN_ID}: init org.jetbrains.research.ml.codetracker.server. API base url is ${baseUrl}. Max count attempt of sending org.jetbrains.research.ml.codetracker.data to org.jetbrains.research.ml.codetracker.server = ${MAX_COUNT_ATTEMPTS}\"")
         OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
@@ -34,7 +34,7 @@ abstract class QueryExecutor {
     var isLastSuccessful: Boolean = false
         private set
 
-    protected val baseUrl: String = Registry.get("codetracker.server.url").asString()
+    protected val baseUrl: String = Registry.get("codetracker.org.jetbrains.research.ml.codetracker.server.url").asString()
 
     protected fun executeQuery(request: Request): Future<Response?> {
         var curCountAttempts = 0
@@ -72,5 +72,9 @@ abstract class QueryExecutor {
         return daemon.schedule(Callable<Response?> {
             executeQueryHelper()
         }, 0, TimeUnit.SECONDS)
+    }
+
+    protected fun isSuccess(response: Response?): Boolean {
+        return response?.isSuccessful == true
     }
 }

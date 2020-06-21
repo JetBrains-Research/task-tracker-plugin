@@ -1,8 +1,8 @@
-package server
+package org.jetbrains.research.ml.codetracker.server
 
-import Plugin
+import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.application.PathManager
-import models.Extension
+import org.jetbrains.research.ml.codetracker.models.Extension
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.Request
@@ -73,7 +73,7 @@ object TrackerQueryExecutor : QueryExecutor() {
     }
 
     fun sendCodeTrackerData(file: File, deleteAfter: () -> Boolean, postActivity: () -> Unit) {
-        val currentUrl = baseUrl + "data-item"
+        val currentUrl = baseUrl + "org.jetbrains.research.ml.codetracker.data-item"
         logger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
         val future = executeQuery(
             Request.Builder()
@@ -87,7 +87,7 @@ object TrackerQueryExecutor : QueryExecutor() {
                 )
                 .build()
         )
-        if (future.get()?.isSuccessful == true) {
+        if (isSuccess(future.get())) {
             if (deleteAfter()) {
                 logger.info("${Plugin.PLUGIN_ID}: delete file ${file.name}")
                 file.delete()

@@ -1,4 +1,4 @@
-package models
+package org.jetbrains.research.ml.codetracker.models
 
 enum class Language(val extension: Extension) {
     PYTHON(Extension.PY),

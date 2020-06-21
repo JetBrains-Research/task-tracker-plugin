@@ -1,3 +1,5 @@
+package org.jetbrains.research.ml.codetracker
+
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
@@ -6,7 +8,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import server.TrackerQueryExecutor
+import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 
 
 object Plugin {
@@ -16,14 +18,14 @@ object Plugin {
     private lateinit var listener: MyDocumentListener
 
     init {
-        logger.info("${PLUGIN_ID}: init plugin")
+        logger.info("$PLUGIN_ID: init plugin")
     }
 
     private class MyDocumentListener : DocumentListener {
         private val logger: Logger = Logger.getInstance(javaClass)
 
         init {
-            logger.info("${PLUGIN_ID}: init documents listener")
+            logger.info("$PLUGIN_ID: init documents listener")
         }
 
         // Tracking documents changes before to be consistent with activity-tracker plugin
@@ -48,13 +50,14 @@ object Plugin {
     }
 
     fun startTracking() {
-        listener = MyDocumentListener()
+        listener =
+            MyDocumentListener()
         listener.add()
     }
 
     fun stopTracking(): Boolean {
-        logger.info("${PLUGIN_ID}: close IDE")
-        logger.info("${PLUGIN_ID}: prepare fo sending ${DocumentLogger.getFiles().size} files")
+        logger.info("$PLUGIN_ID: close IDE")
+        logger.info("$PLUGIN_ID: prepare fo sending ${DocumentLogger.getFiles().size} files")
         if (DocumentLogger.getFiles().isNotEmpty()) {
             DocumentLogger.logCurrentDocuments()
             DocumentLogger.flush()
