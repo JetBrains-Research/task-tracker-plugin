@@ -8,15 +8,15 @@ import ui.ServerDialogWrapper
 
 
 class InitActivity : StartupActivity {
-    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
+    private val logger: Logger = Logger.getInstance(javaClass)
 
     init {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: startup activity")
+        logger.info("${Plugin.PLUGIN_ID}: startup activity")
         Disposer.register(
             ApplicationManager.getApplication(),
             Disposable {
-                diagnosticLogger.info("${Plugin.PLUGIN_ID}: dispose startup activity")
-                if(!Plugin.stopTracking()){
+                logger.info("${Plugin.PLUGIN_ID}: dispose startup activity")
+                if (!Plugin.stopTracking()) {
 //                    Todo: don't run it there....
                     ApplicationManager.getApplication().invokeAndWait {
                         ServerDialogWrapper().show()
@@ -27,6 +27,6 @@ class InitActivity : StartupActivity {
     }
 
     override fun runActivity(project: Project) {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: run activity")
+        logger.info("${Plugin.PLUGIN_ID}: run activity")
     }
 }

@@ -3,12 +3,12 @@ package data
 import org.joda.time.DateTime
 
 data class DocumentChangeData(
-    var date: DateTime,
-    var timestamp: Long,
-    var fileName: String?,
-    var fileHashCode: Int?,
-    var documentHashCode: Int,
-    var fragment: String
+    val date: DateTime,
+    val timestamp: Long,
+    val fileName: String?,
+    val fileHashCode: Int?,
+    val documentHashCode: Int,
+    val fragment: String
 ) {
 
     companion object {
@@ -18,10 +18,11 @@ data class DocumentChangeData(
             "fileName",
             "fileHashCode",
             "documentHashCode",
-            "fragment")
+            "fragment"
+        )
     }
 
-    fun getData() : List<String>{
+    fun getData(): List<String> {
         return listOf(
             date,
             timestamp,

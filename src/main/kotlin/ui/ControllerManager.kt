@@ -1,18 +1,19 @@
 package ui
 
-import models.Task
+import Plugin
 import com.intellij.openapi.diagnostic.Logger
 import data.PE
 import data.UiData
 import javafx.collections.FXCollections
-import kotlinx.serialization.ImplicitReflectionSerializer
+import models.Task
+import server.PluginServer
 
 internal object ControllerManager {
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
     // Todo:
     private val selectTask = Task("NULL", -1)
-    private val controllers : MutableList<Controller> = arrayListOf()
+    private val controllers: MutableList<Controller> = arrayListOf()
     private var lastId: Int = 0
 
 
@@ -20,7 +21,7 @@ internal object ControllerManager {
 
 
     // todo: check for unique keys
-    val uiData = UiData(listOf(selectTask) + Plugin.server.getTasks())
+    val uiData = UiData(listOf(selectTask) + PluginServer.getTasks())
 
     fun addController(controller: Controller) {
         controllers.add(controller)
@@ -39,7 +40,7 @@ internal object ControllerManager {
     }
 
     fun notify(event: NotifyEvent, new: Any?, controllers: MutableList<Controller> = this.controllers) {
-        when(event) {
+        when (event) {
             NotifyEvent.CHOSEN_TASK_NOTIFY -> controllers.forEach {
                 it.taskComboBox.selectionModel.select(new as Int)
                 val task = uiData.tasks[new]
@@ -62,7 +63,7 @@ internal object ControllerManager {
                 }
             }
 
-            NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY ->  controllers.forEach {
+            NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY -> controllers.forEach {
                 it.selectExperienceButton(new as PE)
                 it.setInfoFormButtonsDisability(uiData.age.isDefault() || uiData.programExperience.isDefault(new))
             }

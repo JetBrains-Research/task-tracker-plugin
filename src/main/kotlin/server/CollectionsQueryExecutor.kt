@@ -8,7 +8,7 @@ import okhttp3.Request
 import okhttp3.Response
 import java.net.URL
 
-object CollectionsQueryExecutor: QueryExecutor() {
+object CollectionsQueryExecutor : QueryExecutor() {
 
     inline fun <reified T : Any> parseResponse(response: Response?, serializer: KSerializer<T>): List<T> {
         if (response?.isSuccessful == true) {

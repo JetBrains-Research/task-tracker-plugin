@@ -34,7 +34,7 @@ class PluginToolWindowFactory : ToolWindowFactory {
         toolWindow as ToolWindowImpl
     }
 
-    private fun createContent(project: Project) : JComponent {
+    private fun createContent(project: Project): JComponent {
         val panel = JPanel()
         val fxPanel = JFXPanel()
 

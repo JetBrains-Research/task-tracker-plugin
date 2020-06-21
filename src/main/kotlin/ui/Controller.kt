@@ -1,9 +1,7 @@
 package ui
 
 import DocumentLogger
-import models.Example
 import Plugin
-import models.Task
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -18,8 +16,10 @@ import javafx.scene.layout.Pane
 import javafx.scene.shape.Polygon
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
-import javafx.scene.transform.Scale;
+import javafx.scene.transform.Scale
 import javafx.util.converter.IntegerStringConverter
+import models.Example
+import models.Task
 import java.util.function.UnaryOperator
 
 
@@ -39,7 +39,6 @@ class Controller(val project: Project, val scale: Double) {
 //    For scaling components
 //    @FXML
 //    lateinit var s: Rectangle
-
 
 
     @FXML
@@ -68,25 +67,34 @@ class Controller(val project: Project, val scale: Double) {
 
     @FXML
     lateinit var taskFlow: TextFlow
+
     @FXML
     lateinit var taskNameText: Text
+
     @FXML
     lateinit var taskDescriptionText: Text
+
     @FXML
     lateinit var taskInputText: Text
+
     @FXML
     lateinit var taskOutputText: Text
 
     @FXML
     lateinit var firstExampleInput: TextArea
+
     @FXML
     lateinit var secondExampleInput: TextArea
+
     @FXML
     lateinit var thirdExampleInput: TextArea
+
     @FXML
     lateinit var firstExampleOutput: TextArea
+
     @FXML
     lateinit var secondExampleOutput: TextArea
+
     @FXML
     lateinit var thirdExampleOutput: TextArea
 
@@ -121,18 +129,25 @@ class Controller(val project: Project, val scale: Double) {
 
     @FXML
     lateinit var programExperienceGroup: ToggleGroup
+
     @FXML
     lateinit var peLessThanHalf: RadioButton
+
     @FXML
     lateinit var peFromHalfToOne: RadioButton
+
     @FXML
     lateinit var peFromOneToTwo: RadioButton
+
     @FXML
     lateinit var peFromTwoToFour: RadioButton
+
     @FXML
     lateinit var peFromFourToSix: RadioButton
+
     @FXML
     lateinit var peMoreThanSix: RadioButton
+
     @FXML
     lateinit var experienceButtonByPE: Map<PE, RadioButton?>
 
@@ -144,25 +159,30 @@ class Controller(val project: Project, val scale: Double) {
 
     @FXML
     lateinit var pol_1: Polygon
+
     @FXML
     lateinit var pol_2: Polygon
+
     @FXML
     lateinit var pol_3: Polygon
+
     @FXML
     lateinit var pol_4: Polygon
+
     @FXML
     lateinit var pol_5: Polygon
+
     @FXML
     lateinit var pol_6: Polygon
+
     @FXML
     lateinit var pol_7: Polygon
+
     @FXML
     lateinit var pol_8: Polygon
+
     @FXML
     lateinit var pol_9: Polygon
-
-
-
 
 
     fun initialize() {
@@ -174,7 +194,7 @@ class Controller(val project: Project, val scale: Double) {
         polygonScale.y = scale
         polygonScale.pivotX = 0.0
         polygonScale.pivotY = 0.0
-        polygons.forEach { it.transforms.addAll(polygonScale)}
+        polygons.forEach { it.transforms.addAll(polygonScale) }
 
         diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: init controller")
         Disposer.register(project, Disposable {
@@ -354,9 +374,9 @@ class Controller(val project: Project, val scale: Double) {
     }
 
     private fun initAgeField() {
-        val filter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@ { change: TextFormatter.Change? ->
+        val filter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@{ change: TextFormatter.Change? ->
             val text: String? = change?.controlNewText
-            if (text != null && (text.length < 3) &&(text.isEmpty() || text.matches(Regex("[1-9]+[0-9]*")))) {
+            if (text != null && (text.length < 3) && (text.isEmpty() || text.matches(Regex("[1-9]+[0-9]*")))) {
                 return@label change
             }
             null
@@ -374,7 +394,8 @@ class Controller(val project: Project, val scale: Double) {
     private fun initProgramExperienceGroup() {
         programExperienceGroup.selectedToggleProperty().addListener { _, old, new ->
             diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: program experience changed from $old to $new")
-            uiData.programExperience.uiValue = experienceButtonByPE.filterValues { it == new }.keys.elementAtOrElse(0) { PE.NULL }
+            uiData.programExperience.uiValue =
+                experienceButtonByPE.filterValues { it == new }.keys.elementAtOrElse(0) { PE.NULL }
         }
     }
 

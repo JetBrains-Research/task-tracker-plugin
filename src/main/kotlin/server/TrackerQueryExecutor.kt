@@ -1,5 +1,6 @@
 package server
 
+import Plugin
 import com.intellij.openapi.application.PathManager
 import models.Extension
 import okhttp3.MediaType.Companion.toMediaType

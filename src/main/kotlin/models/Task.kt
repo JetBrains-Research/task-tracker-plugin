@@ -9,8 +9,8 @@ data class Example(val input: String, val output: String)
 data class TaskInfo(
     val name: String,
     val description: String,
-    val input: String = "",
-    val output: String = ""
+    val input: String,
+    val output: String
 )
 
 @Serializable

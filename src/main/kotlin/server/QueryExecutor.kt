@@ -1,44 +1,45 @@
 package server
 
+import Plugin
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.registry.Registry
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.net.UnknownHostException
+import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
-import java.util.concurrent.Callable
 import java.util.concurrent.TimeUnit
 
 abstract class QueryExecutor {
-
     companion object {
         private const val SLEEP_TIME = 5_000L
         private const val MAX_COUNT_ATTEMPTS = 5
+
+        private val daemon = Executors.newSingleThreadScheduledExecutor()
     }
 
     protected val logger: Logger = Logger.getInstance(javaClass)
-    private val daemon = Executors.newSingleThreadScheduledExecutor()
 
-    private var client: OkHttpClient
-    private var isLastSuccessful: Boolean = false
-    protected val baseUrl: String = Registry.get("codetracker.server.url").asString()
-
-    init {
+    private val client: OkHttpClient by lazy {
         logger.info("${Plugin.PLUGIN_ID}: init server. API base url is ${baseUrl}. Max count attempt of sending data to server = ${MAX_COUNT_ATTEMPTS}\"")
-        client = OkHttpClient.Builder()
+        OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .build()
     }
 
-    fun checkSuccessful(): Boolean = isLastSuccessful
+    var isLastSuccessful: Boolean = false
+        private set
+
+    protected val baseUrl: String = Registry.get("codetracker.server.url").asString()
 
     protected fun executeQuery(request: Request): Future<Response?> {
         var curCountAttempts = 0
-        val errorMessageTemplate = "The query ${request.method} ${request.url} was failed"
+        val error = "The query ${request.method} ${request.url} was failed"
+
         fun executeQueryHelper(): Response? {
             try {
                 logger.info("${Plugin.PLUGIN_ID}: An attempt ${curCountAttempts + 1} of execute the query ${request.method} ${request.url} has been started")
@@ -57,15 +58,14 @@ abstract class QueryExecutor {
                         SLEEP_TIME, TimeUnit.SECONDS
                     )
                 }
-            } catch (ex: Exception) {
-                when (ex) {
-                    is UnknownHostException ->
-                        logger.info("${Plugin.PLUGIN_ID}: ${errorMessageTemplate}: no internet connection")
-                    else -> logger.info("${Plugin.PLUGIN_ID}: ${errorMessageTemplate}: internet connection exception")
-                }
+            } catch (e: UnknownHostException) {
+                logger.info("${Plugin.PLUGIN_ID}: ${error}: no internet connection")
+
+            } catch (e: Exception) {
+                logger.info("${Plugin.PLUGIN_ID}: ${error}: internet connection exception")
             }
             isLastSuccessful = false
-            logger.info("${Plugin.PLUGIN_ID}: $errorMessageTemplate")
+            logger.info("${Plugin.PLUGIN_ID}: $error")
             return null
         }
 

@@ -6,7 +6,7 @@ enum class Language(val extension: Extension) {
     KOTLIN(Extension.KT);
 }
 
-enum class Extension(val ext: String){
+enum class Extension(val ext: String) {
     PY(".py"),
     JAVA(".java"),
     KT(".kt"),

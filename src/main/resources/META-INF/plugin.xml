@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>io.github.elena-lyulina.codetracker.codetracker</id>
     <name>codetracker</name>
-    <vendor email="elena.lyulina@gmail.com" url="https://github.com/elena-lyulina"> Elena Lyulina </vendor>
+    <vendor>JetBrains</vendor>
 
     <description><![CDATA[
     This is a plugin for tracking all code changes and storing them in .csv file.

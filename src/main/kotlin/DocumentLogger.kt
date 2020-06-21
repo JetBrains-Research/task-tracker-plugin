@@ -7,6 +7,7 @@ import data.DocumentChangeData
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.joda.time.DateTime
+import server.TrackerQueryExecutor
 import ui.ControllerManager
 import java.io.File
 import java.io.FileWriter
@@ -14,61 +15,65 @@ import kotlin.math.abs
 
 
 object DocumentLogger {
-    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
+    data class Printer(val csvPrinter: CSVPrinter, val fileWriter: FileWriter, val file: File)
 
-    val documentsToPrinters: HashMap<Document, Printer> = HashMap()
+    private val logger: Logger = Logger.getInstance(javaClass)
+
+    private val myDocumentsToPrinters: HashMap<Document, Printer> = HashMap()
+
+    val documentsToPrinters: Map<Document, Printer>
+        get() = documentsToPrinters.toMap()
 
     private val folderPath = "${PathManager.getPluginsPath()}/code-tracker/"
     private const val MAX_FILE_SIZE = 50 * 1024 * 1024
     private const val MAX_DIF_SIZE = 300
 
-    data class Printer(val csvPrinter: CSVPrinter, val fileWriter: FileWriter, val file: File)
-
     fun log(document: Document) {
-        var printer = documentsToPrinters.getOrPut(document, { initPrinter(document) })
+        var printer = myDocumentsToPrinters.getOrPut(document, { initPrinter(document) })
         if (isFull(printer.file.length())) {
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} is full")
+            logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} is full")
             sendFile(printer.file)
+            //TODO-birillo Should not you put here new printer to map?
             printer = initPrinter(document)
-            diagnosticLogger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} was cleared")
+            logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} was cleared")
         }
         val change = document.getChange()
         printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData().map { it.logValue })
     }
 
     fun logCurrentDocuments() {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: log current documents: ${documentsToPrinters.keys.size}")
-        documentsToPrinters.keys.forEach { log(it) }
+        logger.info("${Plugin.PLUGIN_ID}: log current documents: ${myDocumentsToPrinters.keys.size}")
+        myDocumentsToPrinters.keys.forEach { log(it) }
     }
 
 
     private fun isFull(fileSize: Long): Boolean = abs(MAX_FILE_SIZE - fileSize) < MAX_DIF_SIZE
 
     private fun sendFile(file: File) {
-        Plugin.server.trackerQueryExecutor.sendCodeTrackerData(file)
+        TrackerQueryExecutor.sendCodeTrackerData(file)
     }
 
-    fun getFiles() : List<File> = documentsToPrinters.values.map { it.file }
+    fun getFiles(): List<File> = myDocumentsToPrinters.values.map { it.file }
 
     fun flush() {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: flush loggers")
-        documentsToPrinters.values.forEach { it.csvPrinter.flush() }
+        logger.info("${Plugin.PLUGIN_ID}: flush loggers")
+        myDocumentsToPrinters.values.forEach { it.csvPrinter.flush() }
     }
 
-    fun close(document: Document, printer: Printer)  {
+    fun close(document: Document, printer: Printer) {
         printer.csvPrinter.close()
         printer.fileWriter.close()
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: close ${printer.file.name}")
+        logger.info("${Plugin.PLUGIN_ID}: close ${printer.file.name}")
     }
 
     fun close() {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: close loggers")
-        documentsToPrinters.values.forEach { it.csvPrinter.close(); it.fileWriter.close() }
-        documentsToPrinters.clear()
+        logger.info("${Plugin.PLUGIN_ID}: close loggers")
+        myDocumentsToPrinters.values.forEach { it.csvPrinter.close(); it.fileWriter.close() }
+        myDocumentsToPrinters.clear()
     }
 
-    private fun initPrinter(document: Document) : Printer {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: init printer")
+    private fun initPrinter(document: Document): Printer {
+        logger.info("${Plugin.PLUGIN_ID}: init printer")
         val file = createLogFile(document)
         val fileWriter = FileWriter(file)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
@@ -80,13 +85,13 @@ object DocumentLogger {
     private fun createLogFile(document: Document): File {
         File(folderPath).mkdirs()
         val file = FileDocumentManager.getInstance().getFile(document)
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: create log file for file ${file?.name}")
+        logger.info("${Plugin.PLUGIN_ID}: create log file for file ${file?.name}")
         val logFile = File("$folderPath${file?.nameWithoutExtension}_${file.hashCode()}_${document.hashCode()}.csv")
         FileUtil.createIfDoesntExist(logFile)
         return logFile
     }
 
-    private fun Document.getChange() : DocumentChangeData {
+    private fun Document.getChange(): DocumentChangeData {
         val time = DateTime.now()
         val file = FileDocumentManager.getInstance().getFile(this)
 
