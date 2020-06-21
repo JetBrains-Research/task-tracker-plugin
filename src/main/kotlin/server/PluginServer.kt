@@ -3,10 +3,10 @@ package server
 import kotlinx.serialization.builtins.serializer
 import models.Task
 
-class PluginServer {
+object PluginServer {
 
-    var trackerQueryExecutor: TrackerQueryExecutor = TrackerQueryExecutor()
-    private var collectionsQueryExecutor: CollectionsQueryExecutor = CollectionsQueryExecutor()
+    var trackerQueryExecutor: TrackerQueryExecutor = TrackerQueryExecutor
+    private var collectionsQueryExecutor: CollectionsQueryExecutor = CollectionsQueryExecutor
 
     // Todo: get genders, countries and experiences
 

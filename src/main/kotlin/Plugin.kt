@@ -17,7 +17,7 @@ object Plugin {
     const val PLUGIN_ID = "codetracker"
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
     private lateinit var listener: PluginDocumentListener
-    val server: PluginServer = PluginServer()
+    val server: PluginServer = PluginServer
     val logger = DocumentLogger
 
     init {
