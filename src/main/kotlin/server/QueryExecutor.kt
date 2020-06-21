@@ -11,16 +11,19 @@ import java.util.concurrent.Future
 import java.util.concurrent.Callable
 import java.util.concurrent.TimeUnit
 
-object QueryExecutor {
-    private const val SLEEP_TIME = 5_000L
-    private const val MAX_COUNT_ATTEMPTS = 5
+abstract class QueryExecutor {
 
-    val logger: Logger = Logger.getInstance(javaClass)
+    companion object {
+        private const val SLEEP_TIME = 5_000L
+        private const val MAX_COUNT_ATTEMPTS = 5
+    }
+
+    protected val logger: Logger = Logger.getInstance(javaClass)
     private val daemon = Executors.newSingleThreadScheduledExecutor()
 
     private var client: OkHttpClient
     private var isLastSuccessful: Boolean = false
-    val baseUrl: String = Registry.get("codetracker.server.url").asString()
+    protected val baseUrl: String = Registry.get("codetracker.server.url").asString()
 
     init {
         logger.info("${Plugin.PLUGIN_ID}: init server. API base url is ${baseUrl}. Max count attempt of sending data to server = ${MAX_COUNT_ATTEMPTS}\"")
@@ -33,7 +36,7 @@ object QueryExecutor {
 
     fun checkSuccessful(): Boolean = isLastSuccessful
 
-    fun executeQuery(request: Request): Future<Response?> {
+    protected fun executeQuery(request: Request): Future<Response?> {
         var curCountAttempts = 0
         val errorMessageTemplate = "The query ${request.method} ${request.url} was failed"
         fun executeQueryHelper(): Response? {

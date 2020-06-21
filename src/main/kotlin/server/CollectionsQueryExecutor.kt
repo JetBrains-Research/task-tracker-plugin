@@ -8,7 +8,7 @@ import okhttp3.Request
 import okhttp3.Response
 import java.net.URL
 
-object CollectionsQueryExecutor {
+object CollectionsQueryExecutor: QueryExecutor() {
 
     inline fun <reified T : Any> parseResponse(response: Response?, serializer: KSerializer<T>): List<T> {
         if (response?.isSuccessful == true) {
@@ -20,9 +20,10 @@ object CollectionsQueryExecutor {
 
     inline fun <reified T : Any> getCollection(url: String, serializer: KSerializer<T>): List<T> {
         return parseResponse(
-            QueryExecutor.executeQuery(
-                Request.Builder().url(URL("${QueryExecutor.baseUrl}${url}")).build()
+            executeQuery(
+                Request.Builder().url(URL("${baseUrl}${url}")).build()
             ).get(), serializer
         )
     }
+
 }
