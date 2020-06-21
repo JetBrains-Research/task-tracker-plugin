@@ -3,7 +3,7 @@ package models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Example(val input: String = "", val output: String = "")
+data class Example(val input: String, val output: String)
 
 @Serializable
 data class TaskInfo(

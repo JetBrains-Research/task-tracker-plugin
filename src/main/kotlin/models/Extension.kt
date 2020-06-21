@@ -1,15 +1,9 @@
 package models
 
-enum class Language {
-    PYTHON, JAVA, KOTLIN;
-
-    fun getExtensionByLanguage(): Extension {
-        return when (this) {
-            PYTHON -> Extension.PY
-            JAVA -> Extension.JAVA
-            KOTLIN -> Extension.KT
-        }
-    }
+enum class Language(val extension: Extension) {
+    PYTHON(Extension.PY),
+    JAVA(Extension.JAVA),
+    KOTLIN(Extension.KT);
 }
 
 enum class Extension(val ext: String){

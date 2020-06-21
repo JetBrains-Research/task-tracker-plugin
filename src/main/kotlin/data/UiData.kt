@@ -47,7 +47,7 @@ class UiData(val tasks: List<Task>) {
     }
 
     // Todo: get real list by language
-    fun tasksNames() : List<String> = mutableListOf("pies")
+    fun tasksNames() : List<String> = listOf("pies")
 
     fun getData() = listOf(
         chosenTask,
