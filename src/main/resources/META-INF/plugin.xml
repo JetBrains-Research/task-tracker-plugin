@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>io.github.elena-lyulina.codetracker.codetracker</id>
     <name>codetracker</name>
-    <vendor email="elena.lyulina@gmail.com" url="https://github.com/elena-lyulina"> Elena Lyulina </vendor>
+    <vendor>JetBrains</vendor>
 
     <description><![CDATA[
     This is a plugin for tracking all code changes and storing them in .csv file.
@@ -11,8 +11,9 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="InitActivity"></postStartupActivity>
-        <toolWindow id="codetracker" anchor="right" factoryClass="ui.PluginToolWindowFactory"/>
+        <postStartupActivity implementation="org.jetbrains.research.ml.codetracker.InitActivity"></postStartupActivity>
+        <toolWindow id="codetracker" anchor="right" factoryClass="org.jetbrains.research.ml.codetracker.ui.PluginToolWindowFactory"/>
+        <registryKey key="codetracker.org.jetbrains.research.ml.codetracker.server.url" defaultValue="http://localhost:3000/api/" description="Base url for the codetracker org.jetbrains.research.ml.codetracker.server"/>
     </extensions>
 
 </idea-plugin>

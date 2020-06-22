@@ -1,16 +1,19 @@
-package ui
+package org.jetbrains.research.ml.codetracker.ui
 
-import Task
+import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.diagnostic.Logger
-import data.PE
-import data.UiData
+import org.jetbrains.research.ml.codetracker.data.PE
+import org.jetbrains.research.ml.codetracker.data.UiData
 import javafx.collections.FXCollections
+import org.jetbrains.research.ml.codetracker.models.Task
+import org.jetbrains.research.ml.codetracker.server.PluginServer
 
 internal object ControllerManager {
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
-    private val selectTask = Task("NULL", "--Не выбрано--")
-    private val controllers : MutableList<Controller> = arrayListOf()
+    // Todo:
+    private val selectTask = Task("NULL", -1)
+    private val controllers: MutableList<Controller> = arrayListOf()
     private var lastId: Int = 0
 
 
@@ -18,7 +21,7 @@ internal object ControllerManager {
 
 
     // todo: check for unique keys
-    val uiData = UiData(listOf(selectTask) + Plugin.server.getTasks())
+    val uiData = UiData(listOf(selectTask) + PluginServer.getTasks())
 
     fun addController(controller: Controller) {
         controllers.add(controller)
@@ -37,7 +40,7 @@ internal object ControllerManager {
     }
 
     fun notify(event: NotifyEvent, new: Any?, controllers: MutableList<Controller> = this.controllers) {
-        when(event) {
+        when (event) {
             NotifyEvent.CHOSEN_TASK_NOTIFY -> controllers.forEach {
                 it.taskComboBox.selectionModel.select(new as Int)
                 val task = uiData.tasks[new]
@@ -60,7 +63,7 @@ internal object ControllerManager {
                 }
             }
 
-            NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY ->  controllers.forEach {
+            NotifyEvent.PROGRAM_EXPERIENCE_NOTIFY -> controllers.forEach {
                 it.selectExperienceButton(new as PE)
                 it.setInfoFormButtonsDisability(uiData.age.isDefault() || uiData.programExperience.isDefault(new))
             }

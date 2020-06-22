@@ -1,6 +1,6 @@
-package ui
+package org.jetbrains.research.ml.codetracker.ui
 
-import Plugin
+import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -34,7 +34,7 @@ class PluginToolWindowFactory : ToolWindowFactory {
         toolWindow as ToolWindowImpl
     }
 
-    private fun createContent(project: Project) : JComponent {
+    private fun createContent(project: Project): JComponent {
         val panel = JPanel()
         val fxPanel = JFXPanel()
 
