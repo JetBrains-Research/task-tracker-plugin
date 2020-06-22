@@ -17,6 +17,7 @@ import java.io.File
 
 object Plugin {
     const val PLUGIN_ID = "codetracker"
+    const val PLUGIN_FOLDER = "codetracker"
 
     private val logger: Logger = Logger.getInstance(javaClass)
     private lateinit var listener: MyDocumentListener
@@ -89,9 +90,8 @@ object Plugin {
         })
     }
 
-    fun createFile(task: Task, language: Language): File {
-        // Todo: use root of the project
-        val file = File("./${task.key}${language.extension.ext}")
+    fun createFile(project: Project, task: Task, language: Language): File {
+        val file = File("${project.basePath}/${PLUGIN_FOLDER}${task.key}${language.extension.ext}")
         FileUtil.createIfDoesntExist(file)
         return file
     }
