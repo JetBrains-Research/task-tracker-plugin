@@ -54,7 +54,7 @@ object DocumentLogger {
         }
     }
 
-
+    // Todo: change it. Handle a case if we get a fileSize bigger than MAX_FILE_SIZE + MAX_DIF_SIZE
     private fun isFull(fileSize: Long): Boolean = abs(MAX_FILE_SIZE - fileSize) < MAX_DIF_SIZE
 
     private fun sendFile(file: File) {
