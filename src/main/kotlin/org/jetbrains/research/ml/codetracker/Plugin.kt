@@ -8,7 +8,11 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
+import com.intellij.openapi.util.io.FileUtil
+import org.jetbrains.research.ml.codetracker.models.Language
+import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
+import java.io.File
 
 
 object Plugin {
@@ -83,5 +87,12 @@ object Plugin {
                 super.projectClosing(project)
             }
         })
+    }
+
+    fun createFile(task: Task, language: Language): File {
+        // Todo: use root of the project
+        val file = File("./${task.key}${language.extension.ext}")
+        FileUtil.createIfDoesntExist(file)
+        return file
     }
 }
