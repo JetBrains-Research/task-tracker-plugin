@@ -72,7 +72,7 @@ object TrackerQueryExecutor : QueryExecutor() {
         }
     }
 
-    fun sendCodeTrackerData(file: File, deleteAfter: () -> Boolean, postActivity: () -> Unit) {
+    fun sendCodeTrackerData(file: File, deleteAfter: () -> Boolean = { false }, postActivity: () -> Unit = {}) {
         val currentUrl = baseUrl + "org.jetbrains.research.ml.codetracker.data-item"
         logger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
         val future = executeQuery(
@@ -97,9 +97,5 @@ object TrackerQueryExecutor : QueryExecutor() {
             }
         }
         postActivity()
-    }
-
-    fun sendCodeTrackerData(file: File) {
-        return sendCodeTrackerData(file, { false }, {})
     }
 }

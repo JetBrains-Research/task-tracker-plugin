@@ -38,7 +38,6 @@ object DocumentLogger {
         if (isFull(printer.file.length())) {
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} is full")
             sendFile(printer.file)
-            //TODO-birillo Should not you put here new printer to map?
             printer = initPrinter(document)
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} was cleared")
         }
