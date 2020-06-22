@@ -8,16 +8,11 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import com.intellij.openapi.util.io.FileUtil
-import org.jetbrains.research.ml.codetracker.models.Language
-import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
-import java.io.File
 
 
 object Plugin {
     const val PLUGIN_ID = "codetracker"
-    const val PLUGIN_FOLDER = "codetracker"
 
     private val logger: Logger = Logger.getInstance(javaClass)
     private lateinit var listener: MyDocumentListener
@@ -40,7 +35,8 @@ object Plugin {
 
         // To avoid completion events with IntellijIdeaRulezzz sign
         private fun isValidChange(event: DocumentEvent): Boolean {
-            return EditorFactory.getInstance().getEditors(event.document).isNotEmpty()
+            return FileHandler.isTrackedDocument(event.document)
+                    && EditorFactory.getInstance().getEditors(event.document).isNotEmpty()
                     && FileDocumentManager.getInstance().getFile(event.document) != null
         }
 
@@ -55,8 +51,7 @@ object Plugin {
     }
 
     fun startTracking() {
-        listener =
-            MyDocumentListener()
+        listener = MyDocumentListener()
         listener.add()
     }
 
@@ -90,9 +85,4 @@ object Plugin {
         })
     }
 
-    fun createFile(project: Project, task: Task, language: Language): File {
-        val file = File("${project.basePath}/${PLUGIN_FOLDER}${task.key}${language.extension.ext}")
-        FileUtil.createIfDoesntExist(file)
-        return file
-    }
 }
