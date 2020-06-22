@@ -1,8 +1,8 @@
 package ui
 
-import Task
 import com.intellij.openapi.diagnostic.Logger
 import data.PE
+import data.Task
 import data.UiData
 import javafx.collections.FXCollections
 

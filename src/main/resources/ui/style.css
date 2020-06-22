@@ -2,6 +2,7 @@
     -fx-accent: #C6ADD0;
     -fx-focus-color: #C6ADD0;
     -fx-background-color: #ffffff;
+    -fx-font-size: 1px;
 }
 
 .button {
@@ -123,3 +124,4 @@
     -fx-font-weight: bold;
     -fx-font-size: 24em;
 }
+

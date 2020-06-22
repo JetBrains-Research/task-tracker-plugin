@@ -1,14 +1,14 @@
 package ui
 
 import DocumentLogger
-import Example
+import data.Example
 import Plugin
-import Task
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import data.PE
+import data.Task
 import data.UiData
 import javafx.beans.binding.Bindings
 import javafx.fxml.FXML
@@ -16,7 +16,6 @@ import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 import javafx.scene.shape.Polygon
-import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
 import javafx.scene.transform.Scale;
@@ -29,18 +28,14 @@ import java.util.function.UnaryOperator
 class Controller(val project: Project, val scale: Double) {
     // todo: separate task and info form logic?
 
+    abstract class TranslatedComponent<C>(component: C, translations: HashMap<String, String>) {
+        abstract fun translate(language: String)
+    }
 
-    private val SCREEN_WIDTH = 1920.0
-    private val SCREEN_HEIGHT = 1200.0
 
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
 
     private val uiData: UiData = ControllerManager.uiData
-
-//    For scaling components
-//    @FXML
-//    lateinit var s: Rectangle
-
 
 
     @FXML

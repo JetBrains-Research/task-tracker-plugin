@@ -1,9 +1,11 @@
 import kotlinx.serialization.json.*
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
+import data.Task
 import kotlinx.serialization.builtins.list
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
+import ui.Language
 import java.io.File
 import java.net.URL
 import java.net.UnknownHostException
@@ -14,6 +16,11 @@ import java.util.concurrent.TimeUnit
 
 interface Server {
     fun getTasks() : List<Task>
+
+    fun getAvailableLanguages() : List<Language>
+
+//    For each component (String) contains a HashMap with translations (Language, String)
+    fun getComponentTranslations() : HashMap<String, HashMap<Language, String>>
 
     fun sendTrackingData(file: File, deleteAfter: () -> Boolean,  postActivity: () -> Unit = { } )
 
@@ -238,6 +245,15 @@ object PluginServer : Server {
             }
             return emptyList()
         }
+    }
+
+    override fun getAvailableLanguages(): List<Language> {
+        return arrayListOf(Language("en"), Language("ru"))
+    }
+
+    override fun getComponentTranslations(): HashMap<String, HashMap<Language, String>> {
+        return hashMapOf("prevButton" to hashMapOf(Language("ru") to "пред", Language("en") to "prev"),
+                         "nextButton" to hashMapOf(Language("ru") to "след", Language("en") to "next"))
     }
 
 }

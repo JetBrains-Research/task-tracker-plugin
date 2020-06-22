@@ -1,6 +1,5 @@
 package data
 
-import Task
 import ui.ControllerManager
 import ui.NotifyEvent
 import kotlin.properties.Delegates
@@ -45,6 +44,7 @@ class UiData(val tasks: List<Task>) {
             return new == defaultUiValue
         }
     }
+
 
     fun tasksNames() : List<String> = tasks.map { it.name }
 
