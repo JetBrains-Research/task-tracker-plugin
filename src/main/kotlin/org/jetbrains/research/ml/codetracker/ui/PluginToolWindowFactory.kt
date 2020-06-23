@@ -13,8 +13,6 @@ import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.paint.Color
-import org.jetbrains.research.ml.codetracker.models.Language
-import org.jetbrains.research.ml.codetracker.models.Task
 import java.awt.Toolkit
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -61,8 +59,6 @@ class PluginToolWindowFactory : ToolWindowFactory {
             fxPanel.background = java.awt.Color.white
 
         }
-
-        FileHandler.createAndOpenFile(project, Task("pies"), Language.PYTHON)
 
         panel.background = java.awt.Color.white
         panel.add(fxPanel)
