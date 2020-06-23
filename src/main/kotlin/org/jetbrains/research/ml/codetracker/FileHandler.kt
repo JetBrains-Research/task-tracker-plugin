@@ -71,7 +71,7 @@ object FileHandler {
         return document
     }
 
-    fun createAndOpenFile(project: Project, task: Task, language: Language): VirtualFile? {
+    fun createAndOpenFile(project: Project, task: Task, language: Language = Language.PYTHON): VirtualFile? {
         val virtualFile = createFile(project, task, language)
         addDocument(virtualFile, task)
         openFile(project, virtualFile)
