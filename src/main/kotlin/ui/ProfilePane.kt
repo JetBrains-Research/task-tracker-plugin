@@ -27,26 +27,16 @@ object ProfileControllerManager : PaneControllerManager<ProfileNotifyEvent, Prof
     override var paneControllers: MutableList<ProfileController> = arrayListOf()
     override val fxmlFilename: String = "profile-ui-form-2.fxml"
 
-//Todo: get generic type here?
+    //Todo: get generic type here?
     override fun notify(notifyEvent: ProfileNotifyEvent, new: Any?) {
-        when (notifyEvent) {
-            ProfileNotifyEvent.AGE_NOTIFY -> {
-                val isProfileFilled = paneUiData.age.anyNonDefault(new as Int)
-                paneControllers.forEach { it.setAge(new); it.setStartWorkingButtonDisability(isProfileFilled) }
+        val isProfileUnfilled = paneUiData.anyDataDefault()
+        paneControllers.forEach { it.setStartWorkingButtonDisability(isProfileUnfilled) }
 
-            }
-            ProfileNotifyEvent.COUNTRY_NOTIFY -> {
-                val isProfileFilled = paneUiData.country.anyNonDefault(new as Int)
-                paneControllers.forEach { it.selectCountry(new); it.setStartWorkingButtonDisability(isProfileFilled) }
-            }
-            ProfileNotifyEvent.GENDER_NOTIFY -> {
-                val isProfileFilled = paneUiData.gender.anyNonDefault(new as ProfileUiData.Gender?)
-                paneControllers.forEach { it.selectGender(new); it.setStartWorkingButtonDisability(isProfileFilled) }
-            }
-            ProfileNotifyEvent.PROGRAM_EXPERIENCE_NOTIFY -> {
-                val isProfileFilled = paneUiData.programExperience.anyNonDefault(new as ProfileUiData.PE?)
-                paneControllers.forEach { it.selectProgramExperience(new); it.setStartWorkingButtonDisability(isProfileFilled) }
-            }
+        when (notifyEvent) {
+            ProfileNotifyEvent.AGE_NOTIFY -> paneControllers.forEach { it.setAge(new as Int) }
+            ProfileNotifyEvent.COUNTRY_NOTIFY -> paneControllers.forEach { it.selectCountry(new as Int) }
+            ProfileNotifyEvent.GENDER_NOTIFY -> paneControllers.forEach { it.selectGender(new as ProfileUiData.Gender?) }
+            ProfileNotifyEvent.PROGRAM_EXPERIENCE_NOTIFY ->  paneControllers.forEach { it.selectProgramExperience(new as ProfileUiData.PE?) }
             ProfileNotifyEvent.LANGUAGE_NOTIFY -> switchLanguage(new as Int)
         }
     }
@@ -99,7 +89,7 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
 
     // Age
     @FXML private lateinit var ageLabel: Label
-//    lateinit var translatableAgeLabel: TranslatableComponent
+    //    lateinit var translatableAgeLabel: TranslatableComponent
     @FXML private lateinit var ageTextField: TextField
 
     // Gender
@@ -144,12 +134,12 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
 //        translatableAgeLabel = TranslatableComponent(ageLabel, ::ageLabel.name)
     }
 
-// Todo: make button not active when something is not set?
+    // Todo: make button not active when something is not set?
     fun setAge(newAge: Int) {
 //        Default value shouldn't be showed
 //        Todo: include in initAge filter?
-        val strAge = if (ProfileUiData.age.isDefault(newAge)) "" else newAge.toString()
-        ageTextField.text = strAge
+//        val strAge = if (ProfileUiData.age.isDefault(newAge)) "" else newAge.toString()
+        ageTextField.text = newAge.toString()
     }
 
     fun selectGender(newGender: ProfileUiData.Gender?) {

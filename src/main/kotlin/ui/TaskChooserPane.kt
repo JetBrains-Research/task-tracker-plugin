@@ -26,6 +26,8 @@ object TaskChooserControllerManager : PaneControllerManager<TaskChooserNotifyEve
     override val fxmlFilename: String = "taskChooser-ui-form-2.fxml"
 
     override fun notify(notifyEvent: TaskChooserNotifyEvent, new: Any?) {
+        val isDataUnfilled = paneUiData.anyDataDefault()
+        paneControllers.forEach { it.setStartSolvingButonDisability(isDataUnfilled) }
         when (notifyEvent) {
             TaskChooserNotifyEvent.CHOSEN_TASK_NOTIFY -> paneControllers.forEach { it.selectTask(new as Int) }
             TaskChooserNotifyEvent.LANGUAGE_NOTIFY -> switchLanguage(new as Int)
@@ -70,10 +72,13 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
         choseTaskComboBox.selectionModel.select(newTaskIndex)
     }
 
+    fun setStartSolvingButonDisability(isDisable: Boolean) {
+        startSolvingButton.isDisable = isDisable
+    }
+
     private fun initChoseTaskComboBox() {
         choseTaskComboBox.items = FXCollections.observableList(uiData.tasks.map { it.name })
         choseTaskComboBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
-//            diagnosticLogger.info("${Plugin.PLUGIN_ID}, controller${id}: choicebox changed from $old to $new")
             uiData.chosenTask.uiValue = choseTaskComboBox.selectionModel.selectedIndex
         }
     }

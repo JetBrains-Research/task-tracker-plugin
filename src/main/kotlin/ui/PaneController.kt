@@ -24,8 +24,6 @@ import kotlin.reflect.KClass
 
 /**
  * Todo:
- *  * sort out what to do with notifyEvent everywhere and the whole architecture
- *  * add buttons disability
  *  * add autocomplete country box
  *  * fix all todos
  *  * add 'send successfully' signes
@@ -57,24 +55,15 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
      */
     open inner class UiField <T : Any?> (val notifyEvent: E, val defaultUiValue: T, val header: String) {
 
+        var isUiValueDefault: Boolean = true
+            protected set
+
+
         open var uiValue: T by Delegates.observable(defaultUiValue) { _, old, new ->
             if (old != new) {
+                isUiValueDefault = new == defaultUiValue
                 controllerManager.notify(notifyEvent, new)
             }
-        }
-
-        fun anyNonDefault(new: T): Boolean {
-            return new == defaultUiValue || getData().filter { it != this }.any { it.uiValue == it.defaultUiValue }
-        }
-
-        fun setDefault() {
-            uiValue = defaultUiValue
-        }
-        fun isDefault(): Boolean {
-            return uiValue == defaultUiValue
-        }
-        fun isDefault(new: T): Boolean {
-            return new == defaultUiValue
         }
     }
 
@@ -87,6 +76,7 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
     open inner class ListedUiField<T: Any?> (private val dataList: List<T>, notifyEvent: E, defaultValue: Int, header: String) : UiField<Int>(notifyEvent, defaultValue, header) {
         override var uiValue: Int by Delegates.observable(defaultUiValue) { _, old, new ->
             if (old != new && new in dataList.indices) {
+                isUiValueDefault = new == defaultValue
                 controllerManager.notify(notifyEvent, new)
             }
         }
@@ -103,6 +93,7 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
     inner class LanguageUiField(notifyEvent: E) : ListedUiField<Language>(languages, notifyEvent, 0,"language")
 
     abstract fun getData(): List<UiField<*>>
+    fun anyDataDefault(): Boolean = getData().any { it.isUiValueDefault }
 
 }
 
