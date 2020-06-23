@@ -26,7 +26,6 @@ class InitActivity : StartupActivity {
                     }
                 }
             })
-        Plugin.startTracking()
     }
 
     override fun runActivity(project: Project) {

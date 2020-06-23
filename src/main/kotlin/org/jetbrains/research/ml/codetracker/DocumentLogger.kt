@@ -13,12 +13,15 @@ import org.joda.time.DateTime
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import org.jetbrains.research.ml.codetracker.ui.ControllerManager
 import java.io.File
+import java.io.FileOutputStream
 import java.io.FileWriter
+import java.io.OutputStreamWriter
+import java.nio.charset.StandardCharsets
 import kotlin.math.abs
 
 
 object DocumentLogger {
-    data class Printer(val csvPrinter: CSVPrinter, val fileWriter: FileWriter, val file: File)
+    data class Printer(val csvPrinter: CSVPrinter, val fileWriter: OutputStreamWriter, val file: File)
 
     private val logger: Logger = Logger.getInstance(javaClass)
 
@@ -83,7 +86,7 @@ object DocumentLogger {
     private fun initPrinter(document: Document): Printer {
         logger.info("${Plugin.PLUGIN_ID}: init printer")
         val file = createLogFile(document)
-        val fileWriter = FileWriter(file)
+        val fileWriter = OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
         csvPrinter.printRecord(DocumentChangeData.headers + ControllerManager.uiData.getData().map { it.header })
         return Printer(
