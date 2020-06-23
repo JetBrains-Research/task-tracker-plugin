@@ -1,9 +1,6 @@
 package org.jetbrains.research.ml.codetracker
 
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.project.ProjectManagerListener
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 
 
@@ -29,7 +26,7 @@ object Plugin {
                 ) { DocumentLogger.close(d, p) }
             }
         }
-        FileHandler.stopTracking()
+        TaskFileHandler.stopTracking()
         return TrackerQueryExecutor.isLastSuccessful
     }
 

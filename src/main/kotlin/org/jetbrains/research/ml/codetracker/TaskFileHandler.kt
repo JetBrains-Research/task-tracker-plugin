@@ -16,7 +16,7 @@ import org.jetbrains.research.ml.codetracker.models.Task
 import java.io.File
 import java.lang.IllegalArgumentException
 
-private class MyDocumentListener : DocumentListener {
+private class TaskDocumentListener : DocumentListener {
     private val logger: Logger = Logger.getInstance(javaClass)
 
     init {
@@ -29,22 +29,21 @@ private class MyDocumentListener : DocumentListener {
     }
 
     // To avoid completion events with IntellijIdeaRulezzz sign
-    // Todo: should we use it?
+    // Todo: add tests for it
     private fun isValidChange(event: DocumentEvent): Boolean {
-        return FileHandler.isTrackedDocument(event.document)
-                && EditorFactory.getInstance().getEditors(event.document).isNotEmpty()
+        return EditorFactory.getInstance().getEditors(event.document).isNotEmpty()
                 && FileDocumentManager.getInstance().getFile(event.document) != null
     }
 }
 
-object FileHandler {
+object TaskFileHandler {
     private const val PLUGIN_FOLDER = "codetracker"
 
     private val logger: Logger = Logger.getInstance(javaClass)
     private val documentToTask: HashMap<Document, Task> = HashMap()
 
     private val listener by lazy {
-        MyDocumentListener()
+        TaskDocumentListener()
     }
 
     private fun createFile(project: Project, task: Task, language: Language): VirtualFile? {
@@ -57,13 +56,13 @@ object FileHandler {
     private fun addDocument(virtualFile: VirtualFile?, task: Task): Document? {
         val document = virtualFile?.let { FileDocumentManager.getInstance().getDocument(it) }
         if (!documentToTask.containsKey(document)) {
-            document?.let { documentToTask.put(it, task) }
-            document?.addDocumentListener(listener)
+            document?.let { documentToTask[it] = task; it.addDocumentListener(listener) }
         } else {
             // It the old task is not equal the new task
-            if (documentToTask[document] != task) {
+            val oldTask: Task? = documentToTask[document]
+            if (oldTask != task) {
                 val message = "${Plugin.PLUGIN_ID}: an attempt to assign another task to the document ${document}. " +
-                        "The old task is ${documentToTask[document]!!.key}, the new task is ${task.key}"
+                        "The old task is ${oldTask?.key}, the new task is ${task.key}"
                 logger.error(message)
                 throw IllegalArgumentException(message)
             }
@@ -78,16 +77,12 @@ object FileHandler {
         return virtualFile
     }
 
-    fun isTrackedDocument(document: Document): Boolean {
-        return documentToTask.containsKey(document)
-    }
-
     private fun openFile(project: Project, virtualFile: VirtualFile?) {
         virtualFile?.let { FileEditorManager.getInstance(project).openFile(it, true, true) }
     }
 
     fun stopTracking() {
-        documentToTask.map { (d, _) -> d.removeDocumentListener(listener) }
+        documentToTask.forEach { it.key.removeDocumentListener(listener) }
     }
 
 }
