@@ -55,14 +55,14 @@ object TaskFileHandler {
     // If the documentToTask has task null then we don't track the document
     private fun addDocument(virtualFile: VirtualFile?, task: Task): Document? {
         val document = virtualFile?.let { FileDocumentManager.getInstance().getDocument(it) }
-        if (!documentToTask.containsKey(document)) {
+        val oldTask: Task? = documentToTask[document]
+        if (oldTask == null) {
             document?.let { documentToTask[it] = task; it.addDocumentListener(listener) }
         } else {
             // It the old task is not equal the new task
-            val oldTask: Task? = documentToTask[document]
             if (oldTask != task) {
                 val message = "${Plugin.PLUGIN_ID}: an attempt to assign another task to the document ${document}. " +
-                        "The old task is ${oldTask?.key}, the new task is ${task.key}"
+                        "The old task is ${oldTask.key}, the new task is ${task.key}"
                 logger.error(message)
                 throw IllegalArgumentException(message)
             }
