@@ -14,8 +14,9 @@ import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import kotlin.reflect.KClass
 
-enum class TaskChooserNotifyEvent : PaneNotifyEvent {
-    CHOSEN_TASK_NOTIFY
+enum class TaskChooserNotifyEvent : IPaneNotifyEvent {
+    CHOSEN_TASK_NOTIFY,
+    LANGUAGE_NOTIFY
 }
 
 object TaskChooserControllerManager : PaneControllerManager<TaskChooserNotifyEvent, TaskChooserController>() {
@@ -24,13 +25,10 @@ object TaskChooserControllerManager : PaneControllerManager<TaskChooserNotifyEve
     override val paneUiData: PaneUiData<TaskChooserNotifyEvent> = TaskChooserUiData
     override val fxmlFilename: String = "taskChooser-ui-form-2.fxml"
 
-    override fun notify(
-        notifyEvent: TaskChooserNotifyEvent,
-        new: Any?,
-        controllers: MutableList<TaskChooserController>
-    ) {
+    override fun notify(notifyEvent: TaskChooserNotifyEvent, new: Any?) {
         when (notifyEvent) {
-            TaskChooserNotifyEvent.CHOSEN_TASK_NOTIFY -> controllers.forEach { it.selectTask(new as Int) }
+            TaskChooserNotifyEvent.CHOSEN_TASK_NOTIFY -> paneControllers.forEach { it.selectTask(new as Int) }
+            TaskChooserNotifyEvent.LANGUAGE_NOTIFY -> switchLanguage(new as Int)
         }
     }
 }
@@ -38,7 +36,8 @@ object TaskChooserControllerManager : PaneControllerManager<TaskChooserNotifyEve
 object TaskChooserUiData : PaneUiData<TaskChooserNotifyEvent>(TaskChooserControllerManager) {
 //    Todo: get tasks from server
     val tasks: List<Task> = arrayListOf(Task("key1", "name1"), Task("key2", "name2"))
-    val chosenTask = ListedUiField(tasks, TaskChooserNotifyEvent.CHOSEN_TASK_NOTIFY, "chosenTask")
+    val chosenTask = ListedUiField(tasks, TaskChooserNotifyEvent.CHOSEN_TASK_NOTIFY, -1,"chosenTask")
+    override val currentLanguage: LanguageUiField = LanguageUiField(TaskChooserNotifyEvent.LANGUAGE_NOTIFY)
     override fun getData(): List<UiField<*>> = listOf(chosenTask)
 }
 
@@ -54,18 +53,17 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
     @FXML private lateinit var choseTaskComboBox: ComboBox<String>
     @FXML private lateinit var choseTaskLabel: Label
 
+//    Todo: maybe we need a text under this button
     @FXML private lateinit var backToProfileButton: Button
     @FXML private lateinit var startSolvingButton: Button
     @FXML private lateinit var startSolvingText: Text
     @FXML private lateinit var finishWorkButton: Button
     @FXML private lateinit var finishWorkText: Text
 
-    @FXML private lateinit var languageComboBox: ComboBox<String>
-
-
     override fun initialize() {
         initChoseTaskComboBox()
         initButtons()
+        super.initialize()
     }
 
     fun selectTask(newTaskIndex: Int) {
@@ -81,9 +79,15 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
     }
 
     private fun initButtons() {
-//        Todo: add other buttons
+//        Todo: move out the same event handlers?
         backToProfileButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             MainController.visiblePaneControllerManager = ProfileControllerManager
+        }
+        startSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+            MainController.visiblePaneControllerManager = TaskControllerManager
+        }
+        finishWorkButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+            MainController.visiblePaneControllerManager = FinishControllerManager
         }
     }
 }

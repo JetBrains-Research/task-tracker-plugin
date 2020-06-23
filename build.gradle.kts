@@ -1,15 +1,17 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 
 plugins {
     id("org.jetbrains.intellij") version "0.4.10"
     java
-    kotlin("jvm") version "1.3.70"
-    kotlin("plugin.serialization") version "1.3.70"
+    kotlin("jvm") version "1.3.72"
+    kotlin("plugin.serialization") version "1.3.72"
     id("com.github.johnrengelman.shadow") version "5.1.0"
     id("org.openjfx.javafxplugin") version "0.0.8"
     id("com.gluonhq.client-gradle-plugin") version "0.0.11"
-
+    id("org.jetbrains.dokka") version "0.10.1"
 }
 
 group = "io.github.elena-lyulina.codetracker"
@@ -19,14 +21,18 @@ repositories {
     maven (url = "https://www.jetbrains.com/intellij-repository/releases")
     maven (url = "https://jetbrains.bintray.com/intellij-third-party-dependencies")
     maven (url = "https://nexus.gluonhq.com/nexus/content/repositories/releases/")
+    maven (url = "https://jitpack.io")
+
     mavenCentral()
     jcenter()
+    google()
 }
 
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.72")
     implementation("com.opencsv","opencsv", "5.0")
     implementation("joda-time", "joda-time", "2.9.2")
     implementation("org.apache.commons", "commons-csv", "1.7")
@@ -34,6 +40,11 @@ dependencies {
     implementation("com.gluonhq", "charm-glisten", "6.0.1")
     implementation("com.google.code.gson", "gson", "2.8.5")
     implementation("com.squareup.okhttp3", "okhttp", "4.2.2")
+    compile("com.google.auto.service:auto-service:1.0-rc7")
+//    compile("com.github.matfax.klassindex:library:4.0.1")
+//    kapt("com.github.matfax.klassindex:processor:4.0.1")
+//    compile("org.apache.maven.plugins", "maven-compiler-plugin", "3.8.1")
+
 
     testCompile("junit", "junit", "4.12")
 
@@ -111,4 +122,8 @@ tasks.withType<ShadowJar>() {
 
 tasks.withType<Wrapper> {
     gradleVersion = "5.2.1"
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    freeCompilerArgs = listOf("-Xinline-classes")
 }
