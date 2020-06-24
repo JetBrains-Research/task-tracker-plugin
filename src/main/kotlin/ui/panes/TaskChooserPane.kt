@@ -1,4 +1,4 @@
-package ui
+package ui.panes
 
 import data.Task
 import javafx.collections.FXCollections
@@ -12,6 +12,8 @@ import javafx.scene.layout.Pane
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
+import ui.*
+import ui.MainController
 import kotlin.reflect.KClass
 
 enum class TaskChooserNotifyEvent : IPaneNotifyEvent {
@@ -27,7 +29,7 @@ object TaskChooserControllerManager : PaneControllerManager<TaskChooserNotifyEve
 
     override fun notify(notifyEvent: TaskChooserNotifyEvent, new: Any?) {
         val isDataUnfilled = paneUiData.anyDataDefault()
-        paneControllers.forEach { it.setStartSolvingButonDisability(isDataUnfilled) }
+        paneControllers.forEach { it.setStartSolvingButtonDisability(isDataUnfilled) }
         when (notifyEvent) {
             TaskChooserNotifyEvent.CHOSEN_TASK_NOTIFY -> paneControllers.forEach { it.selectTask(new as Int) }
             TaskChooserNotifyEvent.LANGUAGE_NOTIFY -> switchLanguage(new as Int)
@@ -36,9 +38,11 @@ object TaskChooserControllerManager : PaneControllerManager<TaskChooserNotifyEve
 }
 
 object TaskChooserUiData : PaneUiData<TaskChooserNotifyEvent>(TaskChooserControllerManager) {
-//    Todo: get tasks from server
-    val tasks: List<Task> = arrayListOf(Task("key1", "name1"), Task("key2", "name2"))
-    val chosenTask = ListedUiField(tasks, TaskChooserNotifyEvent.CHOSEN_TASK_NOTIFY, -1,"chosenTask")
+//    Todo: get from server
+    private val tasks: List<Task> = arrayListOf(Task("key1", "name1"), Task("key2", "name2"))
+    val chosenTask = ListedUiField(
+        tasks,
+        TaskChooserNotifyEvent.CHOSEN_TASK_NOTIFY, -1,"chosenTask")
     override val currentLanguage: LanguageUiField = LanguageUiField(TaskChooserNotifyEvent.LANGUAGE_NOTIFY)
     override fun getData(): List<UiField<*>> = listOf(chosenTask)
 }
@@ -55,7 +59,7 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
     @FXML private lateinit var choseTaskComboBox: ComboBox<String>
     @FXML private lateinit var choseTaskLabel: Label
 
-//    Todo: maybe we need a text under this button
+//    Todo: maybe we need a text under this button because when user comes back from TaskPane it becomes unclear
     @FXML private lateinit var backToProfileButton: Button
     @FXML private lateinit var startSolvingButton: Button
     @FXML private lateinit var startSolvingText: Text
@@ -72,14 +76,21 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
         choseTaskComboBox.selectionModel.select(newTaskIndex)
     }
 
-    fun setStartSolvingButonDisability(isDisable: Boolean) {
+    fun setStartSolvingButtonDisability(isDisable: Boolean) {
         startSolvingButton.isDisable = isDisable
     }
 
+    override fun makeTranslatable() {
+        choseTaskLabel.makeTranslatable(::choseTaskLabel.name)
+        startSolvingText.makeTranslatable(::startSolvingText.name)
+        finishWorkText.makeTranslatable(::finishWorkText.name)
+
+    }
+
     private fun initChoseTaskComboBox() {
-        choseTaskComboBox.items = FXCollections.observableList(uiData.tasks.map { it.name })
+        choseTaskComboBox.items = FXCollections.observableList(TaskChooserUiData.chosenTask.dataList.map { it.name })
         choseTaskComboBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
-            uiData.chosenTask.uiValue = choseTaskComboBox.selectionModel.selectedIndex
+            TaskChooserUiData.chosenTask.uiValue = choseTaskComboBox.selectionModel.selectedIndex
         }
     }
 
@@ -89,7 +100,8 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
             MainController.visiblePaneControllerManager = ProfileControllerManager
         }
         startSolvingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            MainController.visiblePaneControllerManager = TaskControllerManager
+            MainController.visiblePaneControllerManager =
+                TaskControllerManager
         }
         finishWorkButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             MainController.visiblePaneControllerManager = FinishControllerManager

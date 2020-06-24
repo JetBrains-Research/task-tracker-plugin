@@ -1,10 +1,8 @@
-package ui
+package ui.panes
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.components.JBScrollPane
 import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.embed.swing.JFXPanel
@@ -14,9 +12,9 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.ComboBox
 import javafx.scene.paint.Color
-import java.awt.Toolkit
-import javax.swing.JComponent
-import javax.swing.JPanel
+import ui.Language
+import ui.MainController
+import ui.TranslationManager
 import kotlin.properties.Delegates
 import kotlin.reflect.KClass
 
@@ -24,13 +22,8 @@ import kotlin.reflect.KClass
 
 /**
  * Todo:
- *  * add autocomplete country box
  *  * fix all todos
- *  * add 'send successfully' signes
- *  * add translatable
  *  * add scalable
-
-
  */
 
 /**
@@ -46,10 +39,7 @@ interface IPaneNotifyEvent
  * By default, each pane has language ComboBox, so corresponding field [currentLanguage] is implemented here.
  */
 abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManager: PaneControllerManager<E, out PaneController<E>>) {
-    //    todo: get from server
-    val languages = listOf(Language("ru"), Language("eng"))
     abstract val currentLanguage: LanguageUiField
-
     /**
      * Represents pane data with [uiValue], that triggers [notifyEvent] when it changes.
      */
@@ -67,13 +57,12 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
         }
     }
 
-//    Todo: add some sorting? (alphabetically or by solved status)
-//    Todo: add dataList from here
+//    Todo: add some sorting? (alphabetically or by solved status) and use it in ComboBoxes
     /**
      * Represents pane data, which [uiValue] is one of the [dataList] items,
      * so it can be thought of as an item index with type [Int].
      */
-    open inner class ListedUiField<T: Any?> (private val dataList: List<T>, notifyEvent: E, defaultValue: Int, header: String) : UiField<Int>(notifyEvent, defaultValue, header) {
+    open inner class ListedUiField<T: Any?> (val dataList: List<T>, notifyEvent: E, defaultValue: Int, header: String) : UiField<Int>(notifyEvent, defaultValue, header) {
         override var uiValue: Int by Delegates.observable(defaultUiValue) { _, old, new ->
             if (old != new && new in dataList.indices) {
                 isUiValueDefault = new == defaultValue
@@ -90,7 +79,9 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
         }
     }
 
-    inner class LanguageUiField(notifyEvent: E) : ListedUiField<Language>(languages, notifyEvent, 0,"language")
+    inner class LanguageUiField(notifyEvent: E) : ListedUiField<Language>(
+        TranslationManager.availableLanguages, notifyEvent,
+        TranslationManager.currentLanguageIndex,"language")
 
     abstract fun getData(): List<UiField<*>>
     fun anyDataDefault(): Boolean = getData().any { it.isUiValueDefault }
@@ -107,15 +98,18 @@ abstract class PaneController<E : IPaneNotifyEvent>(open val uiData: PaneUiData<
 
     open fun initialize() {
         initLanguageComboBox()
+        makeTranslatable()
     }
+
+    abstract fun makeTranslatable()
 
     fun selectLanguage(newLanguageIndex: Int) {
         languageComboBox.selectionModel.select(newLanguageIndex)
     }
 
     private fun initLanguageComboBox() {
-        languageComboBox.items = FXCollections.observableList(uiData.languages.map { it.key })
-        languageComboBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
+        languageComboBox.items = FXCollections.observableList(uiData.currentLanguage.dataList.map { it.key })
+        languageComboBox.selectionModel.selectedItemProperty().addListener { _, _, _ ->
             uiData.currentLanguage.uiValue = languageComboBox.selectionModel.selectedIndex
         }
     }
@@ -157,9 +151,8 @@ abstract class PaneControllerManager<E : IPaneNotifyEvent, T : PaneController<E>
 
             //        Todo: maybe create some other way of data updating?
             paneUiData.getData().forEach { notify(it.notifyEvent, it.uiValue) }
-
+            notify(paneUiData.currentLanguage.notifyEvent, paneUiData.currentLanguage.uiValue)
         }
-
         return fxPanel
     }
 
@@ -169,42 +162,14 @@ abstract class PaneControllerManager<E : IPaneNotifyEvent, T : PaneController<E>
         paneControllers.forEach { it.fxPanel.isVisible = visible }
     }
 
-    protected fun switchLanguage(newLanguageIndex: Int) =
+    protected fun switchLanguage(newLanguageIndex: Int) {
+        TranslationManager.currentLanguageIndex = newLanguageIndex
         MainController.paneControllerManagers.forEach { controllerManager ->
             controllerManager.paneControllers.forEach { it.selectLanguage(newLanguageIndex) }
         }
+    }
 
     private fun removeController(controller: T) {
         paneControllers.remove(controller)
-    }
-
-}
-
-
-typealias Pane = PaneControllerManager<out IPaneNotifyEvent, out PaneController<out IPaneNotifyEvent>>
-
-//Todo: rename
-internal object MainController {
-    //    Todo: move to Scalable?
-    private const val SCREEN_HEIGHT = 1080.0
-
-    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
-    //    Todo: do something with list
-    val paneControllerManagers = arrayListOf(ProfileControllerManager, TaskChooserControllerManager, TaskControllerManager, FinishControllerManager)
-    internal var visiblePaneControllerManager: Pane = ProfileControllerManager
-        set(value) {
-            paneControllerManagers.forEach { it.setVisible(it == value) }
-            field = value
-        }
-
-    fun createContent(project: Project): JComponent {
-        val screenSize = Toolkit.getDefaultToolkit().screenSize
-        diagnosticLogger.info("Screen size: $screenSize")
-        val scale = screenSize.height / SCREEN_HEIGHT
-        val panel = JPanel()
-        panel.background = java.awt.Color.WHITE
-        println("${this::class}: $paneControllerManagers")
-        paneControllerManagers.map { it.createContent(project, scale) }.forEach { panel.add(it) }
-        return JBScrollPane(panel)
     }
 }

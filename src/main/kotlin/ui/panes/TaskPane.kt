@@ -1,4 +1,4 @@
-package ui
+package ui.panes
 
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
@@ -10,6 +10,7 @@ import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
+import ui.MainController
 import kotlin.reflect.KClass
 
 enum class TaskNotifyEvent : IPaneNotifyEvent {
@@ -27,7 +28,6 @@ object TaskControllerManager : PaneControllerManager<TaskNotifyEvent, TaskContro
             TaskNotifyEvent.LANGUAGE_NOTIFY -> switchLanguage(new as Int)
         }
     }
-
 }
 
 object TaskUiData : PaneUiData<TaskNotifyEvent>(TaskControllerManager) {
@@ -36,19 +36,20 @@ object TaskUiData : PaneUiData<TaskNotifyEvent>(TaskControllerManager) {
 }
 
 class TaskController(override val uiData: TaskUiData, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController<TaskNotifyEvent>(uiData, scale, fxPanel, id) {
-//    @FXML lateinit var taskPane: Pane
-
+//    Scalable components
     @FXML lateinit var greenPolygon: Polygon
     @FXML lateinit var orangePolygon: Polygon
     @FXML lateinit var bluePolygon: Polygon
     @FXML lateinit var yellowRectangle: Rectangle
 
+//    Task info
     @FXML lateinit var taskTextFlow: TextFlow
     @FXML lateinit var taskNameText: Text
     @FXML lateinit var taskDescriptionText: Text
     @FXML lateinit var taskInputText: Text
     @FXML lateinit var taskOutputText: Text
 
+//    Examples
     @FXML lateinit var inputLabel: Label
     @FXML lateinit var outputLabel: Label
     @FXML lateinit var firstExampleInput: TextArea
@@ -70,11 +71,22 @@ class TaskController(override val uiData: TaskUiData, scale: Double, fxPanel: JF
         super.initialize()
     }
 
+    override fun makeTranslatable() {
+//        Todo: find out the best way to translate task info because it depends on chosen task
+//        taskNameText.makeTranslatable(::taskNameText.name, { taskNameText.text = })
+//        taskDescriptionText
+//        taskInputText
+//        taskOutputText
+//        inputLabel
+//        outputLabel
+//        sendSolutionText
+//        backToTasksText
+    }
+
     private fun initButtons() {
         sendSolutionButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             MainController.visiblePaneControllerManager = TaskChooserControllerManager
-//            Todo: send data here?
-//            Todo: add send successful sign to the tasks
+//            Todo: send data here
         }
         backToTasksButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             MainController.visiblePaneControllerManager = TaskChooserControllerManager

@@ -248,7 +248,7 @@ object PluginServer : Server {
     }
 
     override fun getAvailableLanguages(): List<Language> {
-        return arrayListOf(Language("en"), Language("ru"))
+        return arrayListOf(Language("eng"), Language("ru"))
     }
 
     override fun getComponentTranslations(): HashMap<String, HashMap<Language, String>> {

@@ -1,4 +1,4 @@
-package ui
+package ui.panes
 
 import javafx.collections.FXCollections
 import javafx.embed.swing.JFXPanel
@@ -10,8 +10,12 @@ import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.util.converter.IntegerStringConverter
+import ui.*
+import ui.MainController
+import java.util.*
 import java.util.function.UnaryOperator
 import kotlin.reflect.KClass
+
 
 enum class ProfileNotifyEvent : IPaneNotifyEvent {
     AGE_NOTIFY,
@@ -27,7 +31,7 @@ object ProfileControllerManager : PaneControllerManager<ProfileNotifyEvent, Prof
     override var paneControllers: MutableList<ProfileController> = arrayListOf()
     override val fxmlFilename: String = "profile-ui-form-2.fxml"
 
-    //Todo: get generic type here?
+    //Todo: get uiFiled type here and cast new automatically?
     override fun notify(notifyEvent: ProfileNotifyEvent, new: Any?) {
         val isProfileUnfilled = paneUiData.anyDataDefault()
         paneControllers.forEach { it.setStartWorkingButtonDisability(isProfileUnfilled) }
@@ -42,25 +46,36 @@ object ProfileControllerManager : PaneControllerManager<ProfileNotifyEvent, Prof
     }
 }
 
-inline class Country(val key: String)
+// Todo: move to some other place?
+inline class Country(val key: String) {
+    override fun toString(): String {
+        return key
+    }
+}
 
-
-object ProfileUiData : PaneUiData<ProfileNotifyEvent>(ProfileControllerManager) {
+object ProfileUiData : PaneUiData<ProfileNotifyEvent>(
+    ProfileControllerManager
+) {
     //    Todo: get from server
-    val countryList: List<Country> = listOf(Country("Россия"), Country("Нидерланды"))
+    private val countryList: List<Country> = listOf(
+        Country("Россия"),
+        Country("Нидерланды")
+    )
 
     val age = UiField(ProfileNotifyEvent.AGE_NOTIFY, 0, "age")
     val gender = UiField<Gender?>(ProfileNotifyEvent.GENDER_NOTIFY, null, "gender")
     val programExperience = UiField<PE?>(ProfileNotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, null, "programExperience")
-    val country = ListedUiField(countryList, ProfileNotifyEvent.COUNTRY_NOTIFY, -1,"country")
+    val country = ListedUiField(
+        countryList,
+        ProfileNotifyEvent.COUNTRY_NOTIFY, -1,"country")
     override val currentLanguage: LanguageUiField = LanguageUiField(ProfileNotifyEvent.LANGUAGE_NOTIFY)
 
-
-//    fun isAllDataFilled(): Boolean {
-//        return getData().all { !it.isDefault() }
-//    }
-
-    override fun getData() = listOf(age, gender, programExperience, country)
+    override fun getData() = listOf(
+        age,
+        gender,
+        programExperience,
+        country
+    )
 
     enum class PE {
         LESS_THAN_HALF,
@@ -89,7 +104,6 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
 
     // Age
     @FXML private lateinit var ageLabel: Label
-    //    lateinit var translatableAgeLabel: TranslatableComponent
     @FXML private lateinit var ageTextField: TextField
 
     // Gender
@@ -113,14 +127,11 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
 
     // Country
     @FXML private lateinit var countryLabel: Label
-    @FXML private lateinit var countryComboBox: ComboBox<String>
+    @FXML private lateinit var countryComboBox: ComboBox<Country>
 
     // StartWorking
     @FXML private lateinit var startWorkingButton: Button
     @FXML private lateinit var startWorkingText: Text
-
-//    Todo: add language
-
 
     override fun initialize() {
         initAge()
@@ -129,16 +140,9 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
         initCountry()
         initStartWorkingButton()
         super.initialize()
-
-//        Todo: add translatable, add scalable
-//        translatableAgeLabel = TranslatableComponent(ageLabel, ::ageLabel.name)
     }
 
-    // Todo: make button not active when something is not set?
     fun setAge(newAge: Int) {
-//        Default value shouldn't be showed
-//        Todo: include in initAge filter?
-//        val strAge = if (ProfileUiData.age.isDefault(newAge)) "" else newAge.toString()
         ageTextField.text = newAge.toString()
     }
 
@@ -159,6 +163,14 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
         startWorkingButton.isDisable = isDisable
     }
 
+    override fun makeTranslatable() {
+        ageLabel.makeTranslatable(::ageLabel.name)
+        genderLabel.makeTranslatable(::genderLabel.name)
+        experienceLabel.makeTranslatable(::experienceLabel.name)
+        countryLabel.makeTranslatable(::countryLabel.name)
+        startWorkingText.makeTranslatable(::startWorkingText.name)
+    }
+
     private fun initAge() {
         val filter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@ { change: TextFormatter.Change? ->
             val text: String? = change?.controlNewText
@@ -170,7 +182,7 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
         val converter = IntegerStringConverter()
         ageTextField.textFormatter = TextFormatter(TextFormatter.IDENTITY_STRING_CONVERTER, "", filter)
         ageTextField.textProperty().addListener { _, old, new ->
-            uiData.age.uiValue = converter.fromString(new) ?: uiData.age.defaultUiValue
+            ProfileUiData.age.uiValue = converter.fromString(new) ?: ProfileUiData.age.defaultUiValue
         }
     }
 
@@ -181,7 +193,7 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
             ProfileUiData.Gender.OTHER to otherGender
         )
         genderGroup.selectedToggleProperty().addListener { _, old, new ->
-            uiData.gender.uiValue = genderButtonByGender.filterValues { it == new }.keys.elementAtOrElse(0) { uiData.gender.defaultUiValue}
+            ProfileUiData.gender.uiValue = genderButtonByGender.filterValues { it == new }.keys.elementAtOrElse(0) { ProfileUiData.gender.defaultUiValue}
         }
     }
 
@@ -196,22 +208,22 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
             ProfileUiData.PE.MORE_THAN_SIX to peMoreThanSix
         )
         programExperienceGroup.selectedToggleProperty().addListener { _, old, new ->
-            uiData.programExperience.uiValue = experienceButtonByPE.filterValues { it == new }.keys.elementAtOrElse(0) { uiData.programExperience.defaultUiValue }
+            ProfileUiData.programExperience.uiValue = experienceButtonByPE.filterValues { it == new }.keys.elementAtOrElse(0) { ProfileUiData.programExperience.defaultUiValue }
         }
     }
 
     private fun initCountry() {
 //        Todo: make it autocomplete https://stackoverflow.com/questions/19924852/autocomplete-combobox-in-javafx
-        countryComboBox.items = FXCollections.observableList(uiData.countryList.map { it.key } )
+        countryComboBox.items = FXCollections.observableList(ProfileUiData.country.dataList)
         countryComboBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
-            uiData.country.uiValue = countryComboBox.selectionModel.selectedIndex
+            ProfileUiData.country.uiValue = countryComboBox.selectionModel.selectedIndex
         }
     }
 
     private fun initStartWorkingButton() {
         startWorkingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            MainController.visiblePaneControllerManager = TaskChooserControllerManager
+            MainController.visiblePaneControllerManager =
+                TaskChooserControllerManager
         }
     }
-
 }

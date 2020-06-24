@@ -1,4 +1,4 @@
-package ui
+package ui.panes
 
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
@@ -8,6 +8,8 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
+import ui.*
+import ui.MainController
 import kotlin.reflect.KClass
 
 enum class FinishNotifyEvent : IPaneNotifyEvent {
@@ -18,7 +20,8 @@ object FinishControllerManager : PaneControllerManager<FinishNotifyEvent, Finish
     override val paneControllerClass: KClass<FinishController> = FinishController::class
     override val paneControllers: MutableList<FinishController> = arrayListOf()
     override val fxmlFilename: String = "finish-ui-form-2.fxml"
-    override val paneUiData: PaneUiData<FinishNotifyEvent> = FinishUiData
+    override val paneUiData: PaneUiData<FinishNotifyEvent> =
+        FinishUiData
 
     override fun notify(notifyEvent: FinishNotifyEvent, new: Any?) {
         when (notifyEvent) {
@@ -54,12 +57,21 @@ class FinishController(override val uiData: FinishUiData, scale: Double, fxPanel
         super.initialize()
     }
 
+    override fun makeTranslatable() {
+        backToTasksText.makeTranslatable(::backToTasksText.name)
+        backToProfileText.makeTranslatable(::backToProfileText.name)
+        greatWorkLabel.makeTranslatable(::greatWorkLabel.name)
+        messageText.makeTranslatable(::messageText.name)
+    }
+
     private fun initButtons() {
         backToTasksButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            MainController.visiblePaneControllerManager = TaskChooserControllerManager
+            MainController.visiblePaneControllerManager =
+                TaskChooserControllerManager
         }
         backToProfileButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            MainController.visiblePaneControllerManager = ProfileControllerManager
+            MainController.visiblePaneControllerManager =
+                ProfileControllerManager
         }
 
     }

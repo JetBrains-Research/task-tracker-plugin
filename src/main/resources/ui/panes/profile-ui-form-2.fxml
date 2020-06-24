@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<Pane id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <Pane id="codetrackerPane" prefHeight="80.0" prefWidth="560.0" stylesheets="@style.css">
+            <children>
+                <Label layoutX="193.0" layoutY="11.0" styleClass="codetracker-sign" text="CodeTracker">
+                </Label>
+            </children>
+        </Pane>
+        <Pane fx:id="profilePane" layoutY="80.0" prefHeight="760.0" prefWidth="560.0" stylesheets="@style.css">
+            <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="552.0" layoutY="62.0" opacity="0.35" points="-552.0, -64.0, -552.0, 110.0, 8.0, -22.0, 8.0, -64.0" stroke="WHITE" strokeType="INSIDE" />
+            <Rectangle fx:id="yellowRectangle" arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="191.0" layoutY="497.0" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="560.0" />
+            <Polygon fx:id="bluePolygon" fill="#7abaf5" layoutX="45.0" layoutY="238.0" opacity="0.25" points="-45.0, 185.0, 515.0, 321.5, 515.0, -102.0, -45.0, -102.0" stroke="WHITE" strokeType="INSIDE" />
+            <Label fx:id="ageLabel" layoutX="30.0" layoutY="50.0" styleClass="sanserif-bold-20" text="возраст:" />
+            <TextField fx:id="ageTextField" layoutX="149.0" layoutY="49.0" prefHeight="26.0" prefWidth="164.0" />
+            <Line fx:id="ageLine" endX="76.0" layoutX="235.0" layoutY="75.0" startX="-87.0" />
+            <Label fx:id="genderLabel" layoutX="30.0" layoutY="110.0" styleClass="sanserif-bold-20" text="пол:" />
+            <RadioButton fx:id="femaleGender" layoutX="80.0" layoutY="150.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="221.0" styleClass="sanserif-15" text="женский">
+                <toggleGroup>
+                    <ToggleGroup fx:id="genderGroup" />
+                </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="maleGender" layoutX="80.0" layoutY="190.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="221.0" styleClass="sanserif-15" text="мужской" toggleGroup="$genderGroup" />
+            <RadioButton fx:id="otherGender" layoutX="80.0" layoutY="230.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="221.0" styleClass="sanserif-15" text="другое" toggleGroup="$genderGroup" />
+            <Label fx:id="experienceLabel" layoutX="25.0" layoutY="290.0" styleClass="sanserif-bold-20" text="опыт программирования:" />
+            <RadioButton fx:id="peLessThanHalf" layoutX="80.0" layoutY="330.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="221.0" styleClass="sanserif-15" text="меньше 0.5 года">
+                <toggleGroup>
+                    <ToggleGroup fx:id="programExperienceGroup" />
+                </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="peFromHalfToOne" layoutX="80.0" layoutY="370.0" mnemonicParsing="false" styleClass="sanserif-15" text="от 0.5 до 1 года" toggleGroup="$programExperienceGroup" />
+            <RadioButton fx:id="peFromOneToTwo" layoutX="80.0" layoutY="410.0" mnemonicParsing="false" styleClass="sanserif-15" text="от 1 года до 2 лет" toggleGroup="$programExperienceGroup" />
+            <RadioButton fx:id="peFromTwoToFour" layoutX="340.0" layoutY="330.0" mnemonicParsing="false" styleClass="sanserif-15" text="от 2 до 4 лет" toggleGroup="$programExperienceGroup" />
+            <RadioButton fx:id="peFromFourToSix" layoutX="340.0" layoutY="370.0" mnemonicParsing="false" styleClass="sanserif-15" text="от 4 до 6 лет" toggleGroup="$programExperienceGroup" />
+            <RadioButton fx:id="peMoreThanSix" layoutX="340.0" layoutY="410.0" mnemonicParsing="false" styleClass="sanserif-15" text="больше 6 лет" toggleGroup="$programExperienceGroup" />
+            <Label fx:id="countryLabel" layoutX="30.0" layoutY="470.0" styleClass="sanserif-bold-20" text="страна:" />
+            <ComboBox fx:id="countryComboBox" layoutX="80.0" layoutY="510.0" prefHeight="20.0" prefWidth="396.0" />
+            <ComboBox fx:id="languageComboBox" layoutX="490.0" layoutY="9.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="43.0" styleClass="language" visibleRowCount="5" />
+            <Button fx:id="startWorkingButton" layoutX="456.0" layoutY="577.0" mnemonicParsing="false" prefHeight="93.0" prefWidth="93.0">
+                <graphic>
+                    <VBox alignment="BASELINE_CENTER" prefHeight="106.0" prefWidth="122.0">
+                        <children>
+                            <ImageView fitHeight="35.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@next.png" />
+                                </image>
+                            </ImageView>
+                            <Text fx:id="startWorkingText" strokeType="OUTSIDE" strokeWidth="0.0" text="начать работу" textAlignment="CENTER" wrappingWidth="98.736328125">
+                                <font>
+                                    <Font name="System Bold" size="15.0" />
+                                </font>
+                            </Text>
+                        </children>
+                    </VBox>
+                </graphic>
+            </Button>
+        </Pane>
+    </children>
+</Pane>
