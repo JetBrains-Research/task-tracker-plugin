@@ -6,20 +6,21 @@ import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
+import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.util.converter.IntegerStringConverter
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.makeTranslatable
-import java.util.*
 import java.util.function.UnaryOperator
 import kotlin.reflect.KClass
 
 
 enum class ProfileNotifyEvent : IPaneNotifyEvent {
     AGE_NOTIFY,
-    PROGRAM_EXPERIENCE_NOTIFY,
+    PE_YEARS_NOTIFY,
+    PE_MONTHS_NOTIFY,
     GENDER_NOTIFY,
     COUNTRY_NOTIFY,
     LANGUAGE_NOTIFY
@@ -54,6 +55,12 @@ inline class Country(val key: String) {
     }
 }
 
+inline class Gender(val key: String) {
+    override fun toString(): String {
+        return key
+    }
+}
+
 object ProfileUiData : PaneUiData<ProfileNotifyEvent>(
     ProfileControllerManager
 ) {
@@ -62,12 +69,14 @@ object ProfileUiData : PaneUiData<ProfileNotifyEvent>(
         Country("Россия"),
         Country("Нидерланды")
     )
+    private val genderList: List<Gender> = listOf(Gender("male"), Gender("female"), Gender("other"))
 
     val age = UiField(ProfileNotifyEvent.AGE_NOTIFY, 0, "age")
-    val gender = UiField<Gender?>(
-        ProfileNotifyEvent.GENDER_NOTIFY, null, "gender")
-    val programExperience = UiField<PE?>(
-        ProfileNotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, null, "programExperience")
+    val gender = ListedUiField(
+        genderList,
+        ProfileNotifyEvent.GENDER_NOTIFY, -1, "gender")
+    val peYears = UiField(ProfileNotifyEvent.PE_YEARS_NOTIFY, -1, "peYears")
+    val peMonths = UiField(ProfileNotifyEvent.PE_MONTHS_NOTIFY, -1, "peMonths")
     val country = ListedUiField(
         countryList,
         ProfileNotifyEvent.COUNTRY_NOTIFY, -1,"country")
@@ -81,22 +90,6 @@ object ProfileUiData : PaneUiData<ProfileNotifyEvent>(
         programExperience,
         country
     )
-
-    enum class PE {
-        LESS_THAN_HALF,
-        FROM_HALF_TO_ONE,
-        FROM_ONE_TO_TWO,
-        FROM_TWO_TO_FOUR,
-        FROM_FOUR_TO_SIX,
-        MORE_THAN_SIX
-
-    }
-    enum class Gender {
-        FEMALE,
-        MALE,
-        OTHER
-
-    }
 }
 
 class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController<ProfileNotifyEvent>(uiData, scale, fxPanel, id) {
@@ -114,21 +107,22 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
     // Gender
     @FXML private lateinit var genderLabel: Label
     @FXML private lateinit var genderGroup: ToggleGroup
-    @FXML private lateinit var femaleGender: RadioButton
-    @FXML private lateinit var maleGender: RadioButton
-    @FXML private lateinit var otherGender: RadioButton
-    @FXML private lateinit var genderButtonByGender: HashMap<ProfileUiData.Gender, RadioButton>
+    @FXML private lateinit var gender1: RadioButton
+    @FXML private lateinit var gender2: RadioButton
+    @FXML private lateinit var gender3: RadioButton
+    @FXML private lateinit var gender4: RadioButton
+    @FXML private lateinit var gender5: RadioButton
+    @FXML private lateinit var gender6: RadioButton
+    @FXML private lateinit var genderRadioButtons: List<RadioButton>
 
     // Program Experience
     @FXML private lateinit var experienceLabel: Label
-    @FXML private lateinit var programExperienceGroup: ToggleGroup
-    @FXML private lateinit var peLessThanHalf: RadioButton
-    @FXML private lateinit var peFromHalfToOne: RadioButton
-    @FXML private lateinit var peFromOneToTwo: RadioButton
-    @FXML private lateinit var peFromTwoToFour: RadioButton
-    @FXML private lateinit var peFromFourToSix: RadioButton
-    @FXML private lateinit var peMoreThanSix: RadioButton
-    @FXML private lateinit var experienceButtonByPE: HashMap<ProfileUiData.PE, RadioButton>
+    @FXML private lateinit var peYearsLabel: Label
+    @FXML private lateinit var peYearsTextField: TextField
+    @FXML private lateinit var peYearsLine: Line
+    @FXML private lateinit var peMonthsLabel: Label
+    @FXML private lateinit var peMonthsTextField: TextField
+    @FXML private lateinit var peMonthsLine: Line
 
     // Country
     @FXML private lateinit var countryLabel: Label
@@ -141,7 +135,8 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
     override fun initialize() {
         initAge()
         initGender()
-        initProgramExperience()
+        initPeYears()
+        initPeMonths()
         initCountry()
         initStartWorkingButton()
         super.initialize()
@@ -151,12 +146,17 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
         ageTextField.text = newAge.toString()
     }
 
-    fun selectGender(newGender: ProfileUiData.Gender?) {
-        genderGroup.selectToggle(genderButtonByGender.getOrDefault(newGender, null))
+    fun selectGender(newGenderIndex: Int) {
+//        todo: is newGenderIndex is default?
+        genderGroup.selectToggle(genderRadioButtons[newGenderIndex])
     }
 
-    fun selectProgramExperience(newProgramExperience: ProfileUiData.PE?) {
-        programExperienceGroup.selectToggle(experienceButtonByPE.getOrDefault(newProgramExperience, null))
+    fun setPeYears(newYears: Int) {
+        peYearsTextField.text = newYears.toString()
+    }
+
+    fun setPeMonths(newMonths: Int) {
+        peYearsTextField.text = newMonths.toString()
     }
 
     fun selectCountry(newCountryIndex: Int) {
@@ -192,17 +192,44 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
     }
 
     private fun initGender() {
-        genderButtonByGender = hashMapOf(
-            ProfileUiData.Gender.FEMALE to femaleGender,
-            ProfileUiData.Gender.MALE to maleGender,
-            ProfileUiData.Gender.OTHER to otherGender
-        )
+        genderRadioButtons = listOf(gender1, gender2, gender3, gender4, gender5, gender6)
         genderGroup.selectedToggleProperty().addListener { _, old, new ->
             ProfileUiData.gender.uiValue = genderButtonByGender.filterValues { it == new }.keys.elementAtOrElse(0) { ProfileUiData.gender.defaultUiValue}
         }
     }
 
-    private fun initProgramExperience() {
+    private fun initPeYears() {
+        val yearFilter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@{ change: TextFormatter.Change? ->
+            val text: String? = change?.controlNewText
+            if (text != null && (text.length < 3) && (text.isEmpty() || text.matches(Regex("0|[1-9]+[0-9]*")))) {
+                return@label change
+            }
+            null
+        }
+        val converter = IntegerStringConverter()
+        peYearsTextField.textFormatter = TextFormatter(TextFormatter.IDENTITY_STRING_CONVERTER, "", yearFilter)
+        peYearsTextField.textProperty().addListener { _, old, new ->
+            ProfileUiData.peYears.uiValue = converter.fromString(new) ?: ProfileUiData.peYears.defaultUiValue
+        }
+    }
+
+    private fun initPeMonths() {
+        val monthsFilter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@{ change: TextFormatter.Change? ->
+            val text: String? = change?.controlNewText
+            if (text != null && (text.length < 3) && (text.isEmpty() || text.matches(Regex("[0-9]|1[012]]")))) {
+                return@label change
+            }
+            null
+        }
+        val converter = IntegerStringConverter()
+        peMonthsTextField.textFormatter = TextFormatter(TextFormatter.IDENTITY_STRING_CONVERTER, "", monthsFilter)
+        peMonthsTextField.textProperty().addListener { _, old, new ->
+            ProfileUiData.peMonths.uiValue = converter.fromString(new) ?: ProfileUiData.peMonths.defaultUiValue
+        }
+    }
+
+
+
 //        Todo: make it better somehow?
         experienceButtonByPE = hashMapOf (
             ProfileUiData.PE.LESS_THAN_HALF to peLessThanHalf,
