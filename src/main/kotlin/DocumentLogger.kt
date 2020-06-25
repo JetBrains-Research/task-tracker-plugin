@@ -7,7 +7,6 @@ import data.DocumentChangeData
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.joda.time.DateTime
-import ui.ControllerManager
 import java.io.File
 import java.io.FileWriter
 import kotlin.math.abs
@@ -33,7 +32,8 @@ object DocumentLogger {
             diagnosticLogger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} was cleared")
         }
         val change = document.getChange()
-        printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData().map { it.logValue })
+//        todo: add ui data
+        printer.csvPrinter.printRecord(change.getData())
     }
 
     fun logCurrentDocuments() {
@@ -72,7 +72,8 @@ object DocumentLogger {
         val file = createLogFile(document)
         val fileWriter = FileWriter(file)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
-        csvPrinter.printRecord(DocumentChangeData.headers + ControllerManager.uiData.getData().map { it.header })
+//        add ui data
+        csvPrinter.printRecord(DocumentChangeData.headers)
         return Printer(csvPrinter, fileWriter, file)
     }
 
