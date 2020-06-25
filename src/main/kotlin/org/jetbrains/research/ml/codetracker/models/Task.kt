@@ -17,6 +17,6 @@ data class TaskInfo(
 data class Task(
     val key: String,
     val id: Int = -1,
-    val info: Map<String, TaskInfo>? = null,
+    val infoTranslation: Map<PaneLanguage, TaskInfo>? = null,
     val examples: List<Example> = emptyList()
 )

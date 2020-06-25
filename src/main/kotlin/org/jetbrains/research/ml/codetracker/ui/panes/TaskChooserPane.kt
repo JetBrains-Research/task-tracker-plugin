@@ -11,6 +11,7 @@ import javafx.scene.layout.Pane
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
+import org.jetbrains.research.ml.codetracker.models.PaneLanguage
 import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.models.TaskInfo
 import org.jetbrains.research.ml.codetracker.ui.MainController
@@ -44,8 +45,8 @@ object TaskChooserUiData : PaneUiData<TaskChooserNotifyEvent>(
 ) {
 //    Todo: get from server
     private val tasks: List<Task> = arrayListOf(
-        Task("key1", 0, hashMapOf("en" to TaskInfo("name1", "description1", "input1", "output1"))),
-        Task("key2", 1, hashMapOf("en" to TaskInfo("name2", "description2", "input2", "output2"))))
+        Task("key1", 0, hashMapOf(PaneLanguage("en") to TaskInfo("name1", "description1", "input1", "output1"))),
+        Task("key2", 1, hashMapOf(PaneLanguage("en") to TaskInfo("name2", "description2", "input2", "output2"))))
     val chosenTask = ListedUiField(
         tasks,
         TaskChooserNotifyEvent.CHOSEN_TASK_NOTIFY, -1,"chosenTask")
@@ -99,7 +100,7 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
 
     private fun initChoseTaskComboBox() {
 //        Todo: change language to current language
-        choseTaskComboBox.items = FXCollections.observableList(TaskChooserUiData.chosenTask.dataList.map { it.info?.get("en")?.name })
+        choseTaskComboBox.items = FXCollections.observableList(TaskChooserUiData.chosenTask.dataList.map { it.info?.get(PaneLanguage("en"))?.name })
         choseTaskComboBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
             TaskChooserUiData.chosenTask.uiValue = choseTaskComboBox.selectionModel.selectedIndex
         }

@@ -1,6 +1,7 @@
 package org.jetbrains.research.ml.codetracker
 
 import com.intellij.openapi.diagnostic.Logger
+import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 
 
