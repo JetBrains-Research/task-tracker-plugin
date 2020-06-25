@@ -64,10 +64,10 @@
                 <Line fx:id="peYearsLine" endX="-17.0" layoutX="87.0" layoutY="22.0" startX="-87.0"/>
             </AnchorPane>
         </HBox>
-        <HBox alignment="CENTER_LEFT" layoutX="301.0" layoutY="330.0" style="-fx-spacing: 10;">
+        <HBox fx:id="peMonthsHBox" alignment="CENTER_LEFT" layoutX="301.0" layoutY="330.0" style="-fx-spacing: 10;">
             <Label fx:id="peMonthsLabel" styleClass="sanserif-15" text="месяцев:"/>
             <AnchorPane prefHeight="25.0" prefWidth="70.0">
-                <TextField fx:id="peMonthsTextFiled" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="70.0"/>
+                <TextField fx:id="peMonthsTextField" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="70.0"/>
                 <Line fx:id="peMonthsLine" endX="-17.0" layoutX="87.0" layoutY="22.0" startX="-87.0"/>
             </AnchorPane>
         </HBox>
