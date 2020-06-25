@@ -84,8 +84,25 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
         TranslationManager.availableLanguages, notifyEvent,
         TranslationManager.currentLanguageIndex,"language")
 
+    /**
+     * Represents ui fields with visibility
+     */
+    inner class VisibleUiField<T : Any?>(var isVisible: Boolean, notifyEvent: E, defaultUiValue: T, header: String) : UiField<T>(notifyEvent, defaultUiValue, header)
+
     abstract fun getData(): List<UiField<*>>
+
     fun anyDataDefault(): Boolean = getData().any { it.isUiValueDefault }
+
+    fun anyDataVisibleAndDefault() : Boolean {
+        return getData().any {
+//            If field is invisible, doesn't matter whether it's uiValue is default
+            if (it is VisibleUiField && !it.isVisible) {
+                false
+            } else {
+                it.isUiValueDefault
+            }
+        }
+    }
 
 }
 
