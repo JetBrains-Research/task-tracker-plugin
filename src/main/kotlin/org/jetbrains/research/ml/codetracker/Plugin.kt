@@ -9,11 +9,9 @@ object Plugin {
     const val PLUGIN_ID = "codetracker"
 
     private val logger: Logger = Logger.getInstance(javaClass)
-//    private val pluginServer: PluginServer
 
     init {
         logger.info("$PLUGIN_ID: init plugin")
-//        pluginServer = PluginServer
     }
 
     fun stopTracking(): Boolean {

@@ -8,5 +8,11 @@ data class PaneLanguage(val key: String)
 @Serializable
 data class Gender(
     val key: String,
-    val info: Map<String, String>? = null
+    val translation: Map<PaneLanguage, String>? = null
+)
+
+@Serializable
+data class Country(
+    val key: String,
+    val translation: Map<PaneLanguage, String>? = null
 )
