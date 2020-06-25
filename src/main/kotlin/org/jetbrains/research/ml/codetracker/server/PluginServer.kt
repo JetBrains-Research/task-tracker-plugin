@@ -1,10 +1,7 @@
 package org.jetbrains.research.ml.codetracker.server
 
 import kotlinx.serialization.builtins.serializer
-import org.jetbrains.research.ml.codetracker.models.Country
-import org.jetbrains.research.ml.codetracker.models.Gender
-import org.jetbrains.research.ml.codetracker.models.PaneLanguage
-import org.jetbrains.research.ml.codetracker.models.Task
+import org.jetbrains.research.ml.codetracker.models.*
 
 object PluginServer {
     // Todo: get genders, countries and experiences
@@ -23,6 +20,14 @@ object PluginServer {
 
     fun getCountries(): List<Country> {
         return CollectionsQueryExecutor.getCollection("country/all", Country.serializer())
+    }
+
+    fun getPaneText(): PaneText? {
+        val paneTextList = CollectionsQueryExecutor.getCollection("settings", PaneText.serializer())
+        if (paneTextList.size == 1) {
+            return paneTextList[0]
+        }
+        return null
     }
 
 }

@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import okhttp3.Request
 import okhttp3.Response
+import org.jetbrains.research.ml.codetracker.models.PaneText
 import java.net.URL
 
 object CollectionsQueryExecutor : QueryExecutor() {
