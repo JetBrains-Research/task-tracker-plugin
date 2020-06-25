@@ -12,7 +12,7 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.ComboBox
 import javafx.scene.paint.Color
-import org.jetbrains.research.ml.codetracker.ui.Language
+import org.jetbrains.research.ml.codetracker.models.PaneLanguage
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.TranslationManager
 import java.awt.Panel
@@ -80,7 +80,7 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
         }
     }
 
-    inner class LanguageUiField(notifyEvent: E) : ListedUiField<Language>(
+    inner class LanguageUiField(notifyEvent: E) : ListedUiField<PaneLanguage>(
         TranslationManager.availableLanguages, notifyEvent,
         TranslationManager.currentLanguageIndex,"language")
 
@@ -152,7 +152,7 @@ abstract class PaneControllerManager<E : IPaneNotifyEvent, T : PaneController<E>
             //  Todo: maybe create some other way of data updating?
             paneUiData.getData().forEach { notify(it.notifyEvent, it.uiValue) }
             //  Todo: Set current language AFTER all controllers created their content, otherwise some comboboxes may be not initialized yet
-            notify(paneUiData.currentLanguage.notifyEvent, paneUiData.currentLanguage.uiValue)
+//            notify(paneUiData.currentLanguage.notifyEvent, paneUiData.currentLanguage.uiValue)
         }
         return fxPanel
     }
