@@ -1,4 +1,4 @@
-package ui.panes
+package org.jetbrains.research.ml.codetracker.ui.panes
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
@@ -12,9 +12,9 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.ComboBox
 import javafx.scene.paint.Color
-import ui.Language
-import ui.MainController
-import ui.TranslationManager
+import org.jetbrains.research.ml.codetracker.ui.Language
+import org.jetbrains.research.ml.codetracker.ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.TranslationManager
 import kotlin.properties.Delegates
 import kotlin.reflect.KClass
 
@@ -141,6 +141,7 @@ abstract class PaneControllerManager<E : IPaneNotifyEvent, T : PaneController<E>
         Platform.runLater {
             val loader = FXMLLoader()
             loader.namespace["scale"] = scale
+//            Todo: find out what happen with resourse getting
             loader.location = javaClass.getResource(fxmlFilename)
             loader.setController(controller)
             val root = loader.load<Parent>()
@@ -150,8 +151,7 @@ abstract class PaneControllerManager<E : IPaneNotifyEvent, T : PaneController<E>
             fxPanel.isVisible = MainController.visiblePaneControllerManager == this
             //  Todo: maybe create some other way of data updating?
             paneUiData.getData().forEach { notify(it.notifyEvent, it.uiValue) }
-            //  Todo: Set current language AFTER all controllers created their content, otherwise some combobox may be not initialized yet
-
+            //  Todo: Set current language AFTER all controllers created their content, otherwise some comboboxes may be not initialized yet
             notify(paneUiData.currentLanguage.notifyEvent, paneUiData.currentLanguage.uiValue)
         }
         return fxPanel

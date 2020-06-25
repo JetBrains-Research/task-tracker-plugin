@@ -1,9 +1,9 @@
-package ui
+package org.jetbrains.research.ml.codetracker.ui
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
-import ui.panes.*
+import org.jetbrains.research.ml.codetracker.ui.panes.*
 import java.awt.Toolkit
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -18,10 +18,13 @@ internal object MainController {
     private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
     //    Todo: automatically collect ControllerManagers
     val paneControllerManagers = arrayListOf(
-        ProfileControllerManager, TaskChooserControllerManager, TaskControllerManager,
+        ProfileControllerManager,
+        TaskChooserControllerManager,
+        TaskControllerManager,
         FinishControllerManager
     )
-    internal var visiblePaneControllerManager: Pane = ProfileControllerManager
+    internal var visiblePaneControllerManager: Pane =
+        ProfileControllerManager
         set(value) {
             paneControllerManagers.forEach { it.setVisible(it == value) }
             field = value

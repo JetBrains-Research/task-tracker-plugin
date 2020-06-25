@@ -1,4 +1,4 @@
-package ui.panes
+package org.jetbrains.research.ml.codetracker.ui.panes
 
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
@@ -10,9 +10,8 @@ import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
-import ui.MainController
-import ui.TranslationManager
-import ui.makeTranslatable
+import org.jetbrains.research.ml.codetracker.ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.makeTranslatable
 import kotlin.reflect.KClass
 
 enum class TaskNotifyEvent : IPaneNotifyEvent {
@@ -23,7 +22,8 @@ object TaskControllerManager : PaneControllerManager<TaskNotifyEvent, TaskContro
     override val paneControllerClass: KClass<TaskController> = TaskController::class
     override val paneControllers: MutableList<TaskController> = arrayListOf()
     override val fxmlFilename: String = "task-ui-form-2.fxml"
-    override val paneUiData: PaneUiData<TaskNotifyEvent> = TaskUiData
+    override val paneUiData: PaneUiData<TaskNotifyEvent> =
+        TaskUiData
 
     override fun notify(notifyEvent: TaskNotifyEvent, new: Any?) {
         when (notifyEvent) {
@@ -32,9 +32,13 @@ object TaskControllerManager : PaneControllerManager<TaskNotifyEvent, TaskContro
     }
 }
 
-object TaskUiData : PaneUiData<TaskNotifyEvent>(TaskControllerManager) {
+object TaskUiData : PaneUiData<TaskNotifyEvent>(
+    TaskControllerManager
+) {
     override fun getData(): List<UiField<*>> = arrayListOf()
-    override val currentLanguage: LanguageUiField = LanguageUiField(TaskNotifyEvent.LANGUAGE_NOTIFY)
+    override val currentLanguage: LanguageUiField = LanguageUiField(
+        TaskNotifyEvent.LANGUAGE_NOTIFY
+    )
 }
 
 class TaskController(override val uiData: TaskUiData, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController<TaskNotifyEvent>(uiData, scale, fxPanel, id) {
@@ -87,11 +91,13 @@ class TaskController(override val uiData: TaskUiData, scale: Double, fxPanel: JF
 
     private fun initButtons() {
         sendSolutionButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            MainController.visiblePaneControllerManager = TaskChooserControllerManager
+            MainController.visiblePaneControllerManager =
+                TaskChooserControllerManager
 //            Todo: send data here
         }
         backToTasksButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            MainController.visiblePaneControllerManager = TaskChooserControllerManager
+            MainController.visiblePaneControllerManager =
+                TaskChooserControllerManager
         }
     }
 

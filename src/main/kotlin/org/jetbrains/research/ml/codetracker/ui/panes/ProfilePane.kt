@@ -1,4 +1,4 @@
-package ui.panes
+package org.jetbrains.research.ml.codetracker.ui.panes
 
 import javafx.collections.FXCollections
 import javafx.embed.swing.JFXPanel
@@ -10,8 +10,8 @@ import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.util.converter.IntegerStringConverter
-import ui.*
-import ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.makeTranslatable
 import java.util.*
 import java.util.function.UnaryOperator
 import kotlin.reflect.KClass
@@ -27,7 +27,8 @@ enum class ProfileNotifyEvent : IPaneNotifyEvent {
 
 object ProfileControllerManager : PaneControllerManager<ProfileNotifyEvent, ProfileController>() {
     override val paneControllerClass: KClass<ProfileController> = ProfileController::class
-    override val paneUiData: ProfileUiData = ProfileUiData
+    override val paneUiData: ProfileUiData =
+        ProfileUiData
     override var paneControllers: MutableList<ProfileController> = arrayListOf()
     override val fxmlFilename: String = "profile-ui-form-2.fxml"
 
@@ -63,12 +64,16 @@ object ProfileUiData : PaneUiData<ProfileNotifyEvent>(
     )
 
     val age = UiField(ProfileNotifyEvent.AGE_NOTIFY, 0, "age")
-    val gender = UiField<Gender?>(ProfileNotifyEvent.GENDER_NOTIFY, null, "gender")
-    val programExperience = UiField<PE?>(ProfileNotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, null, "programExperience")
+    val gender = UiField<Gender?>(
+        ProfileNotifyEvent.GENDER_NOTIFY, null, "gender")
+    val programExperience = UiField<PE?>(
+        ProfileNotifyEvent.PROGRAM_EXPERIENCE_NOTIFY, null, "programExperience")
     val country = ListedUiField(
         countryList,
         ProfileNotifyEvent.COUNTRY_NOTIFY, -1,"country")
-    override val currentLanguage: LanguageUiField = LanguageUiField(ProfileNotifyEvent.LANGUAGE_NOTIFY)
+    override val currentLanguage: LanguageUiField = LanguageUiField(
+        ProfileNotifyEvent.LANGUAGE_NOTIFY
+    )
 
     override fun getData() = listOf(
         age,

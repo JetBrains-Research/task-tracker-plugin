@@ -1,4 +1,4 @@
-package ui.panes
+package org.jetbrains.research.ml.codetracker.ui.panes
 
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
@@ -8,8 +8,8 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
-import ui.*
-import ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.*
+import org.jetbrains.research.ml.codetracker.ui.MainController
 import kotlin.reflect.KClass
 
 enum class FinishNotifyEvent : IPaneNotifyEvent {
@@ -31,8 +31,12 @@ object FinishControllerManager : PaneControllerManager<FinishNotifyEvent, Finish
 
 }
 
-object FinishUiData : PaneUiData<FinishNotifyEvent>(FinishControllerManager) {
-    override val currentLanguage: LanguageUiField = LanguageUiField(FinishNotifyEvent.LANGUAGE_NOTIFY)
+object FinishUiData : PaneUiData<FinishNotifyEvent>(
+    FinishControllerManager
+) {
+    override val currentLanguage: LanguageUiField = LanguageUiField(
+        FinishNotifyEvent.LANGUAGE_NOTIFY
+    )
     override fun getData(): List<UiField<*>> = arrayListOf()
 }
 

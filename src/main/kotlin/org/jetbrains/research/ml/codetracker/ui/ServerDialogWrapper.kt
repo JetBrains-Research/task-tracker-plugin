@@ -1,4 +1,4 @@
-package ui
+package org.jetbrains.research.ml.codetracker.ui
 
 
 import com.intellij.openapi.ui.DialogWrapper
@@ -10,7 +10,8 @@ import javax.swing.JPanel
 
 
 class ServerDialogWrapper : DialogWrapper(true) {
-    private val message = "Произошла ошибка отправки данных. Пожалуйста, напишите об этом на почту codetracker.team@gmail.com"
+    private val message =
+        "Произошла ошибка отправки данных. Пожалуйста, напишите об этом на почту codetracker.team@gmail.com"
 
     override fun createCenterPanel(): JComponent? {
         val dialogPanel = JPanel(BorderLayout())
