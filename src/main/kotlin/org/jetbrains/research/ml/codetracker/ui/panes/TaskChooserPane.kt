@@ -100,7 +100,7 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
 
     private fun initChoseTaskComboBox() {
 //        Todo: change language to current language
-        choseTaskComboBox.items = FXCollections.observableList(TaskChooserUiData.chosenTask.dataList.map { it.info?.get(PaneLanguage("en"))?.name })
+        choseTaskComboBox.items = FXCollections.observableList(TaskChooserUiData.chosenTask.dataList.map { it.infoTranslation?.get(PaneLanguage("en"))?.name })
         choseTaskComboBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
             TaskChooserUiData.chosenTask.uiValue = choseTaskComboBox.selectionModel.selectedIndex
         }
