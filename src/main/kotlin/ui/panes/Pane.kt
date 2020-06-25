@@ -148,9 +148,10 @@ abstract class PaneControllerManager<E : IPaneNotifyEvent, T : PaneController<E>
             fxPanel.scene = scene
             fxPanel.background = java.awt.Color.WHITE
             fxPanel.isVisible = MainController.visiblePaneControllerManager == this
-
-            //        Todo: maybe create some other way of data updating?
+            //  Todo: maybe create some other way of data updating?
             paneUiData.getData().forEach { notify(it.notifyEvent, it.uiValue) }
+            //  Todo: Set current language AFTER all controllers created their content, otherwise some combobox may be not initialized yet
+
             notify(paneUiData.currentLanguage.notifyEvent, paneUiData.currentLanguage.uiValue)
         }
         return fxPanel
