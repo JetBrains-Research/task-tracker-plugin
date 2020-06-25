@@ -15,6 +15,7 @@ import javafx.scene.paint.Color
 import org.jetbrains.research.ml.codetracker.ui.Language
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.TranslationManager
+import java.awt.Panel
 import kotlin.properties.Delegates
 import kotlin.reflect.KClass
 
@@ -141,7 +142,6 @@ abstract class PaneControllerManager<E : IPaneNotifyEvent, T : PaneController<E>
         Platform.runLater {
             val loader = FXMLLoader()
             loader.namespace["scale"] = scale
-//            Todo: find out what happen with resourse getting
             loader.location = javaClass.getResource(fxmlFilename)
             loader.setController(controller)
             val root = loader.load<Parent>()
