@@ -34,7 +34,6 @@ dependencies {
     implementation("com.gluonhq", "charm-glisten", "6.0.1")
     implementation("com.google.code.gson", "gson", "2.8.5")
     implementation("com.squareup.okhttp3", "okhttp", "4.2.2")
-
     testCompile("junit", "junit", "4.12")
 
 }
@@ -75,12 +74,14 @@ intellij {
         "CODE_TRACKER_IDEA_VERSION",
         "192.5728.98"
     )
-    println("Using ide version: ${ideVersion}")
+    println("Using ide version: $ideVersion")
     version = ideVersion
     pluginName = "code-tracker-plugin"
     downloadSources = true
     sameSinceUntilBuild = false
     updateSinceUntilBuild = false
+    // Todo: use the latest version
+    setPlugins("Activity Tracker:0.1.9 beta")
 }
 
 javafx {
