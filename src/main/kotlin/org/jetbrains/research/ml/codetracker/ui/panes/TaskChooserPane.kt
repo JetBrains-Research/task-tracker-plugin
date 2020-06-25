@@ -14,6 +14,7 @@ import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.models.PaneLanguage
 import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.models.TaskInfo
+import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.makeTranslatable
 import kotlin.reflect.KClass
@@ -43,12 +44,8 @@ object TaskChooserControllerManager : PaneControllerManager<TaskChooserNotifyEve
 object TaskChooserUiData : PaneUiData<TaskChooserNotifyEvent>(
     TaskChooserControllerManager
 ) {
-//    Todo: get from server
-    private val tasks: List<Task> = arrayListOf(
-        Task("key1", 0, hashMapOf(PaneLanguage("en") to TaskInfo("name1", "description1", "input1", "output1"))),
-        Task("key2", 1, hashMapOf(PaneLanguage("en") to TaskInfo("name2", "description2", "input2", "output2"))))
-    val chosenTask = ListedUiField(
-        tasks,
+     val chosenTask = ListedUiField(
+        PluginServer.tasks,
         TaskChooserNotifyEvent.CHOSEN_TASK_NOTIFY, -1,"chosenTask")
     override val currentLanguage: LanguageUiField = LanguageUiField(
         TaskChooserNotifyEvent.LANGUAGE_NOTIFY
@@ -77,6 +74,8 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
     @FXML private lateinit var finishWorkButton: Button
     @FXML private lateinit var finishWorkText: Text
 
+    private val translations = PluginServer.paneText.taskChoosePane
+
     override fun initialize() {
         initChoseTaskComboBox()
         initButtons()
@@ -92,9 +91,9 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
     }
 
     override fun makeTranslatable() {
-        choseTaskLabel.makeTranslatable(::choseTaskLabel.name)
-        startSolvingText.makeTranslatable(::startSolvingText.name)
-        finishWorkText.makeTranslatable(::finishWorkText.name)
+        choseTaskLabel.makeTranslatable { choseTaskLabel.text = translations[it]?.chooseTask }
+        startSolvingText.makeTranslatable { startSolvingText.text = translations[it]?.startSolving }
+        finishWorkText.makeTranslatable { finishWorkText.text = translations[it]?.finishSession }
 
     }
 

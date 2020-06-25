@@ -13,6 +13,7 @@ import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.util.converter.IntegerStringConverter
 import org.jetbrains.research.ml.codetracker.models.PaneText
+import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.makeTranslatable
 import java.util.function.UnaryOperator
@@ -139,6 +140,8 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
     @FXML private lateinit var startWorkingButton: Button
     @FXML private lateinit var startWorkingText: Text
 
+    private val translations = PluginServer.paneText.surveyPane
+
     override fun initialize() {
         initAge()
         initGender()
@@ -184,12 +187,11 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
     }
 
     override fun makeTranslatable() {
-        val paneText = PaneText()
-        ageLabel.makeTranslatable(::ageLabel.name)
-        genderLabel.makeTranslatable(::genderLabel.name)
-        experienceLabel.makeTranslatable(::experienceLabel.name)
-        countryLabel.makeTranslatable(::countryLabel.name)
-        startWorkingText.makeTranslatable(::startWorkingText.name)
+        ageLabel.makeTranslatable { ageLabel.text = translations[it]?.age }
+        genderLabel.makeTranslatable { genderLabel.text = translations[it]?.gender }
+        experienceLabel.makeTranslatable { experienceLabel.text = translations[it]?.experience }
+        countryLabel.makeTranslatable { countryLabel.text = translations[it]?.country }
+        startWorkingText.makeTranslatable { startWorkingText.text = translations[it]?.startSession }
     }
 
     private fun initAge() {

@@ -38,8 +38,8 @@ data class TaskPaneText(
 
 @Serializable
 data class PaneText(
-    val surveyPane: Map<PaneLanguage, SurveyPaneText>? = null,
-    val taskChoosePane: Map<PaneLanguage, TaskChoosePaneText>? = null,
-    val taskPane: Map<PaneLanguage, TaskPaneText>? = null,
-    val finishPane: Map<PaneLanguage, FinishPaneText>? = null
+    val surveyPane: Map<PaneLanguage, SurveyPaneText>,
+    val taskChoosePane: Map<PaneLanguage, TaskChoosePaneText>,
+    val taskPane: Map<PaneLanguage, TaskPaneText>,
+    val finishPane: Map<PaneLanguage, FinishPaneText>
 )

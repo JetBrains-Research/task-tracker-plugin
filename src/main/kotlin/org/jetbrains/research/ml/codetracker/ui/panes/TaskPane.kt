@@ -10,6 +10,7 @@ import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
+import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.makeTranslatable
 import kotlin.reflect.KClass
@@ -70,6 +71,8 @@ class TaskController(override val uiData: TaskUiData, scale: Double, fxPanel: JF
     @FXML lateinit var backToTasksButton: Button
     @FXML lateinit var backToTasksText: Text
 
+    private val translations = PluginServer.paneText.taskPane
+
 
 
     override fun initialize() {
@@ -79,14 +82,14 @@ class TaskController(override val uiData: TaskUiData, scale: Double, fxPanel: JF
 
     override fun makeTranslatable() {
 //        Todo: find out the best way to translate task info because it depends on chosen task
-        taskNameText.makeTranslatable("${TaskChooserUiData.chosenTask.uiValue}:${::taskNameText.name}")
-        taskDescriptionText.makeTranslatable("${TaskChooserUiData.chosenTask.uiValue}:${::taskDescriptionText.name}")
-        taskInputText.makeTranslatable("${TaskChooserUiData.chosenTask.uiValue}:${::taskInputText.name}")
-        taskOutputText.makeTranslatable("${TaskChooserUiData.chosenTask.uiValue}:${::taskOutputText.name}")
-        inputLabel.makeTranslatable(::inputLabel.name)
-        outputLabel.makeTranslatable(::outputLabel.name)
-        sendSolutionText.makeTranslatable(::sendSolutionText.name)
-        backToTasksText.makeTranslatable(::backToTasksText.name)
+//        taskNameText.makeTranslatable { taskNameText.text = TaskChooserUiData.chosenTask }
+//        taskDescriptionText.makeTranslatable("${TaskChooserUiData.chosenTask.uiValue}:${::taskDescriptionText.name}")
+//        taskInputText.makeTranslatable("${TaskChooserUiData.chosenTask.uiValue}:${::taskInputText.name}")
+//        taskOutputText.makeTranslatable("${TaskChooserUiData.chosenTask.uiValue}:${::taskOutputText.name}")
+        inputLabel.makeTranslatable { inputLabel.text = translations[it]?.inputData }
+        outputLabel.makeTranslatable { outputLabel.text = translations[it]?.outputData }
+        sendSolutionText.makeTranslatable { sendSolutionText.text = translations[it]?.submit }
+        backToTasksText.makeTranslatable { backToTasksText.text = translations[it]?.backToTasks }
     }
 
     private fun initButtons() {

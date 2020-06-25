@@ -8,6 +8,7 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
+import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.*
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import kotlin.reflect.KClass
@@ -55,6 +56,8 @@ class FinishController(override val uiData: FinishUiData, scale: Double, fxPanel
     @FXML lateinit var greatWorkLabel: Label
     @FXML lateinit var messageText: Text
 
+    private val translations = PluginServer.paneText.finishPane
+
 
     override fun initialize() {
         initButtons()
@@ -62,10 +65,10 @@ class FinishController(override val uiData: FinishUiData, scale: Double, fxPanel
     }
 
     override fun makeTranslatable() {
-        backToTasksText.makeTranslatable(::backToTasksText.name)
-        backToProfileText.makeTranslatable(::backToProfileText.name)
-        greatWorkLabel.makeTranslatable(::greatWorkLabel.name)
-        messageText.makeTranslatable(::messageText.name)
+        backToTasksText.makeTranslatable { backToTasksText.text = translations[it]?.backToTasks }
+        backToProfileText.makeTranslatable { backToProfileText.text = translations[it]?.backToSurvey }
+        greatWorkLabel.makeTranslatable { greatWorkLabel.text = translations[it]?.praise }
+        messageText.makeTranslatable { messageText.text = translations[it]?.finalMessage }
     }
 
     private fun initButtons() {
