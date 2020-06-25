@@ -186,7 +186,6 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
     override fun makeTranslatable() {
         val paneText = PaneText()
         ageLabel.makeTranslatable(::ageLabel.name)
-        ageLabel.makeTranslatable { ageLabel.text = paneText.profilePane?.get(it)?.age }
         genderLabel.makeTranslatable(::genderLabel.name)
         experienceLabel.makeTranslatable(::experienceLabel.name)
         countryLabel.makeTranslatable(::countryLabel.name)
