@@ -15,6 +15,10 @@ fun Labeled.makeTranslatable(name: String, translate: (PaneLanguage) -> Unit = {
     TranslationManager.addTranslatableComponent(translate)
 }
 
+fun Labeled.makeTranslatable(translate: (PaneLanguage) -> Unit) {
+    TranslationManager.addTranslatableComponent(translate)
+}
+
 fun Text.makeTranslatable(name: String, translate: (PaneLanguage) -> Unit = { this.text =
     TranslationManager.getTranslation(name, it)
 }) {

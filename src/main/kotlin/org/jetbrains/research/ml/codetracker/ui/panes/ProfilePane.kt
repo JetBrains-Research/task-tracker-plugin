@@ -12,6 +12,7 @@ import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.util.converter.IntegerStringConverter
+import org.jetbrains.research.ml.codetracker.models.PaneText
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.makeTranslatable
 import java.util.function.UnaryOperator
@@ -35,7 +36,7 @@ object ProfileControllerManager : PaneControllerManager<ProfileNotifyEvent, Prof
 
     //Todo: get uiFiled type here and cast new automatically?
     override fun notify(notifyEvent: ProfileNotifyEvent, new: Any?) {
-        val isProfileUnfilled = paneUiData.anyDataVisibleAndDefault()
+        val isProfileUnfilled = paneUiData.anyDataRequiredAndDefault()
         paneControllers.forEach { it.setStartWorkingButtonDisability(isProfileUnfilled) }
 
         when (notifyEvent) {
@@ -73,14 +74,14 @@ object ProfileUiData : PaneUiData<ProfileNotifyEvent>(
         Country("Россия"),
         Country("Нидерланды")
     )
-    private val genderList: List<Gender> = listOf(Gender("male"), Gender("female"), Gender("other"))
+    private val genderList: List<Gender> = listOf(Gender("male"), Gender("female"), Gender("other"), Gender("don't want to choose"))
 
     val age = UiField(ProfileNotifyEvent.AGE_NOTIFY, 0, "age")
     val gender = ListedUiField(
         genderList,
         ProfileNotifyEvent.GENDER_NOTIFY, -1, "gender")
     val peYears = UiField(ProfileNotifyEvent.PE_YEARS_NOTIFY, -1, "peYears")
-    val peMonths = VisibleUiField(true, ProfileNotifyEvent.PE_MONTHS_NOTIFY, -1, "peMonths")
+    val peMonths = RequiredUiField(true, ProfileNotifyEvent.PE_MONTHS_NOTIFY, -1, "peMonths")
     val country = ListedUiField(
         countryList,
         ProfileNotifyEvent.COUNTRY_NOTIFY, -1,"country")
@@ -174,19 +175,18 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
     }
 
     fun setPeMonthsVisibility(isVisible: Boolean) {
-        println("set pe months visibility: $isVisible")
         peMonthsHBox.isVisible = isVisible
-        uiData.peMonths.isVisible = isVisible
-
+        uiData.peMonths.isRequired = isVisible
     }
 
     fun setStartWorkingButtonDisability(isDisable: Boolean) {
-        println("isDisable: $isDisable")
         startWorkingButton.isDisable = isDisable
     }
 
     override fun makeTranslatable() {
+        val paneText = PaneText()
         ageLabel.makeTranslatable(::ageLabel.name)
+        ageLabel.makeTranslatable { ageLabel.text = paneText.profilePane?.get(it)?.age }
         genderLabel.makeTranslatable(::genderLabel.name)
         experienceLabel.makeTranslatable(::experienceLabel.name)
         countryLabel.makeTranslatable(::countryLabel.name)

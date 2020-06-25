@@ -15,7 +15,6 @@ import javafx.scene.paint.Color
 import org.jetbrains.research.ml.codetracker.models.PaneLanguage
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.TranslationManager
-import java.awt.Panel
 import kotlin.properties.Delegates
 import kotlin.reflect.KClass
 
@@ -85,18 +84,18 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
         TranslationManager.currentLanguageIndex,"language")
 
     /**
-     * Represents ui fields with visibility
+     * Represents ui fields that may be required or not, like months text filed in ProfilePane
      */
-    inner class VisibleUiField<T : Any?>(var isVisible: Boolean, notifyEvent: E, defaultUiValue: T, header: String) : UiField<T>(notifyEvent, defaultUiValue, header)
+    inner class RequiredUiField<T : Any?>(var isRequired: Boolean, notifyEvent: E, defaultUiValue: T, header: String) : UiField<T>(notifyEvent, defaultUiValue, header)
 
     abstract fun getData(): List<UiField<*>>
 
     fun anyDataDefault(): Boolean = getData().any { it.isUiValueDefault }
 
-    fun anyDataVisibleAndDefault() : Boolean {
+    fun anyDataRequiredAndDefault() : Boolean {
         return getData().any {
-//            If field is invisible, doesn't matter whether it's uiValue is default
-            if (it is VisibleUiField && !it.isVisible) {
+//            If field is optional (not required), doesn't matter whether it's uiValue is default
+            if (it is RequiredUiField && !it.isRequired) {
                 false
             } else {
                 it.isUiValueDefault

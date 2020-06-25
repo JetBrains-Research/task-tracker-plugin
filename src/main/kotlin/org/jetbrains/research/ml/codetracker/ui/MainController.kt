@@ -38,7 +38,7 @@ internal object MainController {
         panel.background = java.awt.Color.WHITE
         println("${this::class}: $paneControllerManagers")
         // Todo: uncomment it
-//        paneControllerManagers.map { it.createContent(project, scale) }.forEach { panel.add(it) }
+        paneControllerManagers.map { it.createContent(project, scale) }.forEach { panel.add(it) }
         return JBScrollPane(panel)
     }
 }
