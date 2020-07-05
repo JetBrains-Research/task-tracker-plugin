@@ -10,8 +10,10 @@ import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
+import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.TranslationManager
 import org.jetbrains.research.ml.codetracker.ui.makeTranslatable
 import kotlin.reflect.KClass
 
@@ -28,7 +30,7 @@ object TaskControllerManager : PaneControllerManager<TaskNotifyEvent, TaskContro
 
     override fun notify(notifyEvent: TaskNotifyEvent, new: Any?) {
         when (notifyEvent) {
-            TaskNotifyEvent.LANGUAGE_NOTIFY -> switchLanguage(new as Int)
+            TaskNotifyEvent.LANGUAGE_NOTIFY -> TranslationManager.switchLanguage(new as Int)
         }
     }
 }
@@ -76,11 +78,13 @@ class TaskController(override val uiData: TaskUiData, scale: Double, fxPanel: JF
 
 
     override fun initialize() {
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         initButtons()
+        makeTranslatable()
         super.initialize()
     }
 
-    override fun makeTranslatable() {
+    fun makeTranslatable() {
 //        Todo: find out the best way to translate task info because it depends on chosen task
 //        taskNameText.makeTranslatable { taskNameText.text = TaskChooserUiData.chosenTask }
 //        taskDescriptionText.makeTranslatable("${TaskChooserUiData.chosenTask.uiValue}:${::taskDescriptionText.name}")
@@ -88,8 +92,6 @@ class TaskController(override val uiData: TaskUiData, scale: Double, fxPanel: JF
 //        taskOutputText.makeTranslatable("${TaskChooserUiData.chosenTask.uiValue}:${::taskOutputText.name}")
         inputLabel.makeTranslatable { inputLabel.text = translations[it]?.inputData }
         outputLabel.makeTranslatable { outputLabel.text = translations[it]?.outputData }
-        sendSolutionText.makeTranslatable { sendSolutionText.text = translations[it]?.submit }
-        backToTasksText.makeTranslatable { backToTasksText.text = translations[it]?.backToTasks }
     }
 
     private fun initButtons() {
@@ -98,10 +100,14 @@ class TaskController(override val uiData: TaskUiData, scale: Double, fxPanel: JF
                 TaskChooserControllerManager
 //            Todo: send data here
         }
+        sendSolutionText.makeTranslatable { sendSolutionText.text = translations[it]?.submit }
+
         backToTasksButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             MainController.visiblePaneControllerManager =
                 TaskChooserControllerManager
         }
+        backToTasksText.makeTranslatable { backToTasksText.text = translations[it]?.backToTasks }
+
     }
 
 }

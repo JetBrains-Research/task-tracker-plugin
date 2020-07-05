@@ -8,6 +8,7 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
+import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.*
 import org.jetbrains.research.ml.codetracker.ui.MainController
@@ -21,28 +22,22 @@ object FinishControllerManager : PaneControllerManager<FinishNotifyEvent, Finish
     override val paneControllerClass: KClass<FinishController> = FinishController::class
     override val paneControllers: MutableList<FinishController> = arrayListOf()
     override val fxmlFilename: String = "finish-ui-form-2.fxml"
-    override val paneUiData: PaneUiData<FinishNotifyEvent> =
-        FinishUiData
+    override val paneUiData: PaneUiData<FinishNotifyEvent> = FinishUiData
 
     override fun notify(notifyEvent: FinishNotifyEvent, new: Any?) {
         when (notifyEvent) {
-            FinishNotifyEvent.LANGUAGE_NOTIFY -> switchLanguage(new as Int)
+            FinishNotifyEvent.LANGUAGE_NOTIFY -> TranslationManager.switchLanguage(new as Int)
         }
     }
-
 }
 
-object FinishUiData : PaneUiData<FinishNotifyEvent>(
-    FinishControllerManager
-) {
-    override val currentLanguage: LanguageUiField = LanguageUiField(
-        FinishNotifyEvent.LANGUAGE_NOTIFY
-    )
+object FinishUiData : PaneUiData<FinishNotifyEvent>(FinishControllerManager) {
+    override val currentLanguage: LanguageUiField = LanguageUiField(FinishNotifyEvent.LANGUAGE_NOTIFY)
     override fun getData(): List<UiField<*>> = arrayListOf()
 }
 
 class FinishController(override val uiData: FinishUiData, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController<FinishNotifyEvent>(uiData, scale, fxPanel, id) {
-//    @FXML lateinit var finishPane: Pane
+    //    @FXML lateinit var finishPane: Pane
 
     @FXML lateinit var blueRectangle: Rectangle
     @FXML lateinit var orangePolygon: Polygon
@@ -60,26 +55,26 @@ class FinishController(override val uiData: FinishUiData, scale: Double, fxPanel
 
 
     override fun initialize() {
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         initButtons()
+        makeTranslatable()
         super.initialize()
     }
 
-    override fun makeTranslatable() {
-        backToTasksText.makeTranslatable { backToTasksText.text = translations[it]?.backToTasks }
-        backToProfileText.makeTranslatable { backToProfileText.text = translations[it]?.backToSurvey }
+    private fun makeTranslatable() {
         greatWorkLabel.makeTranslatable { greatWorkLabel.text = translations[it]?.praise }
         messageText.makeTranslatable { messageText.text = translations[it]?.finalMessage }
     }
 
     private fun initButtons() {
         backToTasksButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            MainController.visiblePaneControllerManager =
-                TaskChooserControllerManager
+            MainController.visiblePaneControllerManager = TaskChooserControllerManager
         }
-        backToProfileButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            MainController.visiblePaneControllerManager =
-                ProfileControllerManager
-        }
+        backToTasksText.makeTranslatable { backToTasksText.text = translations[it]?.backToTasks }
 
+        backToProfileButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+            MainController.visiblePaneControllerManager = ProfileControllerManager
+        }
+        backToProfileText.makeTranslatable { backToProfileText.text = translations[it]?.backToSurvey }
     }
 }

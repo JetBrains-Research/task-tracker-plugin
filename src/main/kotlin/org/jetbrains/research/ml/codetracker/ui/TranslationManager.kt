@@ -4,39 +4,40 @@ package org.jetbrains.research.ml.codetracker.ui
 import javafx.scene.control.*
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.models.PaneLanguage
+import org.jetbrains.research.ml.codetracker.server.PluginServer
 
 interface ITranslatable {
     fun translate(language: PaneLanguage)
 }
 
-fun Labeled.makeTranslatable(translate: (PaneLanguage) -> Unit) {
-    TranslationManager.addTranslatableComponent(translate)
+fun Any?.makeTranslatable(translate: (PaneLanguage) -> Unit) {
+    TranslationManager.addTranslatableObject(translate)
 }
-
-fun Text.makeTranslatable(translate: (PaneLanguage) -> Unit) {
-    TranslationManager.addTranslatableComponent(translate)
-}
-
 
 object TranslationManager {
-    //    Todo: get from server
-    val availableLanguages = listOf(PaneLanguage("ru"), PaneLanguage("en"))
+    val availableLanguages = PluginServer.availableLanguages
     private val translatableObjects: MutableList<ITranslatable> = arrayListOf()
 
     var currentLanguageIndex: Int = 0
-        set(value) {
-            if (value != field && value < availableLanguages.size) {
+        private set(value) {
+            if (value != field && value in availableLanguages.indices) {
                 translatableObjects.forEach { it.translate(availableLanguages[value]) }
                 field = value
             }
         }
 
-    fun addTranslatableComponent(translate: (PaneLanguage) -> Unit) {
-        translatableObjects.add(object :
-            ITranslatable {
+    fun addTranslatableObject(translate: (PaneLanguage) -> Unit) {
+        val translatableObject = object :  ITranslatable {
             override fun translate(language: PaneLanguage) {
                 translate(language)
             }
-        })
+        }
+        translatableObject.translate(availableLanguages[currentLanguageIndex])
+        translatableObjects.add(translatableObject)
+    }
+
+    fun switchLanguage(newLanguage: Int) {
+        currentLanguageIndex = newLanguage
+        MainController.paneControllerManagers.forEach { it.switchUILanguage(currentLanguageIndex) }
     }
 }

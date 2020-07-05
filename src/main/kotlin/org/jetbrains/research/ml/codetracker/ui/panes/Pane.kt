@@ -1,6 +1,7 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import javafx.application.Platform
@@ -12,9 +13,11 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.ComboBox
 import javafx.scene.paint.Color
+import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.PaneLanguage
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.TranslationManager
+import java.lang.Thread.currentThread
 import kotlin.properties.Delegates
 import kotlin.reflect.KClass
 
@@ -51,6 +54,7 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
 
         open var uiValue: T by Delegates.observable(defaultUiValue) { _, old, new ->
             if (old != new) {
+                println("${this::class.simpleName}:setUiValueInUiField ${currentThread().name}")
                 isUiValueDefault = new == defaultUiValue
                 controllerManager.notify(notifyEvent, new)
             }
@@ -65,6 +69,7 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
     open inner class ListedUiField<T: Any?> (val dataList: List<T>, notifyEvent: E, defaultValue: Int, header: String) : UiField<Int>(notifyEvent, defaultValue, header) {
         override var uiValue: Int by Delegates.observable(defaultUiValue) { _, old, new ->
             if (old != new && new in dataList.indices) {
+                println("${this::class.simpleName}:setUiValueInListedField ${currentThread().name}")
                 isUiValueDefault = new == defaultValue
                 controllerManager.notify(notifyEvent, new)
             }
@@ -93,6 +98,7 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
     fun anyDataDefault(): Boolean = getData().any { it.isUiValueDefault }
 
     fun anyDataRequiredAndDefault() : Boolean {
+        println("${this::class.simpleName}:anyDataRequiredAndDefault ${currentThread().name}")
         return getData().any {
 //            If field is optional (not required), doesn't matter whether it's uiValue is default
             if (it is RequiredUiField && !it.isRequired) {
@@ -112,19 +118,21 @@ abstract class PaneUiData <E : IPaneNotifyEvent> (protected val controllerManage
  */
 abstract class PaneController<E : IPaneNotifyEvent>(open val uiData: PaneUiData<E>, val scale: Double, val fxPanel: JFXPanel, val id: Int) {
     @FXML private lateinit var languageComboBox : ComboBox<String>
+    protected val logger = Logger.getInstance(javaClass)
+
 
     open fun initialize() {
+        println("${this::class.simpleName}:PCinitialize ${currentThread().name}")
         initLanguageComboBox()
-        makeTranslatable()
     }
 
-    abstract fun makeTranslatable()
-
     fun selectLanguage(newLanguageIndex: Int) {
+        println("${this::class.simpleName}:selectLanguage ${currentThread().name}")
         languageComboBox.selectionModel.select(newLanguageIndex)
     }
 
     private fun initLanguageComboBox() {
+        println("${this::class.simpleName}:initLanguageComboBox ${currentThread().name}")
         languageComboBox.items = FXCollections.observableList(uiData.currentLanguage.dataList.map { it.key })
         languageComboBox.selectionModel.selectedItemProperty().addListener { _, _, _ ->
             uiData.currentLanguage.uiValue = languageComboBox.selectionModel.selectedIndex
@@ -141,52 +149,64 @@ abstract class PaneControllerManager<E : IPaneNotifyEvent, T : PaneController<E>
     protected abstract val paneControllers: MutableList<T>
     protected abstract val fxmlFilename: String
     protected abstract val paneUiData: PaneUiData<E>
+    protected val logger = Logger.getInstance(javaClass)
     private var lastId = 0
 
     abstract fun notify(notifyEvent: E, new: Any?)
 
     fun createContent(project: Project, scale: Double): JFXPanel {
+        println("${this::class.simpleName}:createContent ${currentThread().name}")
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create content")
         val fxPanel = JFXPanel()
         val controller = paneControllerClass.constructors.first().call(paneUiData, scale, fxPanel, lastId++)
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create controller")
+
         paneControllers.add(controller)
 
         Disposer.register(project, Disposable {
             this.removeController(controller)
         })
 
-        Platform.setImplicitExit(false)
-        Platform.runLater {
-            val loader = FXMLLoader()
-            loader.namespace["scale"] = scale
-            loader.location = javaClass.getResource(fxmlFilename)
-            loader.setController(controller)
-            val root = loader.load<Parent>()
-            val scene = Scene(root, Color.WHITE)
-            fxPanel.scene = scene
-            fxPanel.background = java.awt.Color.WHITE
-            fxPanel.isVisible = MainController.visiblePaneControllerManager == this
-            //  Todo: maybe create some other way of data updating?
-            paneUiData.getData().forEach { notify(it.notifyEvent, it.uiValue) }
-            //  Todo: Set current language AFTER all controllers created their content, otherwise some comboboxes may be not initialized yet
-//            notify(paneUiData.currentLanguage.notifyEvent, paneUiData.currentLanguage.uiValue)
-        }
+
+        val loader = FXMLLoader()
+        loader.namespace["scale"] = scale
+        loader.location = javaClass.getResource(fxmlFilename)
+        loader.setController(controller)
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set controller")
+
+        val root = loader.load<Parent>()
+        val scene = Scene(root, Color.WHITE)
+        fxPanel.scene = scene
+        fxPanel.background = java.awt.Color.WHITE
+        fxPanel.isVisible = MainController.visiblePaneControllerManager == this
+        //  Todo: maybe create some other way of data updating?
+        paneUiData.getData().forEach { notify(it.notifyEvent, it.uiValue) }
+
+        // Note: don't call TranslationManager or other PaneControllerManagers here because some elements may be not initialized yet
+        switchUILanguage(TranslationManager.currentLanguageIndex)
+
         return fxPanel
     }
 
     //    todo: call MainController here?
     fun setVisible(visible: Boolean) {
-        println("${this::class}: set visible $visible")
+        println("${this::class.simpleName}:setVisible ${currentThread().name}")
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set visible")
         paneControllers.forEach { it.fxPanel.isVisible = visible }
     }
 
-    protected fun switchLanguage(newLanguageIndex: Int) {
-        TranslationManager.currentLanguageIndex = newLanguageIndex
-        MainController.paneControllerManagers.forEach { controllerManager ->
-            controllerManager.paneControllers.forEach { it.selectLanguage(newLanguageIndex) }
-        }
+    /**
+     * Just to switch the combobox language on this pane.
+     * For switching the language on all ui elements use TranslationManager.
+     */
+    fun switchUILanguage(newLanguageIndex: Int) {
+        println("${this::class.simpleName}:switchUILanguage ${currentThread().name}")
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} switch ui language")
+        paneControllers.forEach { it.selectLanguage(newLanguageIndex) }
     }
 
     private fun removeController(controller: T) {
+        println("${this::class.simpleName}:removeController ${currentThread().name}")
         paneControllers.remove(controller)
     }
 }

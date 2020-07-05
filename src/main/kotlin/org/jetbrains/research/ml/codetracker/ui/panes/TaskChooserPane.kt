@@ -11,11 +11,11 @@ import javafx.scene.layout.Pane
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
+import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.PaneLanguage
-import org.jetbrains.research.ml.codetracker.models.Task
-import org.jetbrains.research.ml.codetracker.models.TaskInfo
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.TranslationManager
 import org.jetbrains.research.ml.codetracker.ui.makeTranslatable
 import kotlin.reflect.KClass
 
@@ -36,7 +36,7 @@ object TaskChooserControllerManager : PaneControllerManager<TaskChooserNotifyEve
         paneControllers.forEach { it.setStartSolvingButtonDisability(isDataUnfilled) }
         when (notifyEvent) {
             TaskChooserNotifyEvent.CHOSEN_TASK_NOTIFY -> paneControllers.forEach { it.selectTask(new as Int) }
-            TaskChooserNotifyEvent.LANGUAGE_NOTIFY -> switchLanguage(new as Int)
+            TaskChooserNotifyEvent.LANGUAGE_NOTIFY -> TranslationManager.switchLanguage(new as Int)
         }
     }
 }
@@ -77,6 +77,8 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
     private val translations = PluginServer.paneText.taskChoosePane
 
     override fun initialize() {
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+
         initChoseTaskComboBox()
         initButtons()
         super.initialize()
@@ -90,19 +92,14 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
         startSolvingButton.isDisable = isDisable
     }
 
-    override fun makeTranslatable() {
-        choseTaskLabel.makeTranslatable { choseTaskLabel.text = translations[it]?.chooseTask }
-        startSolvingText.makeTranslatable { startSolvingText.text = translations[it]?.startSolving }
-        finishWorkText.makeTranslatable { finishWorkText.text = translations[it]?.finishSession }
-
-    }
-
     private fun initChoseTaskComboBox() {
 //        Todo: change language to current language
         choseTaskComboBox.items = FXCollections.observableList(TaskChooserUiData.chosenTask.dataList.map { it.infoTranslation?.get(PaneLanguage("en"))?.name })
         choseTaskComboBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
             TaskChooserUiData.chosenTask.uiValue = choseTaskComboBox.selectionModel.selectedIndex
         }
+        choseTaskLabel.makeTranslatable { choseTaskLabel.text = translations[it]?.chooseTask }
+
     }
 
     private fun initButtons() {
@@ -115,9 +112,12 @@ class TaskChooserController(override val uiData: TaskChooserUiData, scale: Doubl
             MainController.visiblePaneControllerManager =
                 TaskControllerManager
         }
+        startSolvingText.makeTranslatable { startSolvingText.text = translations[it]?.startSolving }
+
         finishWorkButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             MainController.visiblePaneControllerManager =
                 FinishControllerManager
         }
+        finishWorkText.makeTranslatable { finishWorkText.text = translations[it]?.finishSession }
     }
 }

@@ -1,5 +1,6 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
+import com.intellij.openapi.diagnostic.Logger
 import javafx.collections.FXCollections
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
@@ -12,9 +13,12 @@ import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import javafx.util.converter.IntegerStringConverter
-import org.jetbrains.research.ml.codetracker.models.PaneText
+import org.jetbrains.research.ml.codetracker.Plugin
+import org.jetbrains.research.ml.codetracker.models.Country
+import org.jetbrains.research.ml.codetracker.models.Gender
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.TranslationManager
 import org.jetbrains.research.ml.codetracker.ui.makeTranslatable
 import java.util.function.UnaryOperator
 import kotlin.reflect.KClass
@@ -49,46 +53,22 @@ object ProfileControllerManager : PaneControllerManager<ProfileNotifyEvent, Prof
                 paneControllers.forEach { it.setPeMonthsVisibility(peMonthsVisibility); it.setPeYears(new as Int) }
             }
             ProfileNotifyEvent.PE_MONTHS_NOTIFY -> paneControllers.forEach { it.setPeMonths(new as Int) }
-            ProfileNotifyEvent.LANGUAGE_NOTIFY -> switchLanguage(new as Int)
+            ProfileNotifyEvent.LANGUAGE_NOTIFY -> TranslationManager.switchLanguage(new as Int)
         }
     }
 }
 
-// Todo: move to some other place?
-inline class Country(val key: String) {
-    override fun toString(): String {
-        return key
-    }
-}
 
-inline class Gender(val key: String) {
-    override fun toString(): String {
-        return key
-    }
-}
-
-object ProfileUiData : PaneUiData<ProfileNotifyEvent>(
-    ProfileControllerManager
-) {
-    //    Todo: get from server
-    private val countryList: List<Country> = listOf(
-        Country("Россия"),
-        Country("Нидерланды")
-    )
-    private val genderList: List<Gender> = listOf(Gender("male"), Gender("female"), Gender("other"), Gender("don't want to choose"))
+object ProfileUiData : PaneUiData<ProfileNotifyEvent>(ProfileControllerManager) {
+    private val countries: List<Country> = PluginServer.countries
+    private val genders: List<Gender> = PluginServer.genders
 
     val age = UiField(ProfileNotifyEvent.AGE_NOTIFY, 0, "age")
-    val gender = ListedUiField(
-        genderList,
-        ProfileNotifyEvent.GENDER_NOTIFY, -1, "gender")
+    val gender = ListedUiField(genders, ProfileNotifyEvent.GENDER_NOTIFY, -1, "gender")
     val peYears = UiField(ProfileNotifyEvent.PE_YEARS_NOTIFY, -1, "peYears")
     val peMonths = RequiredUiField(true, ProfileNotifyEvent.PE_MONTHS_NOTIFY, -1, "peMonths")
-    val country = ListedUiField(
-        countryList,
-        ProfileNotifyEvent.COUNTRY_NOTIFY, -1,"country")
-    override val currentLanguage: LanguageUiField = LanguageUiField(
-        ProfileNotifyEvent.LANGUAGE_NOTIFY
-    )
+    val country = ListedUiField(countries, ProfileNotifyEvent.COUNTRY_NOTIFY, -1,"country")
+    override val currentLanguage: LanguageUiField = LanguageUiField(ProfileNotifyEvent.LANGUAGE_NOTIFY)
 
     override fun getData() = listOf(
         age,
@@ -134,7 +114,7 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
 
     // Country
     @FXML private lateinit var countryLabel: Label
-    @FXML private lateinit var countryComboBox: ComboBox<Country>
+    @FXML private lateinit var countryComboBox: ComboBox<String>
 
     // StartWorking
     @FXML private lateinit var startWorkingButton: Button
@@ -143,12 +123,13 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
     private val translations = PluginServer.paneText.surveyPane
 
     override fun initialize() {
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+
         initAge()
         initGender()
-        initPeYears()
-        initPeMonths()
+        initExperience()
         initCountry()
-        initStartWorkingButton()
+        initStartWorking()
         super.initialize()
     }
 
@@ -186,14 +167,6 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
         startWorkingButton.isDisable = isDisable
     }
 
-    override fun makeTranslatable() {
-        ageLabel.makeTranslatable { ageLabel.text = translations[it]?.age }
-        genderLabel.makeTranslatable { genderLabel.text = translations[it]?.gender }
-        experienceLabel.makeTranslatable { experienceLabel.text = translations[it]?.experience }
-        countryLabel.makeTranslatable { countryLabel.text = translations[it]?.country }
-        startWorkingText.makeTranslatable { startWorkingText.text = translations[it]?.startSession }
-    }
-
     private fun initAge() {
         val filter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@ { change: TextFormatter.Change? ->
             val text: String? = change?.controlNewText
@@ -207,17 +180,30 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
         ageTextField.textProperty().addListener { _, _, new ->
             uiData.age.uiValue = converter.fromString(new) ?: uiData.age.defaultUiValue
         }
+        ageLabel.makeTranslatable { ageLabel.text = translations[it]?.age }
+
     }
 
     private fun initGender() {
         genderRadioButtons = listOf(gender1, gender2, gender3, gender4, gender5, gender6)
         val visibleGenders = genderRadioButtons.subList(0, uiData.gender.dataList.size)
         val invisibleGenders = genderRadioButtons.subList(uiData.gender.dataList.size, genderRadioButtons.size)
-        visibleGenders.forEachIndexed {i, g -> g.isVisible = true; g.text = uiData.gender.dataList[i].key}
+        visibleGenders.forEachIndexed { i, g ->
+            g.isVisible = true
+            g.makeTranslatable { g.text = uiData.gender.dataList[i].translation[it] }
+        }
         invisibleGenders.forEach { it.isVisible = false }
         genderGroup.selectedToggleProperty().addListener { _, old, new ->
             uiData.gender.uiValue = genderRadioButtons.indexOf(new)
         }
+
+        genderLabel.makeTranslatable { genderLabel.text = translations[it]?.gender }
+    }
+
+    private fun initExperience() {
+        experienceLabel.makeTranslatable { experienceLabel.text = translations[it]?.experience }
+        initPeYears()
+        initPeMonths()
     }
 
     private fun initPeYears() {
@@ -233,6 +219,8 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
         peYearsTextField.textProperty().addListener { _, old, new ->
             uiData.peYears.uiValue = converter.fromString(new) ?: uiData.peYears.defaultUiValue
         }
+        peYearsLabel.makeTranslatable { peYearsLabel.text = translations[it]?.years }
+
     }
 
     private fun initPeMonths() {
@@ -248,22 +236,27 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
         peMonthsTextField.textProperty().addListener { _, old, new ->
             uiData.peMonths.uiValue = converter.fromString(new) ?: uiData.peMonths.defaultUiValue
         }
+        peMonthsLabel.makeTranslatable { peMonthsLabel.text = translations[it]?.months }
     }
 
 
 
     private fun initCountry() {
-//        Todo: make it autocomplete https://stackoverflow.com/questions/19924852/autocomplete-combobox-in-javafx
-        countryComboBox.items = FXCollections.observableList(uiData.country.dataList)
+        //        Todo: make it autocomplete https://stackoverflow.com/questions/19924852/autocomplete-combobox-in-javafx
+//        Todo: make translatable
+        val items = FXCollections.observableList(uiData.country.dataList.map { it.translation[TranslationManager.availableLanguages[0]]})
+        countryComboBox.items = items
         countryComboBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
             uiData.country.uiValue = countryComboBox.selectionModel.selectedIndex
         }
+        countryLabel.makeTranslatable { countryLabel.text = translations[it]?.country }
     }
 
-    private fun initStartWorkingButton() {
+    private fun initStartWorking() {
         startWorkingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             MainController.visiblePaneControllerManager =
                 TaskChooserControllerManager
         }
+        startWorkingText.makeTranslatable { startWorkingText.text = translations[it]?.startSession }
     }
 }

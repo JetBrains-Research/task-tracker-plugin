@@ -10,14 +10,14 @@ import org.jetbrains.research.ml.codetracker.Plugin
 
 class PluginToolWindowFactory : ToolWindowFactory {
 
-    private val diagnosticLogger: Logger = Logger.getInstance(javaClass)
+    private val logger: Logger = Logger.getInstance(javaClass)
 
     init {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: init factory")
+        logger.info("${Plugin.PLUGIN_ID}: init tool window factory")
     }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        diagnosticLogger.info("${Plugin.PLUGIN_ID}: create tool window")
+        logger.info("${Plugin.PLUGIN_ID}: creating tool window")
         val content = MainController.createContent(project)
         toolWindow.component.parent.add(content)
         toolWindow as ToolWindowImpl
