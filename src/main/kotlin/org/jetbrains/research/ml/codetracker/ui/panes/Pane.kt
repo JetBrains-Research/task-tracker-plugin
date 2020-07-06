@@ -155,33 +155,38 @@ abstract class PaneControllerManager<E : IPaneNotifyEvent, T : PaneController<E>
     abstract fun notify(notifyEvent: E, new: Any?)
 
     fun createContent(project: Project, scale: Double): JFXPanel {
-        println("${this::class.simpleName}:createContent ${currentThread().name}")
+        logger.info("${this::class.simpleName}:createContent ${currentThread().name}")
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create content")
         val fxPanel = JFXPanel()
-        val controller = paneControllerClass.constructors.first().call(paneUiData, scale, fxPanel, lastId++)
-        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create controller")
 
-        paneControllers.add(controller)
+        Platform.setImplicitExit(false)
+        Platform.runLater {
+            logger.info("${this::class.simpleName}:createContent in platfrom block ${currentThread().name}")
+            // Need to run on Fx thread, because controller initialization includes javaFx elements
+            val controller = paneControllerClass.constructors.first().call(paneUiData, scale, fxPanel, lastId++)
+            logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create controller")
+            paneControllers.add(controller)
+            Disposer.register(project, Disposable {
+                this.removeController(controller)
+            })
 
-        Disposer.register(project, Disposable {
-            this.removeController(controller)
-        })
+            val loader = FXMLLoader()
+            loader.namespace["scale"] = scale
+            loader.location = javaClass.getResource(fxmlFilename)
+            loader.setController(controller)
+            logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set controller")
+            val root = loader.load<Parent>()
+            val scene = Scene(root, Color.WHITE)
+            fxPanel.scene = scene
+        }
 
+        logger.info("${this::class.simpleName}:createContent after platfrom block ${currentThread().name}")
 
-        val loader = FXMLLoader()
-        loader.namespace["scale"] = scale
-        loader.location = javaClass.getResource(fxmlFilename)
-        loader.setController(controller)
-        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set controller")
-
-        val root = loader.load<Parent>()
-        val scene = Scene(root, Color.WHITE)
-        fxPanel.scene = scene
         fxPanel.background = java.awt.Color.WHITE
         fxPanel.isVisible = MainController.visiblePaneControllerManager == this
-        //  Todo: maybe create some other way of data updating?
-        paneUiData.getData().forEach { notify(it.notifyEvent, it.uiValue) }
 
+        //  Todo: maybe create some other way of data updating? something wrong here :(
+        paneUiData.getData().forEach { notify(it.notifyEvent, it.uiValue) }
         // Note: don't call TranslationManager or other PaneControllerManagers here because some elements may be not initialized yet
         switchUILanguage(TranslationManager.currentLanguageIndex)
 
@@ -190,7 +195,7 @@ abstract class PaneControllerManager<E : IPaneNotifyEvent, T : PaneController<E>
 
     //    todo: call MainController here?
     fun setVisible(visible: Boolean) {
-        println("${this::class.simpleName}:setVisible ${currentThread().name}")
+        logger.info("${this::class.simpleName}:setVisible ${currentThread().name}")
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set visible")
         paneControllers.forEach { it.fxPanel.isVisible = visible }
     }
@@ -200,13 +205,13 @@ abstract class PaneControllerManager<E : IPaneNotifyEvent, T : PaneController<E>
      * For switching the language on all ui elements use TranslationManager.
      */
     fun switchUILanguage(newLanguageIndex: Int) {
-        println("${this::class.simpleName}:switchUILanguage ${currentThread().name}")
+        logger.info("${this::class.simpleName}:switchUILanguage ${currentThread().name}")
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} switch ui language")
         paneControllers.forEach { it.selectLanguage(newLanguageIndex) }
     }
 
     private fun removeController(controller: T) {
-        println("${this::class.simpleName}:removeController ${currentThread().name}")
+        logger.info("${this::class.simpleName}:removeController ${currentThread().name}")
         paneControllers.remove(controller)
     }
 }

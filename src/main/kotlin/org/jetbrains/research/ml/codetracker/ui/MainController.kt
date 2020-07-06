@@ -33,20 +33,24 @@ internal object MainController {
         }
 
     fun createContent(project: Project): JComponent {
-        println("${this::class.simpleName}:createContent ${Thread.currentThread().name}")
+        logger.info("${this::class.simpleName}:createContent ${Thread.currentThread().name}")
         val screenSize = Toolkit.getDefaultToolkit().screenSize
         logger.info("${Plugin.PLUGIN_ID}: screen size: $screenSize")
         val scale = screenSize.height / SCREEN_HEIGHT
         val panel = JPanel()
         panel.background = java.awt.Color.WHITE
         logger.info("${this::class}: $paneControllerManagers")
-        // Todo: uncomment it
-        Platform.setImplicitExit(false)
-        Platform.runLater {
-            println("${this::class.simpleName}:createContentPlatfromRunLater ${Thread.currentThread().name}")
-            logger.info("${Plugin.PLUGIN_ID}: platform run later ")
-            paneControllerManagers.map { it.createContent(project, scale) }.forEach { panel.add(it) }
+//       Run on EDT
+        paneControllerManagers.map { it.createContent(project, scale) }.forEach {
+            logger.info("${this::class.simpleName}:createContent forEach ${Thread.currentThread().name}")
+            panel.add(it)
         }
+
+//        Platform.setImplicitExit(false)
+//        Platform.runLater {
+//            logger.info("${this::class.simpleName}:createContentPlatfromRunLater ${Thread.currentThread().name}")
+//            logger.info("${Plugin.PLUGIN_ID}: platform run later ")
+//        }
         return JBScrollPane(panel)
     }
 }
