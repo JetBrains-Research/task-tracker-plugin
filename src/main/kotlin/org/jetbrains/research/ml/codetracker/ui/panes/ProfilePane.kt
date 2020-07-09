@@ -1,85 +1,91 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
+import com.intellij.util.messages.Topic
 import javafx.collections.FXCollections
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.*
-import javafx.scene.input.MouseEvent
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
 import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
-import javafx.util.converter.IntegerStringConverter
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Country
 import org.jetbrains.research.ml.codetracker.models.Gender
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.MainController
-import org.jetbrains.research.ml.codetracker.ui.TranslationManager
-import org.jetbrains.research.ml.codetracker.ui.makeTranslatable
-import java.util.function.UnaryOperator
+import org.jetbrains.research.ml.codetracker.ui.*
+import java.util.function.Consumer
 import kotlin.reflect.KClass
 
 
-enum class ProfileNotifyEvent : IPaneNotifyEvent {
-    AGE_NOTIFY,
-    PE_YEARS_NOTIFY,
-    PE_MONTHS_NOTIFY,
-    GENDER_NOTIFY,
-    COUNTRY_NOTIFY,
-    LANGUAGE_NOTIFY
-}
-
-object ProfileControllerManager : PaneControllerManager<ProfileNotifyEvent, ProfileController>() {
+object ProfileControllerManager : PaneControllerManager<ProfileController>() {
     override val paneControllerClass: KClass<ProfileController> = ProfileController::class
-    override val paneUiData: ProfileUiData = ProfileUiData
     override var paneControllers: MutableList<ProfileController> = arrayListOf()
     override val fxmlFilename: String = "profile-ui-form-2.fxml"
+}
 
-    //Todo: get uiFiled type here and cast new automatically?
-    override fun notify(notifyEvent: ProfileNotifyEvent, new: Any?) {
-        val isProfileUnfilled = paneUiData.anyDataRequiredAndDefault()
-        paneControllers.forEach { it.setStartWorkingButtonDisability(isProfileUnfilled) }
+/**
+ * [create] fun was added to simplify object creation, passing to [subscribe] method, because there is no SAM conversions for
+ * kotlin interfaces (waiting for 1.4 release). Without SAM conversions creation an objects turns into many repeating
+ * lines and looks ugly :( There is a way of turning these interfaces into classes and pass *accept* implementation
+ * as constructor param, which allows to avoid extra lines with creation object. However, MessageBus requires interfaces,
+ * so it's not an option.
+ */
+interface AgeNotifier : Consumer<Int> {
+    companion object {
+        val AGE_TOPIC = Topic.create("age change", AgeNotifier::class.java)
+    }
+}
 
-        when (notifyEvent) {
-            ProfileNotifyEvent.AGE_NOTIFY -> paneControllers.forEach { it.setAge(new as Int) }
-            ProfileNotifyEvent.COUNTRY_NOTIFY -> paneControllers.forEach { it.selectCountry(new as Int) }
-            ProfileNotifyEvent.GENDER_NOTIFY -> paneControllers.forEach { it.selectGender(new as Int) }
-            ProfileNotifyEvent.PE_YEARS_NOTIFY -> {
-                val peMonthsVisibility = new as Int == 0
-                paneControllers.forEach { it.setPeMonthsVisibility(peMonthsVisibility); it.setPeYears(new as Int) }
-            }
-            ProfileNotifyEvent.PE_MONTHS_NOTIFY -> paneControllers.forEach { it.setPeMonths(new as Int) }
-            ProfileNotifyEvent.LANGUAGE_NOTIFY -> TranslationManager.switchLanguage(new as Int)
-        }
+interface GenderNotifier : Consumer<Int> {
+    companion object {
+        val GENDER_TOPIC = Topic.create("gender change", GenderNotifier::class.java)
+    }
+}
+
+interface PeYearsNotifier : Consumer<Int> {
+    companion object {
+        val PE_YEARS_TOPIC = Topic.create("program experience years change", PeYearsNotifier::class.java)
+    }
+}
+
+interface PeMonthsNotifier : Consumer<Int> {
+    companion object {
+        val PE_MONTHS_TOPIC = Topic.create("program experience months change", PeMonthsNotifier::class.java)
+    }
+}
+
+interface CountryNotifier : Consumer<Int> {
+    companion object {
+        val COUNTRY_TOPIC = Topic.create("country change", CountryNotifier::class.java)
     }
 }
 
 
-object ProfileUiData : PaneUiData<ProfileNotifyEvent>(ProfileControllerManager) {
+object ProfileUiData : LanguagePaneUiData() {
     private val countries: List<Country> = PluginServer.countries
     private val genders: List<Gender> = PluginServer.genders
 
-    val age = UiField(ProfileNotifyEvent.AGE_NOTIFY, 0, "age")
-    val gender = ListedUiField(genders, ProfileNotifyEvent.GENDER_NOTIFY, -1, "gender")
-    val peYears = UiField(ProfileNotifyEvent.PE_YEARS_NOTIFY, -1, "peYears")
-    val peMonths = RequiredUiField(true, ProfileNotifyEvent.PE_MONTHS_NOTIFY, -1, "peMonths")
-    val country = ListedUiField(countries, ProfileNotifyEvent.COUNTRY_NOTIFY, -1,"country")
-    override val currentLanguage: LanguageUiField = LanguageUiField(ProfileNotifyEvent.LANGUAGE_NOTIFY)
+    val age = UiField(0, AgeNotifier.AGE_TOPIC)
+    val gender = ListedUiField(genders, -1, GenderNotifier.GENDER_TOPIC)
+    val peYears = UiField(-1, PeYearsNotifier.PE_YEARS_TOPIC)
+    val peMonths = UiField( -1, PeMonthsNotifier.PE_MONTHS_TOPIC, false)
+    val country = ListedUiField(countries, -1, CountryNotifier.COUNTRY_TOPIC)
 
     override fun getData() = listOf(
         age,
         gender,
         peYears,
         peMonths,
-        country
+        country,
+        language
     )
 }
 
-class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController<ProfileNotifyEvent>(uiData, scale, fxPanel, id) {
+class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
     @FXML private lateinit var profilePane: Pane
 
     // Scalable components:
@@ -120,143 +126,131 @@ class ProfileController(override val uiData: ProfileUiData, scale: Double, fxPan
     @FXML private lateinit var startWorkingButton: Button
     @FXML private lateinit var startWorkingText: Text
 
-    private val translations = PluginServer.paneText.surveyPane
+    override val paneUiData = ProfileUiData
+    private val translations = PluginServer.paneText?.surveyPane
+
+    companion object {
+        private const val PE_YEARS_NUMBER_TO_SHOW_MONTHS = 2
+    }
 
     override fun initialize() {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
-
         initAge()
         initGender()
-        initExperience()
+        initPeYears()
+        initPeMonths()
         initCountry()
-        initStartWorking()
+        initStartWorkingButton()
+        makeTranslatable()
         super.initialize()
     }
 
-    fun setAge(newAge: Int) {
-        ageTextField.text = newAge.toString()
-    }
-
-    fun selectGender(newGenderIndex: Int) {
-        val buttonToSelect = if (newGenderIndex in genderRadioButtons.indices) {
-            genderRadioButtons[newGenderIndex]
-        } else {
-            null
-        }
-        genderGroup.selectToggle(buttonToSelect)
-    }
-
-    fun setPeYears(newYears: Int) {
-        peYearsTextField.text = newYears.toString()
-    }
-
-    fun setPeMonths(newMonths: Int) {
-        peMonthsTextField.text = newMonths.toString()
-    }
-
-    fun selectCountry(newCountryIndex: Int) {
-        countryComboBox.selectionModel.select(newCountryIndex)
-    }
-
-    fun setPeMonthsVisibility(isVisible: Boolean) {
-        peMonthsHBox.isVisible = isVisible
-        uiData.peMonths.isRequired = isVisible
-    }
-
-    fun setStartWorkingButtonDisability(isDisable: Boolean) {
-        startWorkingButton.isDisable = isDisable
-    }
-
     private fun initAge() {
-        val filter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@ { change: TextFormatter.Change? ->
-            val text: String? = change?.controlNewText
-            if (text != null && (text.length < 3) && (text.isEmpty() || text.matches(Regex("[1-9]+[0-9]*")))) {
-                return@label change
-            }
-            null
-        }
-        val converter = IntegerStringConverter()
-        ageTextField.textFormatter = TextFormatter(TextFormatter.IDENTITY_STRING_CONVERTER, "", filter)
+        val converter = ageTextField.addIntegerFormatter(regexFilter("[1-9][0-9]{0,1}"))
         ageTextField.textProperty().addListener { _, _, new ->
-            uiData.age.uiValue = converter.fromString(new) ?: uiData.age.defaultUiValue
+            paneUiData.age.uiValue = converter.fromString(new) ?: paneUiData.age.defaultUiValue
         }
-        ageLabel.makeTranslatable { ageLabel.text = translations[it]?.age }
-
+        subscribe(AgeNotifier.AGE_TOPIC, object : AgeNotifier {
+            override fun accept(newAge: Int) {
+                ageTextField.text = newAge.toString()
+                println("age: ${paneUiData.anyRequiredDataDefault()}")
+                startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
+            }
+        })
     }
 
     private fun initGender() {
         genderRadioButtons = listOf(gender1, gender2, gender3, gender4, gender5, gender6)
-        val visibleGenders = genderRadioButtons.subList(0, uiData.gender.dataList.size)
-        val invisibleGenders = genderRadioButtons.subList(uiData.gender.dataList.size, genderRadioButtons.size)
-        visibleGenders.forEachIndexed { i, g ->
-            g.isVisible = true
-            g.makeTranslatable { g.text = uiData.gender.dataList[i].translation[it] }
-        }
-        invisibleGenders.forEach { it.isVisible = false }
-        genderGroup.selectedToggleProperty().addListener { _, old, new ->
-            uiData.gender.uiValue = genderRadioButtons.indexOf(new)
-        }
+        val gendersSize = paneUiData.gender.dataList.size
+        genderRadioButtons.forEachIndexed { i, rb ->  rb.isVisible = i < gendersSize }
 
-        genderLabel.makeTranslatable { genderLabel.text = translations[it]?.gender }
-    }
-
-    private fun initExperience() {
-        experienceLabel.makeTranslatable { experienceLabel.text = translations[it]?.experience }
-        initPeYears()
-        initPeMonths()
+        genderGroup.selectedToggleProperty().addListener { _, _, new ->
+            paneUiData.gender.uiValue = genderRadioButtons.indexOf(new)
+        }
+        subscribe(GenderNotifier.GENDER_TOPIC, object : GenderNotifier {
+            override fun accept(newGenderIndex: Int) {
+                if (paneUiData.gender.isValid(newGenderIndex)) {
+                    genderGroup.selectToggle(genderRadioButtons[newGenderIndex])
+                    println("gender: ${paneUiData.anyRequiredDataDefault()}")
+                    startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
+                }
+            }
+        })
     }
 
     private fun initPeYears() {
-        val yearFilter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@{ change: TextFormatter.Change? ->
-            val text: String? = change?.controlNewText
-            if (text != null && (text.length < 3) && (text.isEmpty() || text.matches(Regex("0|[1-9]+[0-9]*")))) {
-                return@label change
+        val converter = peYearsTextField.addIntegerFormatter(regexFilter("0|[1-9][0-9]{0,1}"))
+        peYearsTextField.textProperty().addListener { _, _, new ->
+            paneUiData.peYears.uiValue = converter.fromString(new) ?: paneUiData.peYears.defaultUiValue
+        }
+        subscribe(PeYearsNotifier.PE_YEARS_TOPIC, object : PeYearsNotifier {
+            override fun accept(newPeYears: Int) {
+                peYearsTextField.text = newPeYears.toString()
+                val isPeMonthsRequired = !paneUiData.peYears.isUiValueDefault && newPeYears < PE_YEARS_NUMBER_TO_SHOW_MONTHS
+//                todo: set default value if not required?
+                paneUiData.peMonths.isRequired = isPeMonthsRequired
+                peMonthsHBox.isVisible = isPeMonthsRequired
+                println("pe years: ${paneUiData.anyRequiredDataDefault()}")
+                startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
-            null
-        }
-        val converter = IntegerStringConverter()
-        peYearsTextField.textFormatter = TextFormatter(TextFormatter.IDENTITY_STRING_CONVERTER, "", yearFilter)
-        peYearsTextField.textProperty().addListener { _, old, new ->
-            uiData.peYears.uiValue = converter.fromString(new) ?: uiData.peYears.defaultUiValue
-        }
-        peYearsLabel.makeTranslatable { peYearsLabel.text = translations[it]?.years }
-
+        })
     }
 
     private fun initPeMonths() {
-        val monthsFilter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@{ change: TextFormatter.Change? ->
-            val text: String? = change?.controlNewText
-            if (text != null && (text.length < 3) && (text.isEmpty() || text.matches(Regex("[0-9]|1[01]")))) {
-                return@label change
-            }
-            null
-        }
-        val converter = IntegerStringConverter()
-        peMonthsTextField.textFormatter = TextFormatter(TextFormatter.IDENTITY_STRING_CONVERTER, "", monthsFilter)
+        peMonthsHBox.isVisible = paneUiData.peMonths.isRequired
+//        change when delete last symbol
+        val converter = peMonthsTextField.addIntegerFormatter(regexFilter("[0-9]|1[01]"))
         peMonthsTextField.textProperty().addListener { _, old, new ->
-            uiData.peMonths.uiValue = converter.fromString(new) ?: uiData.peMonths.defaultUiValue
+            paneUiData.peMonths.uiValue = converter.fromString(new) ?: paneUiData.peMonths.defaultUiValue
         }
-        peMonthsLabel.makeTranslatable { peMonthsLabel.text = translations[it]?.months }
+        subscribe(PeMonthsNotifier.PE_MONTHS_TOPIC, object : PeMonthsNotifier {
+            override fun accept(newPeMonths: Int) {
+                peMonthsTextField.text = newPeMonths.toString()
+                println("pe months: ${paneUiData.anyRequiredDataDefault()}")
+                startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
+            }
+        })
     }
-
 
 
     private fun initCountry() {
-        //        Todo: make it autocomplete https://stackoverflow.com/questions/19924852/autocomplete-combobox-in-javafx
+//        Todo: make it autocomplete https://stackoverflow.com/questions/19924852/autocomplete-combobox-in-javafx
 //        Todo: make translatable
-        val items = FXCollections.observableList(uiData.country.dataList.map { it.translation[TranslationManager.availableLanguages[0]]})
+        val items = FXCollections.observableList(paneUiData.country.dataList.map {
+            it.translation[paneUiData.language.currentValue]
+        })
         countryComboBox.items = items
-        countryComboBox.selectionModel.selectedItemProperty().addListener { _, old, new ->
-            uiData.country.uiValue = countryComboBox.selectionModel.selectedIndex
+        countryComboBox.selectionModel.selectedItemProperty().addListener { _ ->
+            paneUiData.country.uiValue = countryComboBox.selectionModel.selectedIndex
         }
-        countryLabel.makeTranslatable { countryLabel.text = translations[it]?.country }
+        subscribe(CountryNotifier.COUNTRY_TOPIC, object : CountryNotifier {
+            override fun accept(newCountryIndex: Int) {
+                countryComboBox.selectionModel.select(newCountryIndex)
+                startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
+            }
+        })
     }
 
-    private fun initStartWorking() {
-        startWorkingButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            MainController.visiblePaneControllerManager =
-                TaskChooserControllerManager
-        }
-        startWorkingText.makeTranslatable { startWorkingText.text = translations[it]?.startSession }
+    private fun initStartWorkingButton() {
+        startWorkingButton.onMouseClicked { changeVisiblePane(TaskChooserControllerManager) }
+    }
+
+    private fun makeTranslatable() {
+        subscribe(LanguageNotifier.LANGUAGE_TOPIC, object : LanguageNotifier {
+            override fun accept(newLanguageIndex: Int) {
+                val newLanguage = paneUiData.language.dataList[newLanguageIndex]
+                val surveyPaneText = translations?.get(newLanguage)
+                surveyPaneText?.let {
+                    ageLabel.text = it.age
+                    genderLabel.text = it.gender
+                    experienceLabel.text = it.experience
+                    peYearsLabel.text = it.years
+                    peMonthsLabel.text = it.months
+                    countryLabel.text = it.country
+                    startWorkingText.text = it.startSession
+                }
+                genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g -> rb.text = g.translation[newLanguage] }
+            }
+        })
     }
 }

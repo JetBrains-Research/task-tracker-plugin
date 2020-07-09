@@ -48,9 +48,9 @@ dependencies {
 
 }
 
- /*
-    Uncomment for testing with Rider IDE
- */
+/*
+   Uncomment for testing with Rider IDE
+*/
 //tasks.getByName<org.jetbrains.intellij.tasks.IntelliJInstrumentCodeTask>("instrumentCode") {
 //    setCompilerVersion("192.6817.32")
 //}
@@ -62,17 +62,17 @@ dependencies {
 //}
 
 
- /*
-    Uncomment for testing with Intellij IDEA
- */
+/*
+   Uncomment for testing with Intellij IDEA
+*/
 //intellij {
 //    version = "2019.2.2"
 //}
 
 
- /*
-    Uncomment for testing with PyCharm IDE
- */
+/*
+   Uncomment for testing with PyCharm IDE
+*/
 //intellij {
 //    version = "2019.2.3"
 //    type = "PY"

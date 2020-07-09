@@ -16,7 +16,7 @@ object CollectionsQueryExecutor : QueryExecutor() {
         if (isSuccess(response)) {
             return Json(JsonConfiguration.Stable).parse(serializer.list, response?.body?.string() ?: "")
         }
-        return emptyList()
+        throw IllegalStateException("Unsuccessful server response")
     }
 
     inline fun <reified T : Any> getCollection(url: String, serializer: KSerializer<T>): List<T> {

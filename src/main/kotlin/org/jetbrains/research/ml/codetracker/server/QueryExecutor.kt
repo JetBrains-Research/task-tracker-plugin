@@ -32,11 +32,11 @@ abstract class QueryExecutor {
     }
 
     var isLastSuccessful: Boolean = false
-        private set
+//        private set
 
 //    For some reason registry doesn't work on mac
-//    protected val baseUrl: String = Registry.get("codetracker.org.jetbrains.research.ml.codetracker.server.url").asString()
-    protected val baseUrl: String = "http://localhost:3000/api/"
+    protected val baseUrl: String = Registry.get("codetracker.org.jetbrains.research.ml.codetracker.server.url").asString()
+//    protected val baseUrl: String = "http://localhost:3000/api/"
 
     protected fun executeQuery(request: Request): Future<Response?> {
         var curCountAttempts = 0
