@@ -22,7 +22,6 @@ object ErrorReport {
     private const val HTML_URL_TO_CREATE_NEW_ISSUE = "https://github.com/JetBrains-Research/codetracker/issues/new"
 
     fun sendFeedback(errorInformation: ErrorInformation): SubmittedReportInfo? {
-        val result: SubmittedReportInfo
         return try {
             val client = GitHubClient()
             client.setOAuth2Token(GitHubAccessTokenScrambler.decrypt(ErrorReport::class.java.getResourceAsStream(
@@ -45,19 +44,15 @@ object ErrorReport {
                 newGibHubIssue = issueService.createIssue(repoID, newGibHubIssue)
                 true
             }()
-            val htmlUrl: String = newGibHubIssue.htmlUrl
-            //Todo(add link text)
-            result = SubmittedReportInfo(
-                htmlUrl,
-                "test message",
+            SubmittedReportInfo(
+                newGibHubIssue.htmlUrl,
+                "Send bug report",
                 if (isNewIssue) SubmissionStatus.NEW_ISSUE else SubmissionStatus.DUPLICATE
             )
-            result
         } catch (e: Exception) {
-            //Todo(add link text)
             SubmittedReportInfo(
                 HTML_URL_TO_CREATE_NEW_ISSUE,
-                "test message",
+                "Don't send bug report",
                 SubmissionStatus.FAILED
             )
         }
