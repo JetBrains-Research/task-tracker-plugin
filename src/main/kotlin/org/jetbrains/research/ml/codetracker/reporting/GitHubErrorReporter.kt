@@ -71,13 +71,13 @@ class GitHubErrorReporter : ErrorReportSubmitter() {
             callback: Consumer<SubmittedReportInfo>,
             errorInformation: ErrorInformation
         ): Boolean {
-            val dataContext = DataManager.getInstance().getDataContext(parentComponent)
             if (event is IdeaReportingEvent) {
                 event.plugin?.let {
                     errorInformation.setUserInformation(UserInformationType.PLUGIN_NAME, it.name)
                     errorInformation.setUserInformation(UserInformationType.PLUGIN_VERSION, it.version)
                 }
             }
+            val dataContext = DataManager.getInstance().getDataContext(parentComponent)
             val project = CommonDataKeys.PROJECT.getData(dataContext)
             val task = ErrorReportTask(
                 project,

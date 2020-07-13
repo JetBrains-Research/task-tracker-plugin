@@ -7,13 +7,13 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.ExceptionUtil
 
 class ErrorInformation(
-    lastAction_: String,
+    lastAction: String,
     appInfo: ApplicationInfoEx,
     namesInfo: ApplicationNamesInfo,
     throwable: Throwable?) {
 
     private val userInformation: MutableMap<UserInformationType, String> = mutableMapOf(
-        UserInformationType.PLUGIN_NAME to  "",
+        UserInformationType.PLUGIN_NAME to "",
         UserInformationType.PLUGIN_VERSION to "",
 
         UserInformationType.OS_NAME to SystemInfo.OS_NAME,
@@ -27,13 +27,14 @@ class ErrorInformation(
         UserInformationType.APP_BUILD to appInfo.build.asString(),
         UserInformationType.APP_VERSION to appInfo.fullVersion,
 
-        UserInformationType.LAST_ACTION to lastAction_,
+        UserInformationType.LAST_ACTION to lastAction,
 
         UserInformationType.PERMANENT_INSTALLATION_ID to PermanentInstallationID.get()
     )
 
     private val errorInformation: MutableMap<ErrorInformationType, String> = mutableMapOf(
-        ErrorInformationType.ERROR_STACKTRACE to (throwable?.let { ExceptionUtil.getThrowableText(it) } ?: "Invalid stacktrace"),
+        ErrorInformationType.ERROR_STACKTRACE to (throwable?.let { ExceptionUtil.getThrowableText(it) }
+            ?: "Invalid stacktrace"),
         ErrorInformationType.ERROR_MESSAGE to (throwable?.message ?: "Unspecified error")
     )
 

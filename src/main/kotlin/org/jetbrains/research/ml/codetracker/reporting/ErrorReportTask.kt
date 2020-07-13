@@ -13,11 +13,9 @@ class ErrorReportTask internal constructor(
     project: Project?,
     title: String,
     canBeCancelled: Boolean,
-    errorInformation_: ErrorInformation,
-    callback_: Consumer<SubmittedReportInfo>
+    private val errorInformation: ErrorInformation,
+    private val callback: Consumer<SubmittedReportInfo>
 ) : Backgroundable(project, title, canBeCancelled) {
-    private val callback: Consumer<SubmittedReportInfo> = callback_
-    private val errorInformation: ErrorInformation = errorInformation_
 
     override fun run(indicator: ProgressIndicator) {
         indicator.isIndeterminate = true
