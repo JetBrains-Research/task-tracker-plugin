@@ -19,8 +19,9 @@ import kotlin.reflect.KClass
 
 /**
  * Todo:
- *  * open new files by pressing buttons
- *  * make comboboxes translatable
+ * rename all panes
+ * fix server pane
+ * redo server
  *
  *  * fix all todos
  *  * add scalable
@@ -49,7 +50,7 @@ abstract class PaneController(val project: Project, val scale: Double, val fxPan
  */
 abstract class PaneControllerManager<T : PaneController>  {
     protected abstract val paneControllerClass: KClass<T>
-    protected abstract val paneControllers: MutableList<T>
+    protected val paneControllers: MutableList<T> = arrayListOf()
     protected abstract val fxmlFilename: String
     protected val logger = Logger.getInstance(javaClass)
     private var lastId = 0

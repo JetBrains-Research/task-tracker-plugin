@@ -11,15 +11,13 @@ import kotlin.reflect.KClass
 
 
 
-object ErrorControllerManager : PaneControllerManager<ErrorController>() {
-    override val paneControllerClass: KClass<ErrorController> = ErrorController::class
-    override val paneControllers: MutableList<ErrorController> = arrayListOf()
-    override val fxmlFilename: String = "error-ui-form-2.fxml"
-
+object ServerControllerManager : PaneControllerManager<ServerController>() {
+    override val paneControllerClass: KClass<ServerController> = ServerController::class
+    override val fxmlFilename: String = "server-ui-form-2.fxml"
 }
 
 
-class ErrorController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController(project, scale, fxPanel, id) {
+class ServerController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController(project, scale, fxPanel, id) {
     @FXML private lateinit var refreshButton: Button
 
     override fun initialize() {

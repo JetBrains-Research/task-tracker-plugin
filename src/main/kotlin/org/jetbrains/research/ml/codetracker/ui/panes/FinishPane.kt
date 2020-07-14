@@ -14,7 +14,6 @@ import kotlin.reflect.KClass
 
 object FinishControllerManager : PaneControllerManager<FinishController>() {
     override val paneControllerClass: KClass<FinishController> = FinishController::class
-    override val paneControllers: MutableList<FinishController> = arrayListOf()
     override val fxmlFilename: String = "finish-ui-form-2.fxml"
 }
 

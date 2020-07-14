@@ -3,6 +3,7 @@ package org.jetbrains.research.ml.codetracker.ui.panes
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.*
@@ -23,7 +24,6 @@ import kotlin.reflect.KClass
 
 object ProfileControllerManager : PaneControllerManager<ProfileController>() {
     override val paneControllerClass: KClass<ProfileController> = ProfileController::class
-    override var paneControllers: MutableList<ProfileController> = arrayListOf()
     override val fxmlFilename: String = "profile-ui-form-2.fxml"
 }
 
@@ -120,7 +120,8 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
 
     // Country
     @FXML private lateinit var countryLabel: Label
-    @FXML private lateinit var countryComboBox: ComboBox<String>
+    @FXML private lateinit var countryComboBox: ComboBox<String?>
+    private lateinit var countryObservableList: ObservableList<String?>
 
     // StartWorking
     @FXML private lateinit var startWorkingButton: Button
@@ -215,11 +216,11 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
 
     private fun initCountry() {
 //        Todo: make it autocomplete https://stackoverflow.com/questions/19924852/autocomplete-combobox-in-javafx
-//        Todo: make translatable
-        val items = FXCollections.observableList(paneUiData.country.dataList.map {
+        countryObservableList = FXCollections.observableList(paneUiData.country.dataList.map {
             it.translation[paneUiData.language.currentValue]
         })
-        countryComboBox.items = items
+        countryComboBox.items = countryObservableList
+
         countryComboBox.selectionModel.selectedItemProperty().addListener { _ ->
             paneUiData.country.uiValue = countryComboBox.selectionModel.selectedIndex
         }
@@ -248,6 +249,10 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
                     peMonthsLabel.text = it.months
                     countryLabel.text = it.country
                     startWorkingText.text = it.startSession
+
+                    changeComboBoxItems(countryComboBox, countryObservableList, paneUiData.country.dataList.map {
+                        it.translation.getOrDefault(newLanguage,"")
+                    })
                 }
                 genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g -> rb.text = g.translation[newLanguage] }
             }

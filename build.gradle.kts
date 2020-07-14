@@ -43,9 +43,7 @@ dependencies {
     implementation("org.controlsfx:controlsfx:11.0.1")
     compile("com.google.auto.service:auto-service:1.0-rc7")
 
-
     testCompile("junit", "junit", "4.12")
-
 }
 
 /*

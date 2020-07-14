@@ -18,7 +18,6 @@ import kotlin.reflect.KClass
 
 object TaskControllerManager : PaneControllerManager<TaskController>() {
     override val paneControllerClass: KClass<TaskController> = TaskController::class
-    override val paneControllers: MutableList<TaskController> = arrayListOf()
     override val fxmlFilename: String = "task-ui-form-2.fxml"
 }
 
