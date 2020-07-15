@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 abstract class QueryExecutor {
     companion object {
-        private const val SLEEP_TIME = 5_000L
+        private const val SLEEP_TIME = 5L
         private const val MAX_COUNT_ATTEMPTS = 5
 
         private val daemon = Executors.newSingleThreadScheduledExecutor()
@@ -24,7 +24,7 @@ abstract class QueryExecutor {
     protected val logger: Logger = Logger.getInstance(javaClass)
 
     private val client: OkHttpClient by lazy {
-        logger.info("${Plugin.PLUGIN_ID}: init org.jetbrains.research.ml.codetracker.server. API base url is ${baseUrl}. Max count attempt of sending org.jetbrains.research.ml.codetracker.data to org.jetbrains.research.ml.codetracker.server = ${MAX_COUNT_ATTEMPTS}\"")
+        logger.info("${Plugin.PLUGIN_ID}: init the server. API base url is ${baseUrl}. Max count attempt of sending org.jetbrains.research.ml.codetracker.data to org.jetbrains.research.ml.codetracker.server = ${MAX_COUNT_ATTEMPTS}\"")
         OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
@@ -33,16 +33,15 @@ abstract class QueryExecutor {
     }
 
     var isLastSuccessful: Boolean = false
-//        private set
 
     protected val baseUrl: String = Registry.get("codetracker.org.jetbrains.research.ml.codetracker.server.url").asString()
 
-    protected fun executeQuery(request: Request): Future<Response?> {
+    protected fun executeQuery(request: Request): Response? {
         var curCountAttempts = 0
-        val error = "The query ${request.method} ${request.url} was failed"
 
         fun executeQueryHelper(): Response? {
             logger.info("${Plugin.PLUGIN_ID}: call execute query helper, attempt $curCountAttempts")
+            val error = "The query ${request.method} ${request.url} was failed"
             try {
                 curCountAttempts++
                 logger.info("${Plugin.PLUGIN_ID}: An attempt ${curCountAttempts} of execute the query ${request.method} ${request.url} has been started")
@@ -57,16 +56,16 @@ abstract class QueryExecutor {
             } catch (e: Exception) {
                 logger.info("${Plugin.PLUGIN_ID}: ${error}: internet connection exception")
             }
-            if (curCountAttempts < MAX_COUNT_ATTEMPTS) {
-                logger.info("${Plugin.PLUGIN_ID}: trying again")
-                daemon.schedule( { executeQueryHelper() }, SLEEP_TIME, TimeUnit.SECONDS)
-            }
             isLastSuccessful = false
             logger.info("${Plugin.PLUGIN_ID}: $error")
             return null
         }
 
-        return daemon.schedule(Callable<Response?> { executeQueryHelper() }, 0, TimeUnit.SECONDS)
+        var response = daemon.schedule(Callable<Response?> { executeQueryHelper() }, 0, TimeUnit.SECONDS).get()
+        while (curCountAttempts < MAX_COUNT_ATTEMPTS && response == null) {
+            response = daemon.schedule(Callable<Response?> { executeQueryHelper() }, SLEEP_TIME, TimeUnit.SECONDS).get()
+        }
+        return response
     }
 
     protected fun isSuccess(response: Response?): Boolean {
