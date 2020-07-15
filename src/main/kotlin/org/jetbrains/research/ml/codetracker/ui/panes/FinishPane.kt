@@ -13,6 +13,7 @@ import org.jetbrains.research.ml.codetracker.server.PluginServer
 import kotlin.reflect.KClass
 
 object FinishControllerManager : PaneControllerManager<FinishController>() {
+    override val dependsOnServerData: Boolean = true
     override val paneControllerClass: KClass<FinishController> = FinishController::class
     override val fxmlFilename: String = "finish-ui-form-2.fxml"
 }

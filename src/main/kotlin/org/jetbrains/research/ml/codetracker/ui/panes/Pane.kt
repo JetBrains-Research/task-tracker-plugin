@@ -12,7 +12,6 @@ import javafx.scene.Scene
 import javafx.scene.paint.Color
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.ui.MainController
-import org.jetbrains.research.ml.codetracker.ui.PaneUiData
 import java.lang.Thread.currentThread
 import kotlin.reflect.KClass
 
@@ -49,6 +48,7 @@ abstract class PaneController(val project: Project, val scale: Double, val fxPan
  * Creates [PaneController] content by loading .fxml file.
  */
 abstract class PaneControllerManager<T : PaneController>  {
+    abstract val dependsOnServerData: Boolean
     protected abstract val paneControllerClass: KClass<T>
     protected val paneControllers: MutableList<T> = arrayListOf()
     protected abstract val fxmlFilename: String
@@ -56,13 +56,11 @@ abstract class PaneControllerManager<T : PaneController>  {
     private var lastId = 0
 
     fun createContent(project: Project, scale: Double): JFXPanel {
-        logger.info("${this::class.simpleName}:createContent ${currentThread().name}")
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create content")
         val fxPanel = JFXPanel()
 
         Platform.setImplicitExit(false)
         Platform.runLater {
-            logger.info("${this::class.simpleName}:createContent in platfrom block ${currentThread().name}")
             // Need to run on Fx thread, because controller initialization includes javaFx elements
             val controller = paneControllerClass.constructors.first().call(project, scale, fxPanel, lastId++)
             logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create controller")
@@ -81,16 +79,12 @@ abstract class PaneControllerManager<T : PaneController>  {
             fxPanel.scene = scene
         }
 
-        logger.info("${this::class.simpleName}:createContent after platform block ${currentThread().name}")
-
         fxPanel.background = java.awt.Color.WHITE
-        fxPanel.isVisible = MainController.visiblePaneControllerManager == this
+        fxPanel.isVisible = MainController.visiblePane == this
         return fxPanel
     }
 
     fun setVisible(visible: Boolean) {
-        logger.info("${this::class.simpleName}:setVisible ${currentThread().name}")
-        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set visible")
         paneControllers.forEach { it.fxPanel.isVisible = visible }
     }
 
@@ -99,7 +93,6 @@ abstract class PaneControllerManager<T : PaneController>  {
     }
 
     private fun removeController(controller: T) {
-        logger.info("${this::class.simpleName}:removeController ${currentThread().name}")
         paneControllers.remove(controller)
     }
 }

@@ -8,6 +8,7 @@ import org.jetbrains.research.ml.codetracker.models.*
 import java.util.function.Consumer
 
 enum class ServerConnectionResult {
+    LOADING,
     SUCCESS,
     FAIL
 }
@@ -34,6 +35,9 @@ object PluginServer {
     var genders: List<Gender> = emptyList()
     var countries: List<Country> = emptyList()
 
+    var serverConnectionResult: ServerConnectionResult = ServerConnectionResult.LOADING
+        private set
+
     private val logger: Logger = Logger.getInstance(javaClass)
 
     init {
@@ -44,9 +48,12 @@ object PluginServer {
      * Tries to find all data again, sends connection results, and after that notifies all subscribers about reconnection
      */
     fun reconnect() {
-        safeFind { findData() }
-        val publisher = ApplicationManager.getApplication().messageBus.syncPublisher(ServerReconnectionNotifier.SERVER_RECONNECTION_TOPIC)
-        publisher.onNotification()
+        if (serverConnectionResult == ServerConnectionResult.FAIL) {
+            safeFind { findData() }
+            val publisher =
+                ApplicationManager.getApplication().messageBus.syncPublisher(ServerReconnectionNotifier.SERVER_RECONNECTION_TOPIC)
+            publisher.onNotification()
+        }
     }
 
     /**
@@ -54,11 +61,17 @@ object PluginServer {
      */
     private fun safeFind(find: () -> Unit) {
         val publisher = ApplicationManager.getApplication().messageBus.syncPublisher(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC)
-        try {
+        serverConnectionResult = ServerConnectionResult.LOADING
+        publisher.accept(serverConnectionResult)
+
+        serverConnectionResult = try {
             find()
-            publisher.accept(ServerConnectionResult.SUCCESS)
+            ServerConnectionResult.SUCCESS
         } catch (e: java.lang.IllegalStateException) {
-            publisher.accept(ServerConnectionResult.FAIL)
+            logger.info("${Plugin.PLUGIN_ID}: safe find got illegal state")
+            ServerConnectionResult.FAIL
+        } finally {
+            publisher.accept(serverConnectionResult)
         }
     }
 
@@ -96,7 +109,6 @@ object PluginServer {
         if (paneTextList.size == 1) {
             return paneTextList[0]
         }
-        //  show the message about internet connection?
         throw IllegalStateException("Got incorrect data from server")
     }
 

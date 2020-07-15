@@ -6,6 +6,7 @@ import com.intellij.openapi.util.registry.Registry
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.lang.IllegalStateException
 import java.net.UnknownHostException
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
@@ -34,46 +35,38 @@ abstract class QueryExecutor {
     var isLastSuccessful: Boolean = false
 //        private set
 
-//    For some reason registry doesn't work on mac
     protected val baseUrl: String = Registry.get("codetracker.org.jetbrains.research.ml.codetracker.server.url").asString()
-//    protected val baseUrl: String = "http://localhost:3000/api/"
 
     protected fun executeQuery(request: Request): Future<Response?> {
         var curCountAttempts = 0
         val error = "The query ${request.method} ${request.url} was failed"
 
         fun executeQueryHelper(): Response? {
+            logger.info("${Plugin.PLUGIN_ID}: call execute query helper, attempt $curCountAttempts")
             try {
-                logger.info("${Plugin.PLUGIN_ID}: An attempt ${curCountAttempts + 1} of execute the query ${request.method} ${request.url} has been started")
+                curCountAttempts++
+                logger.info("${Plugin.PLUGIN_ID}: An attempt ${curCountAttempts} of execute the query ${request.method} ${request.url} has been started")
                 val response = client.newCall(request).execute()
                 logger.info("${Plugin.PLUGIN_ID}: HTTP status code is ${response.code}")
 
                 if (response.isSuccessful) {
-                    logger.info("${Plugin.PLUGIN_ID}: The query ${request.method} ${request.url} was successfully")
+                    logger.info("${Plugin.PLUGIN_ID}: The query ${request.method} ${request.url} was successfully received")
                     isLastSuccessful = true
                     return response
                 }
-                curCountAttempts++
-                if (curCountAttempts < MAX_COUNT_ATTEMPTS) {
-                    daemon.schedule(
-                        { executeQueryHelper() },
-                        SLEEP_TIME, TimeUnit.SECONDS
-                    )
-                }
-            } catch (e: UnknownHostException) {
-                logger.info("${Plugin.PLUGIN_ID}: ${error}: no internet connection")
-
             } catch (e: Exception) {
                 logger.info("${Plugin.PLUGIN_ID}: ${error}: internet connection exception")
+            }
+            if (curCountAttempts < MAX_COUNT_ATTEMPTS) {
+                logger.info("${Plugin.PLUGIN_ID}: trying again")
+                daemon.schedule( { executeQueryHelper() }, SLEEP_TIME, TimeUnit.SECONDS)
             }
             isLastSuccessful = false
             logger.info("${Plugin.PLUGIN_ID}: $error")
             return null
         }
 
-        return daemon.schedule(Callable<Response?> {
-            executeQueryHelper()
-        }, 0, TimeUnit.SECONDS)
+        return daemon.schedule(Callable<Response?> { executeQueryHelper() }, 0, TimeUnit.SECONDS)
     }
 
     protected fun isSuccess(response: Response?): Boolean {

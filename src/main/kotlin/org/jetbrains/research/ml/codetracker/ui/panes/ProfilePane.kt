@@ -23,6 +23,7 @@ import kotlin.reflect.KClass
 
 
 object ProfileControllerManager : PaneControllerManager<ProfileController>() {
+    override val dependsOnServerData: Boolean = true
     override val paneControllerClass: KClass<ProfileController> = ProfileController::class
     override val fxmlFilename: String = "profile-ui-form-2.fxml"
 }

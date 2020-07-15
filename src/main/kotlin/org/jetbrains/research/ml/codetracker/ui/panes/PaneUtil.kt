@@ -37,7 +37,7 @@ fun <T : Any, C : Consumer<T>> subscribe(topic: Topic<C>, notifier: C) {
 
 fun Button.switchPaneOnMouseClicked(newPaneControllerManager: PaneControllerManager<out PaneController>) {
     this.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-        MainController.visiblePaneControllerManager = newPaneControllerManager
+        MainController.visiblePane = newPaneControllerManager
     }
 }
 
@@ -48,7 +48,7 @@ fun Button.onMouseClicked(action: () -> Unit) {
 }
 
 fun changeVisiblePane(newVisiblePane: PaneControllerManager<out PaneController>) {
-    MainController.visiblePaneControllerManager = newVisiblePane
+    MainController.visiblePane = newVisiblePane
 }
 
 

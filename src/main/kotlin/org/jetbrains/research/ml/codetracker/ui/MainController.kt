@@ -1,11 +1,10 @@
 package org.jetbrains.research.ml.codetracker.ui
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
 import javafx.application.Platform
-import org.jetbrains.research.ml.codetracker.Plugin
+import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
 import org.jetbrains.research.ml.codetracker.ui.panes.*
@@ -14,6 +13,9 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 
 
+typealias Pane = PaneControllerManager<out PaneController>
+
+data class Content(val panel: JPanel, val project: Project, val scale: Double, var isInitialized: Boolean)
 
 
 internal object MainController {
@@ -21,55 +23,95 @@ internal object MainController {
     private const val SCREEN_HEIGHT = 1080.0
 
     private val logger: Logger = Logger.getInstance(javaClass)
+    private val contents: MutableList<Content> = arrayListOf()
+
     //    Todo: automatically collect ControllerManagers
-    val paneControllerManagers: List<PaneControllerManager<out PaneController>> = arrayListOf(
+    private val panes: List<Pane> = arrayListOf(
         ErrorControllerManager,
+        LoadingControllerManager,
         ProfileControllerManager,
         TaskChooserControllerManager,
         TaskControllerManager,
         FinishControllerManager)
 
 //    Set LoadingPane instead
-    internal var visiblePaneControllerManager: PaneControllerManager<out PaneController>? = ProfileControllerManager
+    internal var visiblePane: Pane? = LoadingControllerManager
         set(value) {
-            paneControllerManagers.forEach { it.setVisible(it == value) }
+            logger.info("$value set visible")
+            panes.forEach { it.setVisible(it == value) }
             field = value
         }
 
     init {
-        subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
-            override fun accept(connection: ServerConnectionResult) {
-                visiblePaneControllerManager = when (connection) {
-                    ServerConnectionResult.SUCCESS ->
-//                      Do we want to unsubscribe after first success?
-                        ProfileControllerManager
-
-                    ServerConnectionResult.FAIL -> ErrorControllerManager
-                }
-            }
-        })
+//        subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
+//            override fun accept(connection: ServerConnectionResult) {
+//                visiblePane = when (connection) {
+//                    ServerConnectionResult.SUCCESS -> {
+//                        logger.info("Get success connection result")
+//                        contents.filter { !it.isInitialized }.forEach {
+//                            it.isInitialized = true
+//                            addPanesOnPanel(it.panel, { it.dependsOnServerData }, it.project, it.scale)
+//                        }
+////                      Do we want to unsubscribe after first success?
+//                        ProfileControllerManager
+//                    }
+//                    ServerConnectionResult.FAIL -> {
+//                        logger.info("Get fail connection result")
+//                        ErrorControllerManager
+//                    }
+//                    ServerConnectionResult.LOADING -> {
+//                        logger.info("Get loading connection result")
+//                        LoadingControllerManager
+//                    }
+//                }
+//            }
+//        })
     }
 
 //   Run on EDT (ToolWindowFactory takes care of it)
 //   We should wait for notification about ConnectionResult?
+
+
     fun createContent(project: Project): JComponent {
-        logger.info("${this::class.simpleName}:createContent ${Thread.currentThread().name}")
         val screenSize = Toolkit.getDefaultToolkit().screenSize
-        logger.info("${Plugin.PLUGIN_ID}: screen size: $screenSize")
         val scale = screenSize.height / SCREEN_HEIGHT
         val panel = JPanel()
         panel.background = java.awt.Color.WHITE
-        logger.info("${this::class}: $paneControllerManagers")
-        paneControllerManagers.map { it.createContent(project, scale) }.forEach {
-            logger.info("${this::class.simpleName}:createContent forEach ${Thread.currentThread().name}")
-            panel.add(it)
-        }
+        logger.info("codetracker: server connection result is ${PluginServer.serverConnectionResult}")
 
-//        Run on JavaFX thread because it triggers fx components + they need to be updated after their initialization
-        Platform.runLater {
-            paneControllerManagers.forEach { it.getLastAddedPaneController()?.update() }
-        }
-
+//        when (PluginServer.serverConnectionResult) {
+//            ServerConnectionResult.LOADING -> {
+//                visiblePane = LoadingControllerManager
+//                addPanesOnPanel(panel, { !it.dependsOnServerData }, project, scale)
+//                contents.add(Content(panel, project, scale, false))
+//            }
+//            ServerConnectionResult.FAIL -> {
+//                visiblePane = ErrorControllerManager
+//                addPanesOnPanel(panel, { !it.dependsOnServerData }, project, scale)
+//                contents.add(Content(panel, project, scale, false))
+//            }
+//            ServerConnectionResult.SUCCESS -> {
+//                visiblePane = ProfileControllerManager
+//                addPanesOnPanel(panel, { true }, project, scale)
+//                contents.add(Content(panel, project, scale, true))
+//            }
+//        }
         return JBScrollPane(panel)
     }
+
+    private fun addPanesOnPanel(panel: JPanel, filter: (Pane) -> Boolean, project: Project, scale: Double) {
+        val filteredPanes = panes.filter { filter(it) }
+        filteredPanes.map { it.createContent(project, scale) }.forEach { panel.add(it) }
+        Platform.runLater {
+            filteredPanes.forEach { it.getLastAddedPaneController()?.update() }
+        }
+    }
+
+//    fun create
+
+//    надо в создании контента проверять, че там с сервером. Если фейл -- то загружать ServerPane,
+//    при этом подписаться на обновления и как только будет ок -- то загрузить все, поставить в качестве визибле -- профиль
+
+
+//    если сразу ок -- то просто загрузить все панели
 }

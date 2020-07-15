@@ -17,6 +17,7 @@ import org.jetbrains.research.ml.codetracker.ui.MainController
 import kotlin.reflect.KClass
 
 object TaskControllerManager : PaneControllerManager<TaskController>() {
+    override val dependsOnServerData: Boolean = true
     override val paneControllerClass: KClass<TaskController> = TaskController::class
     override val fxmlFilename: String = "task-ui-form-2.fxml"
 }

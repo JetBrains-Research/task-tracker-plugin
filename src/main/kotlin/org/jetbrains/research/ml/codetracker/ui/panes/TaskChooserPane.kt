@@ -24,6 +24,7 @@ import kotlin.reflect.KClass
 
 
 object TaskChooserControllerManager : PaneControllerManager<TaskChooserController>() {
+    override val dependsOnServerData: Boolean = true
     override val paneControllerClass: KClass<TaskChooserController> = TaskChooserController::class
     override val fxmlFilename: String = "taskChooser-ui-form-2.fxml"
 }
