@@ -13,7 +13,11 @@ import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.ui.FormattedLabel
+import org.jetbrains.research.ml.codetracker.ui.FormattedText
 import org.jetbrains.research.ml.codetracker.ui.MainController
+import java.net.URL
+import java.util.*
 import kotlin.reflect.KClass
 
 object TaskControllerManager : PaneControllerManager<TaskController>() {
@@ -30,15 +34,16 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
     @FXML lateinit var yellowRectangle: Rectangle
 
     //    Task info
-    @FXML lateinit var taskTextFlow: TextFlow
-    @FXML lateinit var taskNameText: Text
+    @FXML lateinit var taskNameText: FormattedText
     @FXML lateinit var taskDescriptionText: Text
+    @FXML lateinit var taskInputHeaderText: FormattedText
     @FXML lateinit var taskInputText: Text
+    @FXML lateinit var taskOutputHeaderText: FormattedText
     @FXML lateinit var taskOutputText: Text
 
     //    Examples
-    @FXML lateinit var inputLabel: Label
-    @FXML lateinit var outputLabel: Label
+    @FXML lateinit var inputLabel: FormattedLabel
+    @FXML lateinit var outputLabel: FormattedLabel
     @FXML lateinit var firstExampleInput: TextArea
     @FXML lateinit var firstExampleOutput: TextArea
     @FXML lateinit var secondExampleInput: TextArea
@@ -50,19 +55,19 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
 
 
     @FXML lateinit var sendSolutionButton: Button
-    @FXML lateinit var sendSolutionText: Text
+    @FXML lateinit var sendSolutionText: FormattedText
     @FXML lateinit var backToTasksButton: Button
-    @FXML lateinit var backToTasksText: Text
+    @FXML lateinit var backToTasksText: FormattedText
 
     private val translations = PluginServer.paneText?.taskPane
 
 
-    override fun initialize() {
+    override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         initTaskInfo()
         initButtons()
         makeTranslatable()
-        super.initialize()
+        super.initialize(url, resource)
     }
 
     private fun initTaskInfo() {
@@ -77,7 +82,7 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
                 newTask?.let {
                     val newTaskInfo = newTask.infoTranslation[paneUiData.language.currentValue]
                     newTaskInfo?.let {
-                        taskNameText.text = it.name
+                        taskNameText.formattedText = it.name
                         taskDescriptionText.text = it.description
                         taskInputText.text = it.input
                         taskOutputText.text = it.output
@@ -103,15 +108,17 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
                 val newLanguage = paneUiData.language.dataList[newLanguageIndex]
                 val taskPaneText = translations?.get(newLanguage)
                 taskPaneText?.let {
-                    inputLabel.text = it.inputData
-                    outputLabel.text = it.outputData
-                    sendSolutionText.text = it.submit
-                    backToTasksText.text = it.backToTasks
+                    taskInputHeaderText.formattedText = it.inputData
+                    taskOutputHeaderText.formattedText = it.outputData
+                    inputLabel.formattedText = it.inputData
+                    outputLabel.formattedText = it.outputData
+                    sendSolutionText.formattedText = it.submit
+                    backToTasksText.formattedText = it.backToTasks
                 }
 
                 val taskInfo = TaskChooserUiData.chosenTask.currentValue?.infoTranslation?.get(newLanguage)
                 taskInfo?.let {
-                    taskNameText.text = it.name
+                    taskNameText.formattedText = it.name
                     taskDescriptionText.text = it.description
                     taskInputText.text = it.input
                     taskOutputText.text = it.output

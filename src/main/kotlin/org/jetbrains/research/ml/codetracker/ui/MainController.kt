@@ -43,29 +43,29 @@ internal object MainController {
         }
 
     init {
-//        subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
-//            override fun accept(connection: ServerConnectionResult) {
-//                visiblePane = when (connection) {
-//                    ServerConnectionResult.SUCCESS -> {
-//                        logger.info("Get success connection result")
-//                        contents.filter { !it.isInitialized }.forEach {
-//                            it.isInitialized = true
-//                            addPanesOnPanel(it.panel, { it.dependsOnServerData }, it.project, it.scale)
-//                        }
-////                      Do we want to unsubscribe after first success?
-//                        ProfileControllerManager
-//                    }
-//                    ServerConnectionResult.FAIL -> {
-//                        logger.info("Get fail connection result")
-//                        ErrorControllerManager
-//                    }
-//                    ServerConnectionResult.LOADING -> {
-//                        logger.info("Get loading connection result")
-//                        LoadingControllerManager
-//                    }
-//                }
-//            }
-//        })
+        subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
+            override fun accept(connection: ServerConnectionResult) {
+                visiblePane = when (connection) {
+                    ServerConnectionResult.SUCCESS -> {
+                        logger.info("Get success connection result")
+                        contents.filter { !it.isInitialized }.forEach {
+                            it.isInitialized = true
+                            addPanesOnPanel(it.panel, { it.dependsOnServerData }, it.project, it.scale)
+                        }
+//                      Do we want to unsubscribe after first success?
+                        ProfileControllerManager
+                    }
+                    ServerConnectionResult.FAIL -> {
+                        logger.info("Get fail connection result")
+                        ErrorControllerManager
+                    }
+                    ServerConnectionResult.LOADING -> {
+                        logger.info("Get loading connection result")
+                        LoadingControllerManager
+                    }
+                }
+            }
+        })
     }
 
 //   Run on EDT (ToolWindowFactory takes care of it)
@@ -79,23 +79,23 @@ internal object MainController {
         panel.background = java.awt.Color.WHITE
         logger.info("codetracker: server connection result is ${PluginServer.serverConnectionResult}")
 
-//        when (PluginServer.serverConnectionResult) {
-//            ServerConnectionResult.LOADING -> {
-//                visiblePane = LoadingControllerManager
-//                addPanesOnPanel(panel, { !it.dependsOnServerData }, project, scale)
-//                contents.add(Content(panel, project, scale, false))
-//            }
-//            ServerConnectionResult.FAIL -> {
-//                visiblePane = ErrorControllerManager
-//                addPanesOnPanel(panel, { !it.dependsOnServerData }, project, scale)
-//                contents.add(Content(panel, project, scale, false))
-//            }
-//            ServerConnectionResult.SUCCESS -> {
-//                visiblePane = ProfileControllerManager
-//                addPanesOnPanel(panel, { true }, project, scale)
-//                contents.add(Content(panel, project, scale, true))
-//            }
-//        }
+        when (PluginServer.serverConnectionResult) {
+            ServerConnectionResult.LOADING -> {
+                visiblePane = LoadingControllerManager
+                addPanesOnPanel(panel, { !it.dependsOnServerData }, project, scale)
+                contents.add(Content(panel, project, scale, false))
+            }
+            ServerConnectionResult.FAIL -> {
+                visiblePane = ErrorControllerManager
+                addPanesOnPanel(panel, { !it.dependsOnServerData }, project, scale)
+                contents.add(Content(panel, project, scale, false))
+            }
+            ServerConnectionResult.SUCCESS -> {
+                visiblePane = ProfileControllerManager
+                addPanesOnPanel(panel, { true }, project, scale)
+                contents.add(Content(panel, project, scale, true))
+            }
+        }
         return JBScrollPane(panel)
     }
 

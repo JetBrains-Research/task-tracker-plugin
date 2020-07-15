@@ -10,6 +10,8 @@ import javafx.scene.control.ComboBox
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.*
 import java.lang.Thread.currentThread
+import java.net.URL
+import java.util.*
 import java.util.function.Consumer
 
 /**
@@ -35,7 +37,7 @@ open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXP
     protected val logger = Logger.getInstance(javaClass)
     protected open val paneUiData: LanguagePaneUiData = LanguagePaneUiData()
 
-    override fun initialize() {
+    override fun initialize(url: URL?, resource: ResourceBundle?) {
         println("${this::class.simpleName}:PCinitialize ${currentThread().name}")
         initLanguageComboBox()
     }

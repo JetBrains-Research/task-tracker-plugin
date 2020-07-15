@@ -13,6 +13,11 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import org.jetbrains.research.ml.codetracker.ui.FormattedLabel?>
+<?import org.jetbrains.research.ml.codetracker.ui.LowerCaseWithColonFormatter?>
+
+<?import org.jetbrains.research.ml.codetracker.ui.FormattedText?>
+<?import org.jetbrains.research.ml.codetracker.ui.LowerCaseFormatter?>
 <Pane id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <Pane id="codetrackerPane" prefHeight="80.0" prefWidth="560.0" stylesheets="@style.css">
@@ -26,7 +31,11 @@
             <Rectangle fx:id="yellowRectangle" arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="354.0" layoutY="180.0" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="560.0" />
             <Polygon fx:id="bluePolygon" fill="#7abaf5" layoutX="72.0" layoutY="60.0" opacity="0.25" points="-72.0, -60.0, -72.0, 400.0, 488.0, -60.0" stroke="WHITE" strokeType="INSIDE" />
             <ComboBox fx:id="choseTaskComboBox" layoutX="70.0" layoutY="230.0" prefHeight="35.0" prefWidth="420.0" minHeight="35.0"/>
-            <Label fx:id="choseTaskLabel" layoutX="70.0" layoutY="150.0" styleClass="sanserif-bold-20" text="выберите задачу:" />
+            <FormattedLabel fx:id="choseTaskLabel" layoutX="70.0" layoutY="150.0" styleClass="sanserif-bold-20">
+                <formatter>
+                    <LowerCaseWithColonFormatter/>
+                </formatter>
+            </FormattedLabel>
             <Button fx:id="backToProfileButton" layoutX="29.0" layoutY="-2.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="41.0" textFill="WHITE">
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true">
@@ -46,11 +55,14 @@
                                     <Image url="@next.png" />
                                 </image>
                             </ImageView>
-                            <Text fx:id="startSolvingText" strokeType="OUTSIDE" strokeWidth="0.0" text="начать решение" textAlignment="CENTER" wrappingWidth="98.736328125">
+                            <FormattedText fx:id="startSolvingText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="98.736328125">
                                 <font>
                                     <Font name="System Bold" size="15.0" />
                                 </font>
-                            </Text>
+                                <formatter>
+                                    <LowerCaseFormatter/>
+                                </formatter>
+                            </FormattedText>
                         </children>
                     </VBox>
                 </graphic>
@@ -64,11 +76,14 @@
                                     <Image url="@close.png" />
                                 </image>
                             </ImageView>
-                            <Text fx:id="finishWorkText" strokeType="OUTSIDE" strokeWidth="0.0" text="закончить работу" textAlignment="CENTER" wrappingWidth="99.736328125">
+                            <FormattedText fx:id="finishWorkText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="99.736328125">
                                 <font>
                                     <Font name="System Bold" size="15.0" />
                                 </font>
-                            </Text>
+                                <formatter>
+                                    <LowerCaseFormatter/>
+                                </formatter>
+                            </FormattedText>
                         </children>
                     </VBox>
                 </graphic>

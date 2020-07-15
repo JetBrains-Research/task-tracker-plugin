@@ -19,6 +19,8 @@ import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.TaskFileHandler
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.*
+import java.net.URL
+import java.util.*
 import java.util.function.Consumer
 import kotlin.reflect.KClass
 
@@ -49,25 +51,25 @@ class TaskChooserController(project: Project, scale: Double, fxPanel: JFXPanel, 
     @FXML private lateinit var bluePolygon: Polygon
 
     @FXML private lateinit var choseTaskComboBox: ComboBox<String?>
-    @FXML private lateinit var choseTaskLabel: Label
+    @FXML private lateinit var choseTaskLabel: FormattedLabel
     private lateinit var choseTaskObservableList: ObservableList<String?>
 
     //    Todo: maybe we need a text under this button because when user comes back from TaskPane it becomes unclear
     @FXML private lateinit var backToProfileButton: Button
     @FXML private lateinit var startSolvingButton: Button
-    @FXML private lateinit var startSolvingText: Text
+    @FXML private lateinit var startSolvingText: FormattedText
     @FXML private lateinit var finishWorkButton: Button
-    @FXML private lateinit var finishWorkText: Text
+    @FXML private lateinit var finishWorkText: FormattedText
 
     override val paneUiData = TaskChooserUiData
     private val translations = PluginServer.paneText?.taskChoosePane
 
-    override fun initialize() {
+    override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         initChoseTaskComboBox()
         initButtons()
         makeTranslatable()
-        super.initialize()
+        super.initialize(url, resource)
     }
 
     private fun initChoseTaskComboBox() {
@@ -106,9 +108,9 @@ class TaskChooserController(project: Project, scale: Double, fxPanel: JFXPanel, 
                 val newLanguage = paneUiData.language.dataList[newLanguageIndex]
                 val taskChooserPaneText = translations?.get(newLanguage)
                 taskChooserPaneText?.let {
-                    choseTaskLabel.text = it.chooseTask
-                    startSolvingText.text = it.startSolving
-                    finishWorkText.text = it.finishSession
+                    choseTaskLabel.formattedText = it.chooseTask
+                    startSolvingText.formattedText = it.startSolving
+                    finishWorkText.formattedText = it.finishSession
                     changeComboBoxItems(choseTaskComboBox, choseTaskObservableList, paneUiData.chosenTask.dataList.map {
                         it.infoTranslation[paneUiData.language.currentValue]?.name
                     })

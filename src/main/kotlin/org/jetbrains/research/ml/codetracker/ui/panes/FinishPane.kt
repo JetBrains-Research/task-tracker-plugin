@@ -10,6 +10,8 @@ import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import java.net.URL
+import java.util.*
 import kotlin.reflect.KClass
 
 object FinishControllerManager : PaneControllerManager<FinishController>() {
@@ -36,11 +38,11 @@ class FinishController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
 
     private val translations = PluginServer.paneText?.finishPane
 
-    override fun initialize() {
+    override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         initButtons()
         makeTranslatable()
-        super.initialize()
+        super.initialize(url, resource)
     }
 
     private fun initButtons() {

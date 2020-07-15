@@ -40,7 +40,7 @@ dependencies {
     implementation("com.gluonhq", "charm-glisten", "6.0.1")
     implementation("com.google.code.gson", "gson", "2.8.5")
     implementation("com.squareup.okhttp3", "okhttp", "4.2.2")
-    implementation("org.controlsfx:controlsfx:11.0.1")
+    implementation("org.controlsfx:controlsfx:11.0.2")
     compile("com.google.auto.service:auto-service:1.0-rc7")
 
     testCompile("junit", "junit", "4.12")

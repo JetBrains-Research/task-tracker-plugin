@@ -8,6 +8,8 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.MainController
+import java.net.URL
+import java.util.*
 import kotlin.reflect.KClass
 
 
@@ -23,7 +25,7 @@ class ErrorController(project: Project, scale: Double, fxPanel: JFXPanel, id: In
     @FXML private lateinit var refreshButton: Button
     @FXML private lateinit var errorMessageText: Text
 
-    override fun initialize() {
+    override fun initialize(url: URL?, resource: ResourceBundle?) {
         refreshButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             MainController.visiblePane = LoadingControllerManager
             PluginServer.reconnect()

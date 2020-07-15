@@ -13,11 +13,14 @@ import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
+import org.jetbrains.research.ml.codetracker.ui.FormattedLabel
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Country
 import org.jetbrains.research.ml.codetracker.models.Gender
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.*
+import java.net.URL
+import java.util.*
 import java.util.function.Consumer
 import kotlin.reflect.KClass
 
@@ -95,38 +98,38 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     @FXML private lateinit var bluePolygon: Polygon
 
     // Age
-    @FXML private lateinit var ageLabel: Label
+    @FXML private lateinit var ageLabel: FormattedLabel
     @FXML private lateinit var ageTextField: TextField
 
     // Gender
-    @FXML private lateinit var genderLabel: Label
+    @FXML private lateinit var genderLabel: FormattedLabel
     @FXML private lateinit var genderGroup: ToggleGroup
-    @FXML private lateinit var gender1: RadioButton
-    @FXML private lateinit var gender2: RadioButton
-    @FXML private lateinit var gender3: RadioButton
-    @FXML private lateinit var gender4: RadioButton
-    @FXML private lateinit var gender5: RadioButton
-    @FXML private lateinit var gender6: RadioButton
-    @FXML private lateinit var genderRadioButtons: List<RadioButton>
+    @FXML private lateinit var gender1: FormattedRadioButton
+    @FXML private lateinit var gender2: FormattedRadioButton
+    @FXML private lateinit var gender3: FormattedRadioButton
+    @FXML private lateinit var gender4: FormattedRadioButton
+    @FXML private lateinit var gender5: FormattedRadioButton
+    @FXML private lateinit var gender6: FormattedRadioButton
+    @FXML private lateinit var genderRadioButtons: List<FormattedRadioButton>
 
     // Program Experience
-    @FXML private lateinit var experienceLabel: Label
-    @FXML private lateinit var peYearsLabel: Label
+    @FXML private lateinit var experienceLabel: FormattedLabel
+    @FXML private lateinit var peYearsLabel: FormattedLabel
     @FXML private lateinit var peYearsTextField: TextField
     @FXML private lateinit var peYearsLine: Line
     @FXML private lateinit var peMonthsHBox: HBox
-    @FXML private lateinit var peMonthsLabel: Label
+    @FXML private lateinit var peMonthsLabel: FormattedLabel
     @FXML private lateinit var peMonthsTextField: TextField
     @FXML private lateinit var peMonthsLine: Line
 
     // Country
-    @FXML private lateinit var countryLabel: Label
+    @FXML private lateinit var countryLabel: FormattedLabel
     @FXML private lateinit var countryComboBox: ComboBox<String?>
     private lateinit var countryObservableList: ObservableList<String?>
 
     // StartWorking
     @FXML private lateinit var startWorkingButton: Button
-    @FXML private lateinit var startWorkingText: Text
+    @FXML private lateinit var startWorkingText: FormattedText
 
     override val paneUiData = ProfileUiData
     private val translations = PluginServer.paneText?.surveyPane
@@ -135,7 +138,7 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
         private const val PE_YEARS_NUMBER_TO_SHOW_MONTHS = 2
     }
 
-    override fun initialize() {
+    override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         initAge()
         initGender()
@@ -144,7 +147,7 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
         initCountry()
         initStartWorkingButton()
         makeTranslatable()
-        super.initialize()
+        super.initialize(url, resource)
     }
 
     private fun initAge() {
@@ -173,7 +176,6 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
             override fun accept(newGenderIndex: Int) {
                 if (paneUiData.gender.isValid(newGenderIndex)) {
                     genderGroup.selectToggle(genderRadioButtons[newGenderIndex])
-                    println("gender: ${paneUiData.anyRequiredDataDefault()}")
                     startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
                 }
             }
@@ -200,9 +202,9 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
 
     private fun initPeMonths() {
         peMonthsHBox.isVisible = paneUiData.peMonths.isRequired
-//        change when delete last symbol
+//        todo: change when delete last symbol
         val converter = peMonthsTextField.addIntegerFormatter(regexFilter("[0-9]|1[01]"))
-        peMonthsTextField.textProperty().addListener { _, old, new ->
+        peMonthsTextField.textProperty().addListener { _, _, new ->
             paneUiData.peMonths.uiValue = converter.fromString(new) ?: paneUiData.peMonths.defaultUiValue
         }
         subscribe(PeMonthsNotifier.PE_MONTHS_TOPIC, object : PeMonthsNotifier {
@@ -243,19 +245,19 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
                 val newLanguage = paneUiData.language.dataList[newLanguageIndex]
                 val surveyPaneText = translations?.get(newLanguage)
                 surveyPaneText?.let {
-                    ageLabel.text = it.age
-                    genderLabel.text = it.gender
-                    experienceLabel.text = it.experience
-                    peYearsLabel.text = it.years
-                    peMonthsLabel.text = it.months
-                    countryLabel.text = it.country
-                    startWorkingText.text = it.startSession
+                    ageLabel.formattedText = it.age
+                    genderLabel.formattedText = it.gender
+                    experienceLabel.formattedText = it.experience
+                    peYearsLabel.formattedText = it.years
+                    peMonthsLabel.formattedText = it.months
+                    countryLabel.formattedText = it.country
+                    startWorkingText.formattedText = it.startSession
 
                     changeComboBoxItems(countryComboBox, countryObservableList, paneUiData.country.dataList.map {
                         it.translation.getOrDefault(newLanguage,"")
                     })
                 }
-                genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g -> rb.text = g.translation[newLanguage] }
+                genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g -> rb.formattedText = g.translation[newLanguage] ?: "" }
             }
         })
     }

@@ -4,6 +4,8 @@ import com.intellij.openapi.project.Project
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.text.Text
+import java.net.URL
+import java.util.*
 import kotlin.reflect.KClass
 
 
@@ -17,7 +19,7 @@ object LoadingControllerManager : PaneControllerManager<LoadingController>() {
 class LoadingController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController(project, scale, fxPanel, id) {
     @FXML private lateinit var loadingText: Text
 
-    override fun initialize() {}
+    override fun initialize(url: URL?, resource: ResourceBundle?) {}
 
     override fun update() {}
 }

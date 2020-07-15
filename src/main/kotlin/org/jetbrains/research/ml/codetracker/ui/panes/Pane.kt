@@ -7,6 +7,7 @@ import com.intellij.openapi.util.Disposer
 import javafx.application.Platform
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXMLLoader
+import javafx.fxml.Initializable
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.paint.Color
@@ -31,11 +32,8 @@ import kotlin.reflect.KClass
  * [PaneController] stores all UI components of *the pane* such as buttons, labels, and so on.
  * Its instance is created every time new IDE window opens.
  */
-abstract class PaneController(val project: Project, val scale: Double, val fxPanel: JFXPanel, val id: Int) {
-    /**
-     * Calls by FXML loader to init UI components.
-     */
-    abstract fun initialize()
+abstract class PaneController(val project: Project, val scale: Double, val fxPanel: JFXPanel, val id: Int) :
+    Initializable {
 
     /**
      * Update Ui elements; it's separated from initialize because some updates depend on
@@ -73,6 +71,7 @@ abstract class PaneControllerManager<T : PaneController>  {
             loader.namespace["scale"] = scale
             loader.location = javaClass.getResource(fxmlFilename)
             loader.setController(controller)
+            loader.classLoader = this::class.java.classLoader
             logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set controller")
             val root = loader.load<Parent>()
             val scene = Scene(root, Color.WHITE)
