@@ -76,10 +76,12 @@ abstract class PaneControllerManager<T : PaneController>  {
             val root = loader.load<Parent>()
             val scene = Scene(root, Color.WHITE)
             fxPanel.scene = scene
+            fxPanel.background = java.awt.Color.WHITE
+            fxPanel.isVisible = MainController.visiblePane == this
         }
 
-        fxPanel.background = java.awt.Color.WHITE
-        fxPanel.isVisible = MainController.visiblePane == this
+//        fxPanel.background = java.awt.Color.WHITE
+//        fxPanel.isVisible = MainController.visiblePane == this
         return fxPanel
     }
 

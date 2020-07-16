@@ -27,7 +27,6 @@ class ErrorController(project: Project, scale: Double, fxPanel: JFXPanel, id: In
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         refreshButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            MainController.visiblePane = LoadingControllerManager
             PluginServer.reconnect()
         }
     }

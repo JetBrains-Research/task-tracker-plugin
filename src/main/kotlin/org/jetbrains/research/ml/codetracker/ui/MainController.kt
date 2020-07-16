@@ -15,7 +15,7 @@ import javax.swing.JPanel
 
 typealias Pane = PaneControllerManager<out PaneController>
 
-data class Content(val panel: JPanel, val project: Project, val scale: Double, var isInitialized: Boolean)
+data class Content(val panel: JPanel, val project: Project, val scale: Double, var isFullyInitialized: Boolean)
 
 
 internal object MainController {
@@ -45,23 +45,22 @@ internal object MainController {
     init {
         subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
             override fun accept(connection: ServerConnectionResult) {
-                visiblePane = when (connection) {
+                when (connection) {
+                    ServerConnectionResult.UNINITIALIZED -> {
+                        visiblePane = LoadingControllerManager
+                    }
                     ServerConnectionResult.SUCCESS -> {
-                        logger.info("Get success connection result")
-                        contents.filter { !it.isInitialized }.forEach {
-                            it.isInitialized = true
-                            addPanesOnPanel(it.panel, { it.dependsOnServerData }, it.project, it.scale)
-                        }
+                        logger.info("codetracker: get success, set success")
 //                      Do we want to unsubscribe after first success?
-                        ProfileControllerManager
+                        finishInitWithServer()
                     }
                     ServerConnectionResult.FAIL -> {
-                        logger.info("Get fail connection result")
-                        ErrorControllerManager
+                        logger.info("codetracker: get failed, set failed")
+                        visiblePane = ErrorControllerManager
                     }
                     ServerConnectionResult.LOADING -> {
-                        logger.info("Get loading connection result")
-                        LoadingControllerManager
+                        logger.info("codetracker: get loading, set loading")
+                        visiblePane = LoadingControllerManager
                     }
                 }
             }
@@ -77,26 +76,43 @@ internal object MainController {
         val scale = screenSize.height / SCREEN_HEIGHT
         val panel = JPanel()
         panel.background = java.awt.Color.WHITE
-        logger.info("codetracker: server connection result is ${PluginServer.serverConnectionResult}")
 
         when (PluginServer.serverConnectionResult) {
+            ServerConnectionResult.UNINITIALIZED -> {
+                initWithoutServer(panel, project, scale)
+                PluginServer.reconnect()
+            }
             ServerConnectionResult.LOADING -> {
-                visiblePane = LoadingControllerManager
-                addPanesOnPanel(panel, { !it.dependsOnServerData }, project, scale)
-                contents.add(Content(panel, project, scale, false))
+                initWithoutServer(panel, project, scale)
             }
             ServerConnectionResult.FAIL -> {
-                visiblePane = ErrorControllerManager
-                addPanesOnPanel(panel, { !it.dependsOnServerData }, project, scale)
-                contents.add(Content(panel, project, scale, false))
+                initWithoutServer(panel, project, scale)
             }
             ServerConnectionResult.SUCCESS -> {
-                visiblePane = ProfileControllerManager
-                addPanesOnPanel(panel, { true }, project, scale)
-                contents.add(Content(panel, project, scale, true))
+                logger.info("codetracker: create content, set success")
+                initWithServer(panel, project, scale)
             }
         }
         return JBScrollPane(panel)
+    }
+
+    private fun initWithoutServer(panel: JPanel, project: Project, scale: Double) {
+        addPanesOnPanel(panel, { !it.dependsOnServerData }, project, scale)
+        contents.add(Content(panel, project, scale, false))
+    }
+
+    private fun initWithServer(panel: JPanel, project: Project, scale: Double) {
+        addPanesOnPanel(panel, { true }, project, scale)
+        contents.add(Content(panel, project, scale, false))
+    }
+
+    private fun finishInitWithServer() {
+        contents.filter { !it.isFullyInitialized }.forEach {
+            it.isFullyInitialized = true
+            addPanesOnPanel(it.panel, { it.dependsOnServerData }, it.project, it.scale)
+        }
+        visiblePane = ProfileControllerManager
+
     }
 
     private fun addPanesOnPanel(panel: JPanel, filter: (Pane) -> Boolean, project: Project, scale: Double) {
@@ -106,12 +122,4 @@ internal object MainController {
             filteredPanes.forEach { it.getLastAddedPaneController()?.update() }
         }
     }
-
-//    fun create
-
-//    надо в создании контента проверять, че там с сервером. Если фейл -- то загружать ServerPane,
-//    при этом подписаться на обновления и как только будет ок -- то загрузить все, поставить в качестве визибле -- профиль
-
-
-//    если сразу ок -- то просто загрузить все панели
 }

@@ -8,6 +8,7 @@ import org.jetbrains.research.ml.codetracker.models.*
 import java.util.function.Consumer
 
 enum class ServerConnectionResult {
+    UNINITIALIZED,
     LOADING,
     SUCCESS,
     FAIL
@@ -19,14 +20,6 @@ interface ServerConnectionNotifier : Consumer<ServerConnectionResult> {
     }
 }
 
-// What do we want to do on reconnection? reload all UI? update only depending on server uiData (like countries or genders?
-interface ServerReconnectionNotifier  {
-    companion object {
-        val SERVER_RECONNECTION_TOPIC = Topic.create("server reconnection", ServerReconnectionNotifier::class.java)
-    }
-    fun onNotification()
-}
-
 object PluginServer {
 
     var paneText: PaneText? = null
@@ -35,29 +28,21 @@ object PluginServer {
     var genders: List<Gender> = emptyList()
     var countries: List<Country> = emptyList()
 
-    var serverConnectionResult: ServerConnectionResult = ServerConnectionResult.LOADING
+    var serverConnectionResult: ServerConnectionResult = ServerConnectionResult.UNINITIALIZED
         private set
 
     private val logger: Logger = Logger.getInstance(javaClass)
 
-    init {
+    /**
+     * Finds all data and sends results about finding
+     */
+    fun reconnect() {
+
         safeFind { findData() }
     }
 
     /**
-     * Tries to find all data again, sends connection results, and after that notifies all subscribers about reconnection
-     */
-    fun reconnect() {
-        if (serverConnectionResult == ServerConnectionResult.FAIL) {
-            safeFind { findData() }
-            val publisher =
-                ApplicationManager.getApplication().messageBus.syncPublisher(ServerReconnectionNotifier.SERVER_RECONNECTION_TOPIC)
-            publisher.onNotification()
-        }
-    }
-
-    /**
-     * Tries to find all data and sends the result to all subscribers
+     * Tries to call 'find' and sends the result of it to all subscribers
      */
     private fun safeFind(find: () -> Unit) {
         val publisher = ApplicationManager.getApplication().messageBus.syncPublisher(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC)
@@ -68,11 +53,10 @@ object PluginServer {
             find()
             ServerConnectionResult.SUCCESS
         } catch (e: java.lang.IllegalStateException) {
-            logger.info("${Plugin.PLUGIN_ID}: safe find got illegal state")
             ServerConnectionResult.FAIL
-        } finally {
-            publisher.accept(serverConnectionResult)
         }
+        publisher.accept(serverConnectionResult)
+
     }
 
     private fun findData() {
