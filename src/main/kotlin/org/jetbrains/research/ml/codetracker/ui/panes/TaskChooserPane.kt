@@ -28,7 +28,7 @@ import kotlin.reflect.KClass
 object TaskChooserControllerManager : PaneControllerManager<TaskChooserController>() {
     override val dependsOnServerData: Boolean = true
     override val paneControllerClass: KClass<TaskChooserController> = TaskChooserController::class
-    override val fxmlFilename: String = "taskChooser-ui-form-2.fxml"
+    override val fxmlFilename: String = "taskChooser-ui-form.fxml"
 }
 
 interface ChosenTaskNotifier : Consumer<Int> {
@@ -51,15 +51,15 @@ class TaskChooserController(project: Project, scale: Double, fxPanel: JFXPanel, 
     @FXML private lateinit var bluePolygon: Polygon
 
     @FXML private lateinit var choseTaskComboBox: ComboBox<String?>
-    @FXML private lateinit var choseTaskLabel: Label
+    @FXML private lateinit var choseTaskLabel: FormattedLabel
     private lateinit var choseTaskObservableList: ObservableList<String?>
 
     //    Todo: maybe we need a text under this button because when user comes back from TaskPane it becomes unclear
     @FXML private lateinit var backToProfileButton: Button
     @FXML private lateinit var startSolvingButton: Button
-    @FXML private lateinit var startSolvingText: Text
+    @FXML private lateinit var startSolvingText: FormattedText
     @FXML private lateinit var finishWorkButton: Button
-    @FXML private lateinit var finishWorkText: Text
+    @FXML private lateinit var finishWorkText: FormattedText
 
     override val paneUiData = TaskChooserUiData
     private val translations = PluginServer.paneText?.taskChoosePane

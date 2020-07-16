@@ -11,6 +11,8 @@ import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.ui.FormattedLabel
+import org.jetbrains.research.ml.codetracker.ui.FormattedText
 import java.net.URL
 import java.util.*
 import kotlin.reflect.KClass
@@ -18,7 +20,7 @@ import kotlin.reflect.KClass
 object TaskControllerManager : PaneControllerManager<TaskController>() {
     override val dependsOnServerData: Boolean = true
     override val paneControllerClass: KClass<TaskController> = TaskController::class
-    override val fxmlFilename: String = "task-ui-form-2.fxml"
+    override val fxmlFilename: String = "task-ui-form.fxml"
 }
 
 class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
@@ -29,16 +31,16 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
     @FXML lateinit var yellowRectangle: Rectangle
 
     //    Task info
-    @FXML lateinit var taskNameText: Text
+    @FXML lateinit var taskNameText: FormattedText
     @FXML lateinit var taskDescriptionText: Text
-    @FXML lateinit var taskInputHeaderText: Text
+    @FXML lateinit var taskInputHeaderText: FormattedText
     @FXML lateinit var taskInputText: Text
-    @FXML lateinit var taskOutputHeaderText: Text
+    @FXML lateinit var taskOutputHeaderText: FormattedText
     @FXML lateinit var taskOutputText: Text
 
     //    Examples
-    @FXML lateinit var inputLabel: Label
-    @FXML lateinit var outputLabel: Label
+    @FXML lateinit var inputLabel: FormattedLabel
+    @FXML lateinit var outputLabel: FormattedLabel
     @FXML lateinit var firstExampleInput: TextArea
     @FXML lateinit var firstExampleOutput: TextArea
     @FXML lateinit var secondExampleInput: TextArea
@@ -50,9 +52,9 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
 
 
     @FXML lateinit var sendSolutionButton: Button
-    @FXML lateinit var sendSolutionText: Text
+    @FXML lateinit var sendSolutionText: FormattedText
     @FXML lateinit var backToTasksButton: Button
-    @FXML lateinit var backToTasksText: Text
+    @FXML lateinit var backToTasksText: FormattedText
 
     private val translations = PluginServer.paneText?.taskPane
 

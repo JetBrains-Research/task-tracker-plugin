@@ -27,7 +27,7 @@ import kotlin.reflect.KClass
 object ProfileControllerManager : PaneControllerManager<ProfileController>() {
     override val dependsOnServerData: Boolean = true
     override val paneControllerClass: KClass<ProfileController> = ProfileController::class
-    override val fxmlFilename: String = "profile-ui-form-2.fxml"
+    override val fxmlFilename: String = "profile-ui-form.fxml"
 }
 
 /**
@@ -97,38 +97,38 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     @FXML private lateinit var bluePolygon: Polygon
 
     // Age
-    @FXML private lateinit var ageLabel: Label
+    @FXML private lateinit var ageLabel: FormattedLabel
     @FXML private lateinit var ageTextField: TextField
 
     // Gender
-    @FXML private lateinit var genderLabel: Label
+    @FXML private lateinit var genderLabel: FormattedLabel
     @FXML private lateinit var genderGroup: ToggleGroup
-    @FXML private lateinit var gender1: RadioButton
-    @FXML private lateinit var gender2: RadioButton
-    @FXML private lateinit var gender3: RadioButton
-    @FXML private lateinit var gender4: RadioButton
-    @FXML private lateinit var gender5: RadioButton
-    @FXML private lateinit var gender6: RadioButton
-    @FXML private lateinit var genderRadioButtons: List<RadioButton>
+    @FXML private lateinit var gender1: FormattedRadioButton
+    @FXML private lateinit var gender2: FormattedRadioButton
+    @FXML private lateinit var gender3: FormattedRadioButton
+    @FXML private lateinit var gender4: FormattedRadioButton
+    @FXML private lateinit var gender5: FormattedRadioButton
+    @FXML private lateinit var gender6: FormattedRadioButton
+    @FXML private lateinit var genderRadioButtons: List<FormattedRadioButton>
 
     // Program Experience
-    @FXML private lateinit var experienceLabel: Label
-    @FXML private lateinit var peYearsLabel: Label
+    @FXML private lateinit var experienceLabel: FormattedLabel
+    @FXML private lateinit var peYearsLabel: FormattedLabel
     @FXML private lateinit var peYearsTextField: TextField
     @FXML private lateinit var peYearsLine: Line
     @FXML private lateinit var peMonthsHBox: HBox
-    @FXML private lateinit var peMonthsLabel: Label
+    @FXML private lateinit var peMonthsLabel: FormattedLabel
     @FXML private lateinit var peMonthsTextField: TextField
     @FXML private lateinit var peMonthsLine: Line
 
     // Country
-    @FXML private lateinit var countryLabel: Label
+    @FXML private lateinit var countryLabel: FormattedLabel
     @FXML private lateinit var countryComboBox: ComboBox<String?>
     private lateinit var countryObservableList: ObservableList<String?>
 
     // StartWorking
     @FXML private lateinit var startWorkingButton: Button
-    @FXML private lateinit var startWorkingText: Text
+    @FXML private lateinit var startWorkingText: FormattedText
 
     override val paneUiData = ProfileUiData
     private val translations = PluginServer.paneText?.surveyPane

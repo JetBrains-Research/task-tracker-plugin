@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 object LoadingControllerManager : PaneControllerManager<LoadingController>() {
     override val dependsOnServerData: Boolean = false
     override val paneControllerClass: KClass<LoadingController> = LoadingController::class
-    override val fxmlFilename: String = "loading-ui-form-2.fxml"
+    override val fxmlFilename: String = "loading-ui-form.fxml"
 }
 
 

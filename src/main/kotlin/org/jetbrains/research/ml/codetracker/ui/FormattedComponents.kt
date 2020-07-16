@@ -1,9 +1,13 @@
 package org.jetbrains.research.ml.codetracker.ui
 
 import javafx.beans.NamedArg
+import javafx.beans.property.SimpleStringProperty
+import javafx.beans.value.ChangeListener
+import javafx.beans.value.ObservableValue
 import javafx.scene.control.Label
 import javafx.scene.control.RadioButton
 import javafx.scene.text.Text
+
 
 interface Formatter<T> {
     fun format(t: T): T
@@ -33,26 +37,20 @@ class CapitalCaseFormatter : Formatter<String> {
 
 
 class FormattedLabel(@NamedArg("formatter") private val formatter: Formatter<String>) : Label() {
-    var formattedText: String = formatter.format(text)
-        set(value) {
-            text = formatter.format(value)
-            field = text
-        }
+    init {
+        textProperty().addListener { _, _, new -> text = formatter.format(new) }
+    }
 }
 
 class FormattedText(@NamedArg("formatter") private val formatter: Formatter<String>) : Text() {
-    var formattedText: String = formatter.format(text)
-        set(value) {
-            text = formatter.format(value)
-            field = text
-        }
+    init {
+        textProperty().addListener { _, _, new -> text = formatter.format(new) }
+    }
 }
 
 class FormattedRadioButton(@NamedArg("formatter") private val formatter: Formatter<String>) : RadioButton() {
-    var formattedText: String = formatter.format(text)
-        set(value) {
-            text = formatter.format(value)
-            field = text
-        }
+    init {
+        textProperty().addListener { _, _, new -> text = formatter.format(new) }
+    }
 }
 

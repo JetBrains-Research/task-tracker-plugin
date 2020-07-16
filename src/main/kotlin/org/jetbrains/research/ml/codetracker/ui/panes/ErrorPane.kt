@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
 object ErrorControllerManager : PaneControllerManager<ErrorController>() {
     override val dependsOnServerData: Boolean = false
     override val paneControllerClass: KClass<ErrorController> = ErrorController::class
-    override val fxmlFilename: String = "error-ui-form-2.fxml"
+    override val fxmlFilename: String = "error-ui-form.fxml"
 }
 
 

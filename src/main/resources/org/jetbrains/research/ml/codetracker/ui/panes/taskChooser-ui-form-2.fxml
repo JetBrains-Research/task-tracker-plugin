@@ -49,10 +49,7 @@
                                     <Image url="@next.png" />
                                 </image>
                             </ImageView>
-                            <Text fx:id="startSolvingText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="98.736328125">
-                                <font>
-                                    <Font name="System Bold" size="15.0" />
-                                </font>
+                            <Text fx:id="startSolvingText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="98.736328125" styleClass="sanserif-bold-15">
       <!--                                <formatter>-->
       <!--                                    <LowerCaseFormatter/>-->
       <!--                                </formatter>-->
@@ -70,10 +67,7 @@
                                     <Image url="@close.png" />
                                 </image>
                             </ImageView>
-                            <Text fx:id="finishWorkText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="99.736328125">
-                                <font>
-                                    <Font name="System Bold" size="15.0" />
-                                </font>
+                            <Text fx:id="finishWorkText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="99.736328125" styleClass="sanserif-bold-15">
 <!--                                <formatter>-->
 <!--                                    <LowerCaseFormatter/>-->
 <!--                                </formatter>-->

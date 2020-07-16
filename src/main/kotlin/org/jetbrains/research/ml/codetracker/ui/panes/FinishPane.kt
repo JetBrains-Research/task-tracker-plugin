@@ -10,6 +10,8 @@ import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.ui.FormattedLabel
+import org.jetbrains.research.ml.codetracker.ui.FormattedText
 import java.net.URL
 import java.util.*
 import kotlin.reflect.KClass
@@ -17,7 +19,7 @@ import kotlin.reflect.KClass
 object FinishControllerManager : PaneControllerManager<FinishController>() {
     override val dependsOnServerData: Boolean = true
     override val paneControllerClass: KClass<FinishController> = FinishController::class
-    override val fxmlFilename: String = "finish-ui-form-2.fxml"
+    override val fxmlFilename: String = "finish-ui-form.fxml"
 }
 
 
@@ -29,12 +31,12 @@ class FinishController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     @FXML lateinit var yellowPolygon: Polygon
 
     @FXML lateinit var backToTasksButton: Button
-    @FXML lateinit var backToTasksText: Text
+    @FXML lateinit var backToTasksText: FormattedText
     @FXML lateinit var backToProfileButton: Button
-    @FXML lateinit var backToProfileText: Text
+    @FXML lateinit var backToProfileText: FormattedText
 
-    @FXML lateinit var greatWorkLabel: Label
-    @FXML lateinit var messageText: Text
+    @FXML lateinit var greatWorkLabel: FormattedLabel
+    @FXML lateinit var messageText: FormattedText
 
     private val translations = PluginServer.paneText?.finishPane
 
