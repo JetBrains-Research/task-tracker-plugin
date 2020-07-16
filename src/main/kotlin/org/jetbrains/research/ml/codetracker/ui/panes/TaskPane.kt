@@ -6,16 +6,11 @@ import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextArea
-import javafx.scene.input.MouseEvent
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
-import javafx.scene.text.TextFlow
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.FormattedLabel
-import org.jetbrains.research.ml.codetracker.ui.FormattedText
-import org.jetbrains.research.ml.codetracker.ui.MainController
 import java.net.URL
 import java.util.*
 import kotlin.reflect.KClass
@@ -34,16 +29,16 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
     @FXML lateinit var yellowRectangle: Rectangle
 
     //    Task info
-    @FXML lateinit var taskNameText: FormattedText
+    @FXML lateinit var taskNameText: Text
     @FXML lateinit var taskDescriptionText: Text
-    @FXML lateinit var taskInputHeaderText: FormattedText
+    @FXML lateinit var taskInputHeaderText: Text
     @FXML lateinit var taskInputText: Text
-    @FXML lateinit var taskOutputHeaderText: FormattedText
+    @FXML lateinit var taskOutputHeaderText: Text
     @FXML lateinit var taskOutputText: Text
 
     //    Examples
-    @FXML lateinit var inputLabel: FormattedLabel
-    @FXML lateinit var outputLabel: FormattedLabel
+    @FXML lateinit var inputLabel: Label
+    @FXML lateinit var outputLabel: Label
     @FXML lateinit var firstExampleInput: TextArea
     @FXML lateinit var firstExampleOutput: TextArea
     @FXML lateinit var secondExampleInput: TextArea
@@ -55,9 +50,9 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
 
 
     @FXML lateinit var sendSolutionButton: Button
-    @FXML lateinit var sendSolutionText: FormattedText
+    @FXML lateinit var sendSolutionText: Text
     @FXML lateinit var backToTasksButton: Button
-    @FXML lateinit var backToTasksText: FormattedText
+    @FXML lateinit var backToTasksText: Text
 
     private val translations = PluginServer.paneText?.taskPane
 
@@ -82,7 +77,7 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
                 newTask?.let {
                     val newTaskInfo = newTask.infoTranslation[paneUiData.language.currentValue]
                     newTaskInfo?.let {
-                        taskNameText.formattedText = it.name
+                        taskNameText.text = it.name
                         taskDescriptionText.text = it.description
                         taskInputText.text = it.input
                         taskOutputText.text = it.output
@@ -108,17 +103,17 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
                 val newLanguage = paneUiData.language.dataList[newLanguageIndex]
                 val taskPaneText = translations?.get(newLanguage)
                 taskPaneText?.let {
-                    taskInputHeaderText.formattedText = it.inputData
-                    taskOutputHeaderText.formattedText = it.outputData
-                    inputLabel.formattedText = it.inputData
-                    outputLabel.formattedText = it.outputData
-                    sendSolutionText.formattedText = it.submit
-                    backToTasksText.formattedText = it.backToTasks
+                    taskInputHeaderText.text = it.inputData
+                    taskOutputHeaderText.text = it.outputData
+                    inputLabel.text = it.inputData
+                    outputLabel.text = it.outputData
+                    sendSolutionText.text = it.submit
+                    backToTasksText.text = it.backToTasks
                 }
 
                 val taskInfo = TaskChooserUiData.chosenTask.currentValue?.infoTranslation?.get(newLanguage)
                 taskInfo?.let {
-                    taskNameText.formattedText = it.name
+                    taskNameText.text = it.name
                     taskDescriptionText.text = it.description
                     taskInputText.text = it.input
                     taskOutputText.text = it.output

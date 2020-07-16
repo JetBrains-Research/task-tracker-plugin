@@ -13,7 +13,6 @@ import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
-import org.jetbrains.research.ml.codetracker.ui.FormattedLabel
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Country
 import org.jetbrains.research.ml.codetracker.models.Gender
@@ -98,38 +97,38 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     @FXML private lateinit var bluePolygon: Polygon
 
     // Age
-    @FXML private lateinit var ageLabel: FormattedLabel
+    @FXML private lateinit var ageLabel: Label
     @FXML private lateinit var ageTextField: TextField
 
     // Gender
-    @FXML private lateinit var genderLabel: FormattedLabel
+    @FXML private lateinit var genderLabel: Label
     @FXML private lateinit var genderGroup: ToggleGroup
-    @FXML private lateinit var gender1: FormattedRadioButton
-    @FXML private lateinit var gender2: FormattedRadioButton
-    @FXML private lateinit var gender3: FormattedRadioButton
-    @FXML private lateinit var gender4: FormattedRadioButton
-    @FXML private lateinit var gender5: FormattedRadioButton
-    @FXML private lateinit var gender6: FormattedRadioButton
-    @FXML private lateinit var genderRadioButtons: List<FormattedRadioButton>
+    @FXML private lateinit var gender1: RadioButton
+    @FXML private lateinit var gender2: RadioButton
+    @FXML private lateinit var gender3: RadioButton
+    @FXML private lateinit var gender4: RadioButton
+    @FXML private lateinit var gender5: RadioButton
+    @FXML private lateinit var gender6: RadioButton
+    @FXML private lateinit var genderRadioButtons: List<RadioButton>
 
     // Program Experience
-    @FXML private lateinit var experienceLabel: FormattedLabel
-    @FXML private lateinit var peYearsLabel: FormattedLabel
+    @FXML private lateinit var experienceLabel: Label
+    @FXML private lateinit var peYearsLabel: Label
     @FXML private lateinit var peYearsTextField: TextField
     @FXML private lateinit var peYearsLine: Line
     @FXML private lateinit var peMonthsHBox: HBox
-    @FXML private lateinit var peMonthsLabel: FormattedLabel
+    @FXML private lateinit var peMonthsLabel: Label
     @FXML private lateinit var peMonthsTextField: TextField
     @FXML private lateinit var peMonthsLine: Line
 
     // Country
-    @FXML private lateinit var countryLabel: FormattedLabel
+    @FXML private lateinit var countryLabel: Label
     @FXML private lateinit var countryComboBox: ComboBox<String?>
     private lateinit var countryObservableList: ObservableList<String?>
 
     // StartWorking
     @FXML private lateinit var startWorkingButton: Button
-    @FXML private lateinit var startWorkingText: FormattedText
+    @FXML private lateinit var startWorkingText: Text
 
     override val paneUiData = ProfileUiData
     private val translations = PluginServer.paneText?.surveyPane
@@ -245,19 +244,19 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
                 val newLanguage = paneUiData.language.dataList[newLanguageIndex]
                 val surveyPaneText = translations?.get(newLanguage)
                 surveyPaneText?.let {
-                    ageLabel.formattedText = it.age
-                    genderLabel.formattedText = it.gender
-                    experienceLabel.formattedText = it.experience
-                    peYearsLabel.formattedText = it.years
-                    peMonthsLabel.formattedText = it.months
-                    countryLabel.formattedText = it.country
-                    startWorkingText.formattedText = it.startSession
+                    ageLabel.text = it.age
+                    genderLabel.text = it.gender
+                    experienceLabel.text = it.experience
+                    peYearsLabel.text = it.years
+                    peMonthsLabel.text = it.months
+                    countryLabel.text = it.country
+                    startWorkingText.text = it.startSession
 
                     changeComboBoxItems(countryComboBox, countryObservableList, paneUiData.country.dataList.map {
                         it.translation.getOrDefault(newLanguage,"")
                     })
                 }
-                genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g -> rb.formattedText = g.translation[newLanguage] ?: "" }
+                genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g -> rb.text = g.translation[newLanguage] ?: "" }
             }
         })
     }

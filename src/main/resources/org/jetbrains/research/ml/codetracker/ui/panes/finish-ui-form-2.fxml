@@ -14,60 +14,45 @@
 <?import javafx.scene.text.Text?>
 
 <AnchorPane id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-    <children>
-        <AnchorPane id="codetrackerPane" prefHeight="80.0" prefWidth="560.0" stylesheets="@style.css">
-            <children>
-                <Label layoutX="193.0" layoutY="11.0" styleClass="codetracker-sign" text="CodeTracker">
-                </Label>
-            </children>
-        </AnchorPane>
-        <Pane fx:id="finishPane" layoutY="80.0" prefHeight="760.0" prefWidth="560.0">
-            <Rectangle fx:id="blueRectangle" arcHeight="5.0" arcWidth="5.0" fill="#7abaf5" height="232.0" layoutY="210.0" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="560.0" />
-            <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="60.0" layoutY="314.0" opacity="0.41" points="-60.0, -13.0, 500.0, -314.0, -60.0, -314.0" stroke="WHITE" strokeType="INSIDE" />
-            <Polygon fx:id="yellowPolygon" fill="#fff782" layoutX="87.0" layoutY="482.0" opacity="0.3" points="-80.0, 30.0, 473.0, 135.0, 473.0, -132.0" stroke="WHITE" strokeType="INSIDE" />
-            <Button fx:id="backToTasksButton" layoutX="380.0" layoutY="340.0" mnemonicParsing="false" prefHeight="93.0" prefWidth="126.0">
-                <graphic>
-                    <VBox alignment="BASELINE_CENTER" prefHeight="106.0" prefWidth="122.0">
-                        <children>
-                            <ImageView fitHeight="35.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
-                                <image>
-                                    <Image url="@next.png" />
-                                </image>
-                            </ImageView>
-                            <Text fx:id="backToTasksText" strokeType="OUTSIDE" strokeWidth="0.0" text="вернуться к задачам" textAlignment="CENTER" wrappingWidth="121.736328125">
-                                <font>
-                                    <Font name="System Bold" size="15.0" />
-                                </font>
-                            </Text>
-                        </children>
-                    </VBox>
-                </graphic>
-            </Button>
-            <Label fx:id="greatWorkLabel" layoutX="160.0" layoutY="154.0" prefHeight="71.0" prefWidth="280.0" styleClass="sanserif-bold-24" text="отличная работа! " />
-            <Text fx:id="messageText" layoutX="95.0" layoutY="261.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="370.0">
-                <font>
-                    <Font size="20.0" />
-                </font>
-            </Text>
-            <ComboBox fx:id="languageComboBox" layoutX="490.0" layoutY="9.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="43.0" styleClass="language" visibleRowCount="5" />
-            <Button fx:id="backToProfileButton" layoutX="76.0" layoutY="340.0" mnemonicParsing="false" prefHeight="93.0" prefWidth="126.0">
-                <graphic>
-                    <VBox alignment="BASELINE_CENTER" prefHeight="106.0" prefWidth="122.0">
-                        <children>
-                            <ImageView fitHeight="35.0" fitWidth="75.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true">
-                                <image>
-                                    <Image url="@next.png" />
-                                </image>
-                            </ImageView>
-                            <Text fx:id="backToProfileText" strokeType="OUTSIDE" strokeWidth="0.0" text="вернуться к анкете " textAlignment="CENTER" wrappingWidth="121.736328125">
-                                <font>
-                                    <Font name="System Bold" size="15.0" />
-                                </font>
-                            </Text>
-                        </children>
-                    </VBox>
-                </graphic>
-            </Button>
-        </Pane>
-    </children>
+    <AnchorPane id="codetrackerPane" prefHeight="80.0" prefWidth="560.0" stylesheets="@style.css">
+        <Label layoutX="193.0" layoutY="11.0" styleClass="codetracker-sign" text="CodeTracker">
+        </Label>
+    </AnchorPane>
+    <Pane fx:id="finishPane" layoutY="80.0" prefHeight="760.0" prefWidth="560.0">
+        <Rectangle fx:id="blueRectangle" arcHeight="5.0" arcWidth="5.0" fill="#7abaf5" height="232.0" layoutY="210.0" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="560.0" />
+        <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="60.0" layoutY="314.0" opacity="0.41" points="-60.0, 12.0, 500.0, -314.0, -60.0, -314.0" stroke="WHITE" strokeType="INSIDE" />
+        <Polygon fx:id="yellowPolygon" fill="#fff782" layoutX="87.0" layoutY="482.0" opacity="0.3" points="-80.0, 30.0, 473.0, 135.0, 473.0, -132.0" stroke="WHITE" strokeType="INSIDE" />
+        <Button fx:id="backToTasksButton" layoutX="380.0" layoutY="340.0" mnemonicParsing="false" prefHeight="93.0" prefWidth="126.0">
+            <graphic>
+                <VBox prefHeight="106.0" prefWidth="122.0" styleClass="v-box">
+                    <ImageView fitHeight="35.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@next.png" />
+                    </ImageView>
+                    <Text fx:id="backToTasksText" strokeType="OUTSIDE" strokeWidth="0.0" text="вернуться к задачам" textAlignment="CENTER" wrappingWidth="121.736328125">
+                        <font>
+                            <Font name="System Bold" size="15.0" />
+                        </font>
+                    </Text>
+                </VBox>
+            </graphic>
+        </Button>
+        <Label fx:id="greatWorkLabel" alignment="CENTER" layoutX="160.0" layoutY="154.0" prefHeight="71.0" prefWidth="280.0" styleClass="sanserif-bold-24" textAlignment="CENTER" />
+        <Text fx:id="messageText" layoutX="98.0" layoutY="261.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="364.0" styleClass="sanserif-20"/>
+        <Rectangle fx:id="LanguageRectangle" fill="TRANSPARENT" height="25.0" layoutX="508.0" layoutY="8.0" strokeType="INSIDE" styleClass="rectangle" width="42.0" />
+        <ComboBox fx:id="languageComboBox" layoutX="512.0" layoutY="5.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="51.0" styleClass="language" visibleRowCount="5" />
+        <Button fx:id="backToProfileButton" layoutX="76.0" layoutY="340.0" mnemonicParsing="false" prefHeight="93.0" prefWidth="126.0">
+            <graphic>
+                <VBox prefHeight="106.0" prefWidth="122.0" styleClass="v-box">
+                    <ImageView fitHeight="35.0" fitWidth="75.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@next.png" />
+                    </ImageView>
+                    <Text fx:id="backToProfileText" strokeType="OUTSIDE" strokeWidth="0.0" text="вернуться к анкете " textAlignment="CENTER" wrappingWidth="121.736328125">
+                        <font>
+                            <Font name="System Bold" size="15.0" />
+                        </font>
+                    </Text>
+                </VBox>
+            </graphic>
+        </Button>
+    </Pane>
 </AnchorPane>

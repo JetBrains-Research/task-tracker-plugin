@@ -51,15 +51,15 @@ class TaskChooserController(project: Project, scale: Double, fxPanel: JFXPanel, 
     @FXML private lateinit var bluePolygon: Polygon
 
     @FXML private lateinit var choseTaskComboBox: ComboBox<String?>
-    @FXML private lateinit var choseTaskLabel: FormattedLabel
+    @FXML private lateinit var choseTaskLabel: Label
     private lateinit var choseTaskObservableList: ObservableList<String?>
 
     //    Todo: maybe we need a text under this button because when user comes back from TaskPane it becomes unclear
     @FXML private lateinit var backToProfileButton: Button
     @FXML private lateinit var startSolvingButton: Button
-    @FXML private lateinit var startSolvingText: FormattedText
+    @FXML private lateinit var startSolvingText: Text
     @FXML private lateinit var finishWorkButton: Button
-    @FXML private lateinit var finishWorkText: FormattedText
+    @FXML private lateinit var finishWorkText: Text
 
     override val paneUiData = TaskChooserUiData
     private val translations = PluginServer.paneText?.taskChoosePane
@@ -108,9 +108,9 @@ class TaskChooserController(project: Project, scale: Double, fxPanel: JFXPanel, 
                 val newLanguage = paneUiData.language.dataList[newLanguageIndex]
                 val taskChooserPaneText = translations?.get(newLanguage)
                 taskChooserPaneText?.let {
-                    choseTaskLabel.formattedText = it.chooseTask
-                    startSolvingText.formattedText = it.startSolving
-                    finishWorkText.formattedText = it.finishSession
+                    choseTaskLabel.text = it.chooseTask
+                    startSolvingText.text = it.startSolving
+                    finishWorkText.text = it.finishSession
                     changeComboBoxItems(choseTaskComboBox, choseTaskObservableList, paneUiData.chosenTask.dataList.map {
                         it.infoTranslation[paneUiData.language.currentValue]?.name
                     })
