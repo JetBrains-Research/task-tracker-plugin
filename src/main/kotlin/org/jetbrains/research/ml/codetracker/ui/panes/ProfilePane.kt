@@ -12,31 +12,25 @@ import javafx.scene.layout.Pane
 import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
-import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Country
 import org.jetbrains.research.ml.codetracker.models.Gender
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
 import org.jetbrains.research.ml.codetracker.ui.*
+import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
 import java.util.function.Consumer
 import kotlin.reflect.KClass
 
 
-object ProfileControllerManager : PaneControllerManager<ProfileController>() {
-    override val dependsOnServerData: Boolean = true
+object ProfileControllerManager : ServerDependentPane<ProfileController>() {
     override val paneControllerClass: KClass<ProfileController> = ProfileController::class
     override val fxmlFilename: String = "profile-ui-form.fxml"
 }
 
-/**
- * [create] fun was added to simplify object creation, passing to [subscribe] method, because there is no SAM conversions for
- * kotlin interfaces (waiting for 1.4 release). Without SAM conversions creation an objects turns into many repeating
- * lines and looks ugly :( There is a way of turning these interfaces into classes and pass *accept* implementation
- * as constructor param, which allows to avoid extra lines with creation object. However, MessageBus requires interfaces,
- * so it's not an option.
- */
+
 interface AgeNotifier : Consumer<Int> {
     companion object {
         val AGE_TOPIC = Topic.create("age change", AgeNotifier::class.java)

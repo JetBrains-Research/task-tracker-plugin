@@ -2,10 +2,14 @@ package org.jetbrains.research.ml.codetracker.server
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.messages.Topic
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.*
 import java.util.function.Consumer
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.progress.Task.Backgroundable
 
 enum class ServerConnectionResult {
     UNINITIALIZED,
@@ -23,22 +27,31 @@ interface ServerConnectionNotifier : Consumer<ServerConnectionResult> {
 object PluginServer {
 
     var paneText: PaneText? = null
+        private set
     var availableLanguages: List<PaneLanguage> = emptyList()
+        private set
     var tasks: List<Task> = emptyList()
+        private set
     var genders: List<Gender> = emptyList()
+        private set
     var countries: List<Country> = emptyList()
-
+        private set
     var serverConnectionResult: ServerConnectionResult = ServerConnectionResult.UNINITIALIZED
         private set
 
     private val logger: Logger = Logger.getInstance(javaClass)
 
-    /**
-     * Finds all data and sends results about finding
-     */
-    fun reconnect() {
 
-        safeFind { findData() }
+    /**
+     * Finds all data in background task and sends results about finding
+     */
+    fun reconnect(project: Project) {
+        ProgressManager.getInstance().run(object : Backgroundable(project, "Getting data from server") {
+            override fun run(indicator: ProgressIndicator) {
+                safeFind { findData() }
+            }
+        })
+
     }
 
     /**

@@ -1,4 +1,4 @@
-package org.jetbrains.research.ml.codetracker.ui.panes
+package org.jetbrains.research.ml.codetracker.ui.panes.util
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.util.messages.Topic

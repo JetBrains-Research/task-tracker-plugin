@@ -4,20 +4,18 @@ import com.intellij.openapi.project.Project
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
-import javafx.scene.control.Label
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
-import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.FormattedLabel
 import org.jetbrains.research.ml.codetracker.ui.FormattedText
+import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
 import kotlin.reflect.KClass
 
-object FinishControllerManager : PaneControllerManager<FinishController>() {
-    override val dependsOnServerData: Boolean = true
+object FinishControllerManager : ServerDependentPane<FinishController>() {
     override val paneControllerClass: KClass<FinishController> = FinishController::class
     override val fxmlFilename: String = "finish-ui-form.fxml"
 }

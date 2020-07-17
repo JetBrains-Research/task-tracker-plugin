@@ -1,4 +1,4 @@
-package org.jetbrains.research.ml.codetracker.ui.panes
+package org.jetbrains.research.ml.codetracker.ui.panes.util
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
@@ -13,7 +13,6 @@ import javafx.scene.Scene
 import javafx.scene.paint.Color
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.ui.MainController
-import java.lang.Thread.currentThread
 import kotlin.reflect.KClass
 
 
@@ -28,25 +27,28 @@ import kotlin.reflect.KClass
  */
 
 
+
+interface Updatable {
+    /**
+     * Update Ui elements; it's separated from initializing because some updates depend on
+     * other panes, which may be not initialized yet. So it should be called after all necessary panes initializing.
+     */
+    fun update()
+}
+
 /**
  * [PaneController] stores all UI components of *the pane* such as buttons, labels, and so on.
  * Its instance is created every time new IDE window opens.
  */
 abstract class PaneController(val project: Project, val scale: Double, val fxPanel: JFXPanel, val id: Int) :
     Initializable {
-
-    /**
-     * Update Ui elements; it's separated from initialize because some updates depend on
-     * other PaneControllers, which may be not initialized yet
-     */
-    abstract fun update()
 }
 
 /**
  * Creates [PaneController] content by loading .fxml file.
  */
 abstract class PaneControllerManager<T : PaneController>  {
-    abstract val dependsOnServerData: Boolean
+    abstract val canCreateContent: Boolean
     protected abstract val paneControllerClass: KClass<T>
     protected val paneControllers: MutableList<T> = arrayListOf()
     protected abstract val fxmlFilename: String

@@ -8,15 +8,16 @@ import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
 import org.jetbrains.research.ml.codetracker.ui.panes.*
+import org.jetbrains.research.ml.codetracker.ui.panes.util.PaneController
+import org.jetbrains.research.ml.codetracker.ui.panes.util.PaneControllerManager
+import org.jetbrains.research.ml.codetracker.ui.panes.util.Updatable
+import org.jetbrains.research.ml.codetracker.ui.panes.util.subscribe
 import java.awt.Toolkit
 import javax.swing.JComponent
 import javax.swing.JPanel
 
 
 typealias Pane = PaneControllerManager<out PaneController>
-
-data class Content(val panel: JPanel, val project: Project, val scale: Double, var isFullyInitialized: Boolean)
-
 
 internal object MainController {
     //    Todo: move to Scalable in future
@@ -25,7 +26,6 @@ internal object MainController {
     private val logger: Logger = Logger.getInstance(javaClass)
     private val contents: MutableList<Content> = arrayListOf()
 
-    //    Todo: automatically collect ControllerManagers
     private val panes: List<Pane> = arrayListOf(
         ErrorControllerManager,
         LoadingControllerManager,
@@ -34,7 +34,6 @@ internal object MainController {
         TaskControllerManager,
         FinishControllerManager)
 
-//    Set LoadingPane instead
     internal var visiblePane: Pane? = LoadingControllerManager
         set(value) {
             logger.info("$value set visible")
@@ -43,83 +42,66 @@ internal object MainController {
         }
 
     init {
+        /* Subscribes to notifications about server connectio result to update visible panes */
         subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
             override fun accept(connection: ServerConnectionResult) {
-                when (connection) {
-                    ServerConnectionResult.UNINITIALIZED -> {
-                        visiblePane = LoadingControllerManager
-                    }
+                visiblePane = when (connection) {
+                    ServerConnectionResult.UNINITIALIZED -> LoadingControllerManager
+                    ServerConnectionResult.LOADING -> LoadingControllerManager
+                    ServerConnectionResult.FAIL -> ErrorControllerManager
                     ServerConnectionResult.SUCCESS -> {
-                        logger.info("codetracker: get success, set success")
-//                      Do we want to unsubscribe after first success?
-                        finishInitWithServer()
-                    }
-                    ServerConnectionResult.FAIL -> {
-                        logger.info("codetracker: get failed, set failed")
-                        visiblePane = ErrorControllerManager
-                    }
-                    ServerConnectionResult.LOADING -> {
-                        logger.info("codetracker: get loading, set loading")
-                        visiblePane = LoadingControllerManager
+                        contents.forEach { it.updatePanesToCreate() }
+                        ProfileControllerManager
                     }
                 }
             }
         })
     }
 
-//   Run on EDT (ToolWindowFactory takes care of it)
-//   We should wait for notification about ConnectionResult?
-
-
+    /*   Run on EDT (ToolWindowFactory takes care of it) */
     fun createContent(project: Project): JComponent {
         val screenSize = Toolkit.getDefaultToolkit().screenSize
         val scale = screenSize.height / SCREEN_HEIGHT
         val panel = JPanel()
         panel.background = java.awt.Color.WHITE
 
-        when (PluginServer.serverConnectionResult) {
-            ServerConnectionResult.UNINITIALIZED -> {
-                initWithoutServer(panel, project, scale)
-                PluginServer.reconnect()
-            }
-            ServerConnectionResult.LOADING -> {
-                initWithoutServer(panel, project, scale)
-            }
-            ServerConnectionResult.FAIL -> {
-                initWithoutServer(panel, project, scale)
-            }
-            ServerConnectionResult.SUCCESS -> {
-                logger.info("codetracker: create content, set success")
-                initWithServer(panel, project, scale)
-            }
+        contents.add(Content(panel, project, scale, panes))
+
+        if (PluginServer.serverConnectionResult == ServerConnectionResult.UNINITIALIZED) {
+            PluginServer.reconnect(project)
         }
         return JBScrollPane(panel)
     }
 
-    private fun initWithoutServer(panel: JPanel, project: Project, scale: Double) {
-        addPanesOnPanel(panel, { !it.dependsOnServerData }, project, scale)
-        contents.add(Content(panel, project, scale, false))
-    }
-
-    private fun initWithServer(panel: JPanel, project: Project, scale: Double) {
-        addPanesOnPanel(panel, { true }, project, scale)
-        contents.add(Content(panel, project, scale, false))
-    }
-
-    private fun finishInitWithServer() {
-        contents.filter { !it.isFullyInitialized }.forEach {
-            it.isFullyInitialized = true
-            addPanesOnPanel(it.panel, { it.dependsOnServerData }, it.project, it.scale)
+    /**
+     * Represents ui content that needs to be created. It contains [panel] to which all [panesToCreateContent] should
+     * add their contents.
+     */
+    data class Content(val panel: JPanel, val project: Project, val scale: Double, var panesToCreateContent: List<Pane>) {
+        init {
+            updatePanesToCreate()
         }
-        visiblePane = ProfileControllerManager
 
-    }
+        /**
+         * Looks to all [panesToCreateContent] and check if any can create content. If so, creates pane contents,
+         * adds them to the [panel], and removes panes from [panesToCreateContent]
+         */
+        fun updatePanesToCreate() {
+            logger.info("codetracker: panes to create content were $panesToCreateContent")
 
-    private fun addPanesOnPanel(panel: JPanel, filter: (Pane) -> Boolean, project: Project, scale: Double) {
-        val filteredPanes = panes.filter { filter(it) }
-        filteredPanes.map { it.createContent(project, scale) }.forEach { panel.add(it) }
-        Platform.runLater {
-            filteredPanes.forEach { it.getLastAddedPaneController()?.update() }
+            val (canCreateContentPanes, cantCreateContentPanes) = panes.partition { it.canCreateContent }
+            if (canCreateContentPanes.isNotEmpty()) {
+                canCreateContentPanes.map { it.createContent(project, scale) }.forEach { panel.add(it) }
+                Platform.runLater {
+                    canCreateContentPanes.map { it.getLastAddedPaneController() }.forEach {
+                        if (it is Updatable) {
+                            it.update()
+                        }
+                    }
+                }
+                logger.info("codetracker: panes to create content now $cantCreateContentPanes")
+                panesToCreateContent = cantCreateContentPanes
+            }
         }
     }
 }

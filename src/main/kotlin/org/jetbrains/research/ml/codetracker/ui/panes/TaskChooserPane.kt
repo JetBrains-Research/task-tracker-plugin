@@ -1,7 +1,6 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import javafx.collections.FXCollections
@@ -10,23 +9,21 @@ import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
-import javafx.scene.control.Label
 import javafx.scene.layout.Pane
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
-import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.TaskFileHandler
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.*
+import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
 import java.util.function.Consumer
 import kotlin.reflect.KClass
 
 
-object TaskChooserControllerManager : PaneControllerManager<TaskChooserController>() {
-    override val dependsOnServerData: Boolean = true
+object TaskChooserControllerManager : ServerDependentPane<TaskChooserController>() {
     override val paneControllerClass: KClass<TaskChooserController> = TaskChooserController::class
     override val fxmlFilename: String = "taskChooser-ui-form.fxml"
 }

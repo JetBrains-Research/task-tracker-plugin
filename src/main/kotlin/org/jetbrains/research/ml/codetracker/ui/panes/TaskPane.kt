@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
-import javafx.scene.control.Label
 import javafx.scene.control.TextArea
 import javafx.scene.shape.Polygon
 import javafx.scene.shape.Rectangle
@@ -13,12 +12,12 @@ import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.FormattedLabel
 import org.jetbrains.research.ml.codetracker.ui.FormattedText
+import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
 import kotlin.reflect.KClass
 
-object TaskControllerManager : PaneControllerManager<TaskController>() {
-    override val dependsOnServerData: Boolean = true
+object TaskControllerManager : ServerDependentPane<TaskController>() {
     override val paneControllerClass: KClass<TaskController> = TaskController::class
     override val fxmlFilename: String = "task-ui-form.fxml"
 }

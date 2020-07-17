@@ -7,7 +7,8 @@ import javafx.scene.control.Button
 import javafx.scene.input.MouseEvent
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.panes.util.PaneController
+import org.jetbrains.research.ml.codetracker.ui.panes.util.PaneControllerManager
 import java.net.URL
 import java.util.*
 import kotlin.reflect.KClass
@@ -15,7 +16,7 @@ import kotlin.reflect.KClass
 
 
 object ErrorControllerManager : PaneControllerManager<ErrorController>() {
-    override val dependsOnServerData: Boolean = false
+    override val canCreateContent: Boolean = true
     override val paneControllerClass: KClass<ErrorController> = ErrorController::class
     override val fxmlFilename: String = "error-ui-form.fxml"
 }
@@ -27,10 +28,7 @@ class ErrorController(project: Project, scale: Double, fxPanel: JFXPanel, id: In
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         refreshButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            PluginServer.reconnect()
+            PluginServer.reconnect(project)
         }
-    }
-
-    override fun update() {
     }
 }

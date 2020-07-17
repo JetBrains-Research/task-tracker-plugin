@@ -1,4 +1,4 @@
-package org.jetbrains.research.ml.codetracker.ui.panes
+package org.jetbrains.research.ml.codetracker.ui.panes.util
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -31,7 +31,8 @@ open class LanguagePaneUiData : PaneUiData() {
     override fun getData(): List<UiField<*>> = arrayListOf(language)
 }
 
-open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController(project, scale, fxPanel, id) {
+open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController(project, scale, fxPanel, id),
+    Updatable {
     @FXML
     private lateinit var languageComboBox: ComboBox<String>
     protected val logger = Logger.getInstance(javaClass)
