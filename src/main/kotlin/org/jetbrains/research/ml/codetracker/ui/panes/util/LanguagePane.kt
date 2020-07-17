@@ -8,7 +8,6 @@ import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.ComboBox
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.*
 import java.lang.Thread.currentThread
 import java.net.URL
 import java.util.*
@@ -39,7 +38,6 @@ open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXP
     protected open val paneUiData: LanguagePaneUiData = LanguagePaneUiData()
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
-        println("${this::class.simpleName}:PCinitialize ${currentThread().name}")
         initLanguageComboBox()
     }
 
@@ -48,7 +46,6 @@ open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXP
     }
 
     private fun initLanguageComboBox() {
-        println("${this::class.simpleName}:initLanguageComboBox ${currentThread().name}")
         languageComboBox.items = FXCollections.observableList(paneUiData.language.dataList.map { it.key })
         languageComboBox.selectionModel.selectedItemProperty().addListener { _ ->
             paneUiData.language.uiValue = languageComboBox.selectionModel.selectedIndex

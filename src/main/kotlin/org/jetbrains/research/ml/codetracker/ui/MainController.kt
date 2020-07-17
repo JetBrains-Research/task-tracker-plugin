@@ -83,12 +83,10 @@ internal object MainController {
         }
 
         /**
-         * Looks to all [panesToCreateContent] and check if any can create content. If so, creates pane contents,
-         * adds them to the [panel], and removes panes from [panesToCreateContent]
+         * Looks to all [panesToCreateContent] and checks if any can create content. If so, creates pane contents,
+         * adds them to the [panel], and removes created panes from [panesToCreateContent]
          */
         fun updatePanesToCreate() {
-            logger.info("codetracker: panes to create content were $panesToCreateContent")
-
             val (canCreateContentPanes, cantCreateContentPanes) = panes.partition { it.canCreateContent }
             if (canCreateContentPanes.isNotEmpty()) {
                 canCreateContentPanes.map { it.createContent(project, scale) }.forEach { panel.add(it) }
@@ -99,7 +97,6 @@ internal object MainController {
                         }
                     }
                 }
-                logger.info("codetracker: panes to create content now $cantCreateContentPanes")
                 panesToCreateContent = cantCreateContentPanes
             }
         }

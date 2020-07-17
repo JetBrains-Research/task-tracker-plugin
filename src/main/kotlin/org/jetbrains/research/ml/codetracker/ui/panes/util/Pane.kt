@@ -15,22 +15,9 @@ import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import kotlin.reflect.KClass
 
-
-/**
- * Todo:
- * rename all panes
- * fix server pane
- * redo server
- *
- *  * fix all todos
- *  * add scalable
- */
-
-
-
 interface Updatable {
     /**
-     * Update Ui elements; it's separated from initializing because some updates depend on
+     * Updates Ui elements; it's separated from initializing because some updates depend on
      * other panes, which may be not initialized yet. So it should be called after all necessary panes initializing.
      */
     fun update()
@@ -41,8 +28,7 @@ interface Updatable {
  * Its instance is created every time new IDE window opens.
  */
 abstract class PaneController(val project: Project, val scale: Double, val fxPanel: JFXPanel, val id: Int) :
-    Initializable {
-}
+    Initializable
 
 /**
  * Creates [PaneController] content by loading .fxml file.
@@ -82,8 +68,6 @@ abstract class PaneControllerManager<T : PaneController>  {
             fxPanel.isVisible = MainController.visiblePane == this
         }
 
-//        fxPanel.background = java.awt.Color.WHITE
-//        fxPanel.isVisible = MainController.visiblePane == this
         return fxPanel
     }
 

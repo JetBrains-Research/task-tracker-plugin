@@ -1,17 +1,16 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.TextArea
-import javafx.scene.shape.Polygon
-import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.FormattedLabel
-import org.jetbrains.research.ml.codetracker.ui.FormattedText
+import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
+import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
@@ -23,12 +22,6 @@ object TaskControllerManager : ServerDependentPane<TaskController>() {
 }
 
 class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
-    //    Scalable components
-    @FXML lateinit var greenPolygon: Polygon
-    @FXML lateinit var orangePolygon: Polygon
-    @FXML lateinit var bluePolygon: Polygon
-    @FXML lateinit var yellowRectangle: Rectangle
-
     //    Task info
     @FXML lateinit var taskNameText: FormattedText
     @FXML lateinit var taskDescriptionText: Text
@@ -49,14 +42,12 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
     private lateinit var exampleTexts: List<ExampleText>
     private data class ExampleText(val input: TextArea, val output: TextArea)
 
-
     @FXML lateinit var sendSolutionButton: Button
     @FXML lateinit var sendSolutionText: FormattedText
     @FXML lateinit var backToTasksButton: Button
     @FXML lateinit var backToTasksText: FormattedText
 
     private val translations = PluginServer.paneText?.taskPane
-
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
@@ -93,8 +84,13 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
     }
 
     private fun initButtons() {
-//        Todo: add *send successful* pane?
-        sendSolutionButton.onMouseClicked { changeVisiblePane(TaskChooserControllerManager) }
+        sendSolutionButton.onMouseClicked {
+            ApplicationManager.getApplication().invokeLater {
+                // Todo: send file with solution here
+            }
+            changeVisiblePane(TaskChooserControllerManager)
+
+        }
         backToTasksButton.onMouseClicked { changeVisiblePane(TaskChooserControllerManager) }
     }
 

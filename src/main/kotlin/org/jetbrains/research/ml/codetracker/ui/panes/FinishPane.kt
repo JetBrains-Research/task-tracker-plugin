@@ -4,12 +4,10 @@ import com.intellij.openapi.project.Project
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
-import javafx.scene.shape.Polygon
-import javafx.scene.shape.Rectangle
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.FormattedLabel
-import org.jetbrains.research.ml.codetracker.ui.FormattedText
+import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
+import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
@@ -20,14 +18,7 @@ object FinishControllerManager : ServerDependentPane<FinishController>() {
     override val fxmlFilename: String = "finish-ui-form.fxml"
 }
 
-
 class FinishController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
-    //    @FXML lateinit var finishPane: Pane
-
-    @FXML lateinit var blueRectangle: Rectangle
-    @FXML lateinit var orangePolygon: Polygon
-    @FXML lateinit var yellowPolygon: Polygon
-
     @FXML lateinit var backToTasksButton: Button
     @FXML lateinit var backToTasksText: FormattedText
     @FXML lateinit var backToProfileButton: Button
@@ -46,8 +37,8 @@ class FinishController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     }
 
     private fun initButtons() {
-        backToProfileButton.switchPaneOnMouseClicked(ProfileControllerManager)
-        backToTasksButton.switchPaneOnMouseClicked(TaskChooserControllerManager)
+        backToProfileButton.onMouseClicked { changeVisiblePane(ProfileControllerManager) }
+        backToTasksButton.onMouseClicked { changeVisiblePane(TaskChooserControllerManager) }
     }
 
     private fun makeTranslatable() {

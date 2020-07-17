@@ -1,9 +1,6 @@
-package org.jetbrains.research.ml.codetracker.ui
+package org.jetbrains.research.ml.codetracker.ui.panes.util
 
 import javafx.beans.NamedArg
-import javafx.beans.property.SimpleStringProperty
-import javafx.beans.value.ChangeListener
-import javafx.beans.value.ObservableValue
 import javafx.scene.control.Label
 import javafx.scene.control.RadioButton
 import javafx.scene.text.Text

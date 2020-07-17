@@ -9,13 +9,9 @@ import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
-import javafx.scene.layout.Pane
-import javafx.scene.shape.Polygon
-import javafx.scene.shape.Rectangle
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.TaskFileHandler
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.*
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
@@ -41,12 +37,6 @@ object TaskChooserUiData : LanguagePaneUiData() {
 
 
 class TaskChooserController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
-    @FXML private lateinit var taskChooserPane: Pane
-
-    @FXML private lateinit var orangePolygon: Polygon
-    @FXML private lateinit var yellowRectangle: Rectangle
-    @FXML private lateinit var bluePolygon: Polygon
-
     @FXML private lateinit var choseTaskComboBox: ComboBox<String?>
     @FXML private lateinit var choseTaskLabel: FormattedLabel
     private lateinit var choseTaskObservableList: ObservableList<String?>

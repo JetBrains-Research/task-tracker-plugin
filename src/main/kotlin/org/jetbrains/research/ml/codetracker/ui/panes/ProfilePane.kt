@@ -8,16 +8,10 @@ import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.layout.HBox
-import javafx.scene.layout.Pane
-import javafx.scene.shape.Line
-import javafx.scene.shape.Polygon
-import javafx.scene.shape.Rectangle
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Country
 import org.jetbrains.research.ml.codetracker.models.Gender
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
-import org.jetbrains.research.ml.codetracker.ui.*
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
@@ -31,6 +25,7 @@ object ProfileControllerManager : ServerDependentPane<ProfileController>() {
 }
 
 
+// Maybe its possible to make bounded properties instead?
 interface AgeNotifier : Consumer<Int> {
     companion object {
         val AGE_TOPIC = Topic.create("age change", AgeNotifier::class.java)
@@ -83,13 +78,6 @@ object ProfileUiData : LanguagePaneUiData() {
 }
 
 class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
-    @FXML private lateinit var profilePane: Pane
-
-    // Scalable components:
-    @FXML private lateinit var orangePolygon: Polygon
-    @FXML private lateinit var yellowRectangle: Rectangle
-    @FXML private lateinit var bluePolygon: Polygon
-
     // Age
     @FXML private lateinit var ageLabel: FormattedLabel
     @FXML private lateinit var ageTextField: TextField
@@ -109,11 +97,9 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     @FXML private lateinit var experienceLabel: FormattedLabel
     @FXML private lateinit var peYearsLabel: FormattedLabel
     @FXML private lateinit var peYearsTextField: TextField
-    @FXML private lateinit var peYearsLine: Line
     @FXML private lateinit var peMonthsHBox: HBox
     @FXML private lateinit var peMonthsLabel: FormattedLabel
     @FXML private lateinit var peMonthsTextField: TextField
-    @FXML private lateinit var peMonthsLine: Line
 
     // Country
     @FXML private lateinit var countryLabel: FormattedLabel
@@ -128,7 +114,7 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     private val translations = PluginServer.paneText?.surveyPane
 
     companion object {
-        private const val PE_YEARS_NUMBER_TO_SHOW_MONTHS = 2
+        private const val PE_YEARS_NUMBER_TO_SHOW_MONTHS = 1
     }
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
@@ -151,7 +137,6 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
         subscribe(AgeNotifier.AGE_TOPIC, object : AgeNotifier {
             override fun accept(newAge: Int) {
                 ageTextField.text = newAge.toString()
-                println("age: ${paneUiData.anyRequiredDataDefault()}")
                 startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
         })
@@ -187,7 +172,6 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
 //                todo: set default value if not required?
                 paneUiData.peMonths.isRequired = isPeMonthsRequired
                 peMonthsHBox.isVisible = isPeMonthsRequired
-                println("pe years: ${paneUiData.anyRequiredDataDefault()}")
                 startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
         })
@@ -195,7 +179,6 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
 
     private fun initPeMonths() {
         peMonthsHBox.isVisible = paneUiData.peMonths.isRequired
-//        todo: change when delete last symbol
         val converter = peMonthsTextField.addIntegerFormatter(regexFilter("[0-9]|1[01]"))
         peMonthsTextField.textProperty().addListener { _, _, new ->
             paneUiData.peMonths.uiValue = converter.fromString(new) ?: paneUiData.peMonths.defaultUiValue
@@ -203,12 +186,10 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
         subscribe(PeMonthsNotifier.PE_MONTHS_TOPIC, object : PeMonthsNotifier {
             override fun accept(newPeMonths: Int) {
                 peMonthsTextField.text = newPeMonths.toString()
-                println("pe months: ${paneUiData.anyRequiredDataDefault()}")
                 startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
         })
     }
-
 
     private fun initCountry() {
 //        Todo: make it autocomplete https://stackoverflow.com/questions/19924852/autocomplete-combobox-in-javafx
