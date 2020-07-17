@@ -23,7 +23,7 @@ object CollectionsQueryExecutor : QueryExecutor() {
         return parseResponse(
             executeQuery(
                 Request.Builder().url(URL("${baseUrl}${url}")).build()
-            ).get(), serializer
+            ), serializer
         )
     }
 

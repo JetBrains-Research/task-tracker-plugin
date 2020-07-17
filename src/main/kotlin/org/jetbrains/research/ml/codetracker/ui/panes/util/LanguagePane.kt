@@ -1,4 +1,4 @@
-package org.jetbrains.research.ml.codetracker.ui.panes
+package org.jetbrains.research.ml.codetracker.ui.panes.util
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -8,8 +8,9 @@ import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.ComboBox
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.*
 import java.lang.Thread.currentThread
+import java.net.URL
+import java.util.*
 import java.util.function.Consumer
 
 /**
@@ -29,14 +30,14 @@ open class LanguagePaneUiData : PaneUiData() {
     override fun getData(): List<UiField<*>> = arrayListOf(language)
 }
 
-open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController(project, scale, fxPanel, id) {
+open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController(project, scale, fxPanel, id),
+    Updatable {
     @FXML
     private lateinit var languageComboBox: ComboBox<String>
     protected val logger = Logger.getInstance(javaClass)
     protected open val paneUiData: LanguagePaneUiData = LanguagePaneUiData()
 
-    override fun initialize() {
-        println("${this::class.simpleName}:PCinitialize ${currentThread().name}")
+    override fun initialize(url: URL?, resource: ResourceBundle?) {
         initLanguageComboBox()
     }
 
@@ -45,7 +46,6 @@ open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXP
     }
 
     private fun initLanguageComboBox() {
-        println("${this::class.simpleName}:initLanguageComboBox ${currentThread().name}")
         languageComboBox.items = FXCollections.observableList(paneUiData.language.dataList.map { it.key })
         languageComboBox.selectionModel.selectedItemProperty().addListener { _ ->
             paneUiData.language.uiValue = languageComboBox.selectionModel.selectedIndex

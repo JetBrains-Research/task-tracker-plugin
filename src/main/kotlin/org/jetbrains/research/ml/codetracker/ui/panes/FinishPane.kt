@@ -4,48 +4,41 @@ import com.intellij.openapi.project.Project
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
-import javafx.scene.control.Label
-import javafx.scene.shape.Polygon
-import javafx.scene.shape.Rectangle
-import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
+import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
+import org.jetbrains.research.ml.codetracker.ui.panes.util.*
+import java.net.URL
+import java.util.*
 import kotlin.reflect.KClass
 
-object FinishControllerManager : PaneControllerManager<FinishController>() {
+object FinishControllerManager : ServerDependentPane<FinishController>() {
     override val paneControllerClass: KClass<FinishController> = FinishController::class
-    override val paneControllers: MutableList<FinishController> = arrayListOf()
-    override val fxmlFilename: String = "finish-ui-form-2.fxml"
+    override val fxmlFilename: String = "finish-ui-form.fxml"
 }
 
-
 class FinishController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
-    //    @FXML lateinit var finishPane: Pane
-
-    @FXML lateinit var blueRectangle: Rectangle
-    @FXML lateinit var orangePolygon: Polygon
-    @FXML lateinit var yellowPolygon: Polygon
-
     @FXML lateinit var backToTasksButton: Button
-    @FXML lateinit var backToTasksText: Text
+    @FXML lateinit var backToTasksText: FormattedText
     @FXML lateinit var backToProfileButton: Button
-    @FXML lateinit var backToProfileText: Text
+    @FXML lateinit var backToProfileText: FormattedText
 
-    @FXML lateinit var greatWorkLabel: Label
-    @FXML lateinit var messageText: Text
+    @FXML lateinit var greatWorkLabel: FormattedLabel
+    @FXML lateinit var messageText: FormattedText
 
     private val translations = PluginServer.paneText?.finishPane
 
-    override fun initialize() {
+    override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         initButtons()
         makeTranslatable()
-        super.initialize()
+        super.initialize(url, resource)
     }
 
     private fun initButtons() {
-        backToProfileButton.switchPaneOnMouseClicked(ProfileControllerManager)
-        backToTasksButton.switchPaneOnMouseClicked(TaskChooserControllerManager)
+        backToProfileButton.onMouseClicked { changeVisiblePane(ProfileControllerManager) }
+        backToTasksButton.onMouseClicked { changeVisiblePane(TaskChooserControllerManager) }
     }
 
     private fun makeTranslatable() {

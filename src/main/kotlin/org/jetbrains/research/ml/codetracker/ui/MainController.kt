@@ -1,75 +1,104 @@
 package org.jetbrains.research.ml.codetracker.ui
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
 import javafx.application.Platform
-import org.jetbrains.research.ml.codetracker.Plugin
+import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
 import org.jetbrains.research.ml.codetracker.ui.panes.*
+import org.jetbrains.research.ml.codetracker.ui.panes.util.PaneController
+import org.jetbrains.research.ml.codetracker.ui.panes.util.PaneControllerManager
+import org.jetbrains.research.ml.codetracker.ui.panes.util.Updatable
+import org.jetbrains.research.ml.codetracker.ui.panes.util.subscribe
 import java.awt.Toolkit
 import javax.swing.JComponent
 import javax.swing.JPanel
 
 
-
+typealias Pane = PaneControllerManager<out PaneController>
 
 internal object MainController {
     //    Todo: move to Scalable in future
     private const val SCREEN_HEIGHT = 1080.0
 
     private val logger: Logger = Logger.getInstance(javaClass)
-    //    Todo: automatically collect ControllerManagers
-    val paneControllerManagers: List<PaneControllerManager<out PaneController>> = arrayListOf(
+    private val contents: MutableList<Content> = arrayListOf()
+
+    private val panes: List<Pane> = arrayListOf(
         ErrorControllerManager,
+        LoadingControllerManager,
         ProfileControllerManager,
         TaskChooserControllerManager,
         TaskControllerManager,
         FinishControllerManager)
 
-//    Set LoadingPane instead
-    internal var visiblePaneControllerManager: PaneControllerManager<out PaneController>? = ProfileControllerManager
+    internal var visiblePane: Pane? = LoadingControllerManager
         set(value) {
-            paneControllerManagers.forEach { it.setVisible(it == value) }
+            logger.info("$value set visible")
+            panes.forEach { it.setVisible(it == value) }
             field = value
         }
 
     init {
+        /* Subscribes to notifications about server connectio result to update visible panes */
         subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
             override fun accept(connection: ServerConnectionResult) {
-                visiblePaneControllerManager = when (connection) {
-                    ServerConnectionResult.SUCCESS ->
-//                      Do we want to unsubscribe after first success?
-                        ProfileControllerManager
-
+                visiblePane = when (connection) {
+                    ServerConnectionResult.UNINITIALIZED -> LoadingControllerManager
+                    ServerConnectionResult.LOADING -> LoadingControllerManager
                     ServerConnectionResult.FAIL -> ErrorControllerManager
+                    ServerConnectionResult.SUCCESS -> {
+                        contents.forEach { it.updatePanesToCreate() }
+                        ProfileControllerManager
+                    }
                 }
             }
         })
     }
 
-//   Run on EDT (ToolWindowFactory takes care of it)
-//   We should wait for notification about ConnectionResult?
+    /*   Run on EDT (ToolWindowFactory takes care of it) */
     fun createContent(project: Project): JComponent {
-        logger.info("${this::class.simpleName}:createContent ${Thread.currentThread().name}")
         val screenSize = Toolkit.getDefaultToolkit().screenSize
-        logger.info("${Plugin.PLUGIN_ID}: screen size: $screenSize")
         val scale = screenSize.height / SCREEN_HEIGHT
         val panel = JPanel()
         panel.background = java.awt.Color.WHITE
-        logger.info("${this::class}: $paneControllerManagers")
-        paneControllerManagers.map { it.createContent(project, scale) }.forEach {
-            logger.info("${this::class.simpleName}:createContent forEach ${Thread.currentThread().name}")
-            panel.add(it)
-        }
 
-//        Run on JavaFX thread because it triggers fx components + they need to be updated after their initialization
-        Platform.runLater {
-            paneControllerManagers.forEach { it.getLastAddedPaneController()?.update() }
-        }
+        contents.add(Content(panel, project, scale, panes))
 
+        if (PluginServer.serverConnectionResult == ServerConnectionResult.UNINITIALIZED) {
+            PluginServer.reconnect(project)
+        }
         return JBScrollPane(panel)
+    }
+
+    /**
+     * Represents ui content that needs to be created. It contains [panel] to which all [panesToCreateContent] should
+     * add their contents.
+     */
+    data class Content(val panel: JPanel, val project: Project, val scale: Double, var panesToCreateContent: List<Pane>) {
+        init {
+            updatePanesToCreate()
+        }
+
+        /**
+         * Looks to all [panesToCreateContent] and checks if any can create content. If so, creates pane contents,
+         * adds them to the [panel], and removes created panes from [panesToCreateContent]
+         */
+        fun updatePanesToCreate() {
+            val (canCreateContentPanes, cantCreateContentPanes) = panes.partition { it.canCreateContent }
+            if (canCreateContentPanes.isNotEmpty()) {
+                canCreateContentPanes.map { it.createContent(project, scale) }.forEach { panel.add(it) }
+                Platform.runLater {
+                    canCreateContentPanes.map { it.getLastAddedPaneController() }.forEach {
+                        if (it is Updatable) {
+                            it.update()
+                        }
+                    }
+                }
+                panesToCreateContent = cantCreateContentPanes
+            }
+        }
     }
 }

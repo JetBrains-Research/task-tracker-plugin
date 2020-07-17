@@ -3,37 +3,29 @@ package org.jetbrains.research.ml.codetracker.ui.panes
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.layout.HBox
-import javafx.scene.layout.Pane
-import javafx.scene.shape.Line
-import javafx.scene.shape.Polygon
-import javafx.scene.shape.Rectangle
-import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Country
 import org.jetbrains.research.ml.codetracker.models.Gender
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.*
+import org.jetbrains.research.ml.codetracker.ui.panes.util.*
+import java.net.URL
+import java.util.*
 import java.util.function.Consumer
 import kotlin.reflect.KClass
 
 
-object ProfileControllerManager : PaneControllerManager<ProfileController>() {
+object ProfileControllerManager : ServerDependentPane<ProfileController>() {
     override val paneControllerClass: KClass<ProfileController> = ProfileController::class
-    override var paneControllers: MutableList<ProfileController> = arrayListOf()
-    override val fxmlFilename: String = "profile-ui-form-2.fxml"
+    override val fxmlFilename: String = "profile-ui-form.fxml"
 }
 
-/**
- * [create] fun was added to simplify object creation, passing to [subscribe] method, because there is no SAM conversions for
- * kotlin interfaces (waiting for 1.4 release). Without SAM conversions creation an objects turns into many repeating
- * lines and looks ugly :( There is a way of turning these interfaces into classes and pass *accept* implementation
- * as constructor param, which allows to avoid extra lines with creation object. However, MessageBus requires interfaces,
- * so it's not an option.
- */
+
+// Maybe its possible to make bounded properties instead?
 interface AgeNotifier : Consumer<Int> {
     companion object {
         val AGE_TOPIC = Topic.create("age change", AgeNotifier::class.java)
@@ -86,54 +78,46 @@ object ProfileUiData : LanguagePaneUiData() {
 }
 
 class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
-    @FXML private lateinit var profilePane: Pane
-
-    // Scalable components:
-    @FXML private lateinit var orangePolygon: Polygon
-    @FXML private lateinit var yellowRectangle: Rectangle
-    @FXML private lateinit var bluePolygon: Polygon
-
     // Age
-    @FXML private lateinit var ageLabel: Label
+    @FXML private lateinit var ageLabel: FormattedLabel
     @FXML private lateinit var ageTextField: TextField
 
     // Gender
-    @FXML private lateinit var genderLabel: Label
+    @FXML private lateinit var genderLabel: FormattedLabel
     @FXML private lateinit var genderGroup: ToggleGroup
-    @FXML private lateinit var gender1: RadioButton
-    @FXML private lateinit var gender2: RadioButton
-    @FXML private lateinit var gender3: RadioButton
-    @FXML private lateinit var gender4: RadioButton
-    @FXML private lateinit var gender5: RadioButton
-    @FXML private lateinit var gender6: RadioButton
-    @FXML private lateinit var genderRadioButtons: List<RadioButton>
+    @FXML private lateinit var gender1: FormattedRadioButton
+    @FXML private lateinit var gender2: FormattedRadioButton
+    @FXML private lateinit var gender3: FormattedRadioButton
+    @FXML private lateinit var gender4: FormattedRadioButton
+    @FXML private lateinit var gender5: FormattedRadioButton
+    @FXML private lateinit var gender6: FormattedRadioButton
+    @FXML private lateinit var genderRadioButtons: List<FormattedRadioButton>
 
     // Program Experience
-    @FXML private lateinit var experienceLabel: Label
-    @FXML private lateinit var peYearsLabel: Label
+    @FXML private lateinit var experienceLabel: FormattedLabel
+    @FXML private lateinit var peYearsLabel: FormattedLabel
     @FXML private lateinit var peYearsTextField: TextField
-    @FXML private lateinit var peYearsLine: Line
     @FXML private lateinit var peMonthsHBox: HBox
-    @FXML private lateinit var peMonthsLabel: Label
+    @FXML private lateinit var peMonthsLabel: FormattedLabel
     @FXML private lateinit var peMonthsTextField: TextField
-    @FXML private lateinit var peMonthsLine: Line
 
     // Country
-    @FXML private lateinit var countryLabel: Label
-    @FXML private lateinit var countryComboBox: ComboBox<String>
+    @FXML private lateinit var countryLabel: FormattedLabel
+    @FXML private lateinit var countryComboBox: ComboBox<String?>
+    private lateinit var countryObservableList: ObservableList<String?>
 
     // StartWorking
     @FXML private lateinit var startWorkingButton: Button
-    @FXML private lateinit var startWorkingText: Text
+    @FXML private lateinit var startWorkingText: FormattedText
 
     override val paneUiData = ProfileUiData
     private val translations = PluginServer.paneText?.surveyPane
 
     companion object {
-        private const val PE_YEARS_NUMBER_TO_SHOW_MONTHS = 2
+        private const val PE_YEARS_NUMBER_TO_SHOW_MONTHS = 1
     }
 
-    override fun initialize() {
+    override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         initAge()
         initGender()
@@ -142,7 +126,7 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
         initCountry()
         initStartWorkingButton()
         makeTranslatable()
-        super.initialize()
+        super.initialize(url, resource)
     }
 
     private fun initAge() {
@@ -153,7 +137,6 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
         subscribe(AgeNotifier.AGE_TOPIC, object : AgeNotifier {
             override fun accept(newAge: Int) {
                 ageTextField.text = newAge.toString()
-                println("age: ${paneUiData.anyRequiredDataDefault()}")
                 startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
         })
@@ -171,7 +154,6 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
             override fun accept(newGenderIndex: Int) {
                 if (paneUiData.gender.isValid(newGenderIndex)) {
                     genderGroup.selectToggle(genderRadioButtons[newGenderIndex])
-                    println("gender: ${paneUiData.anyRequiredDataDefault()}")
                     startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
                 }
             }
@@ -190,7 +172,6 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
 //                todo: set default value if not required?
                 paneUiData.peMonths.isRequired = isPeMonthsRequired
                 peMonthsHBox.isVisible = isPeMonthsRequired
-                println("pe years: ${paneUiData.anyRequiredDataDefault()}")
                 startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
         })
@@ -198,28 +179,25 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
 
     private fun initPeMonths() {
         peMonthsHBox.isVisible = paneUiData.peMonths.isRequired
-//        change when delete last symbol
         val converter = peMonthsTextField.addIntegerFormatter(regexFilter("[0-9]|1[01]"))
-        peMonthsTextField.textProperty().addListener { _, old, new ->
+        peMonthsTextField.textProperty().addListener { _, _, new ->
             paneUiData.peMonths.uiValue = converter.fromString(new) ?: paneUiData.peMonths.defaultUiValue
         }
         subscribe(PeMonthsNotifier.PE_MONTHS_TOPIC, object : PeMonthsNotifier {
             override fun accept(newPeMonths: Int) {
                 peMonthsTextField.text = newPeMonths.toString()
-                println("pe months: ${paneUiData.anyRequiredDataDefault()}")
                 startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
         })
     }
 
-
     private fun initCountry() {
 //        Todo: make it autocomplete https://stackoverflow.com/questions/19924852/autocomplete-combobox-in-javafx
-//        Todo: make translatable
-        val items = FXCollections.observableList(paneUiData.country.dataList.map {
+        countryObservableList = FXCollections.observableList(paneUiData.country.dataList.map {
             it.translation[paneUiData.language.currentValue]
         })
-        countryComboBox.items = items
+        countryComboBox.items = countryObservableList
+
         countryComboBox.selectionModel.selectedItemProperty().addListener { _ ->
             paneUiData.country.uiValue = countryComboBox.selectionModel.selectedIndex
         }
@@ -248,8 +226,12 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
                     peMonthsLabel.text = it.months
                     countryLabel.text = it.country
                     startWorkingText.text = it.startSession
+
+                    changeComboBoxItems(countryComboBox, countryObservableList, paneUiData.country.dataList.map {
+                        it.translation.getOrDefault(newLanguage,"")
+                    })
                 }
-                genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g -> rb.text = g.translation[newLanguage] }
+                genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g -> rb.text = g.translation[newLanguage] ?: "" }
             }
         })
     }

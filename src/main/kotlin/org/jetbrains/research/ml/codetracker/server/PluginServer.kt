@@ -2,12 +2,18 @@ package org.jetbrains.research.ml.codetracker.server
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.messages.Topic
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.*
 import java.util.function.Consumer
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.progress.Task.Backgroundable
 
 enum class ServerConnectionResult {
+    UNINITIALIZED,
+    LOADING,
     SUCCESS,
     FAIL
 }
@@ -18,48 +24,52 @@ interface ServerConnectionNotifier : Consumer<ServerConnectionResult> {
     }
 }
 
-// What do we want to do on reconnection? reload all UI? update only depending on server uiData (like countries or genders?
-interface ServerReconnectionNotifier  {
-    companion object {
-        val SERVER_RECONNECTION_TOPIC = Topic.create("server reconnection", ServerReconnectionNotifier::class.java)
-    }
-    fun onNotification()
-}
-
 object PluginServer {
 
     var paneText: PaneText? = null
+        private set
     var availableLanguages: List<PaneLanguage> = emptyList()
+        private set
     var tasks: List<Task> = emptyList()
+        private set
     var genders: List<Gender> = emptyList()
+        private set
     var countries: List<Country> = emptyList()
+        private set
+    var serverConnectionResult: ServerConnectionResult = ServerConnectionResult.UNINITIALIZED
+        private set
 
     private val logger: Logger = Logger.getInstance(javaClass)
 
-    init {
-        safeFind { findData() }
-    }
 
     /**
-     * Tries to find all data again, sends connection results, and after that notifies all subscribers about reconnection
+     * Finds all data in background task and sends results about finding
      */
-    fun reconnect() {
-        safeFind { findData() }
-        val publisher = ApplicationManager.getApplication().messageBus.syncPublisher(ServerReconnectionNotifier.SERVER_RECONNECTION_TOPIC)
-        publisher.onNotification()
+    fun reconnect(project: Project) {
+        ProgressManager.getInstance().run(object : Backgroundable(project, "Getting data from server") {
+            override fun run(indicator: ProgressIndicator) {
+                safeFind { findData() }
+            }
+        })
+
     }
 
     /**
-     * Tries to find all data and sends the result to all subscribers
+     * Tries to call 'find' and sends the result of it to all subscribers
      */
     private fun safeFind(find: () -> Unit) {
         val publisher = ApplicationManager.getApplication().messageBus.syncPublisher(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC)
-        try {
+        serverConnectionResult = ServerConnectionResult.LOADING
+        publisher.accept(serverConnectionResult)
+
+        serverConnectionResult = try {
             find()
-            publisher.accept(ServerConnectionResult.SUCCESS)
+            ServerConnectionResult.SUCCESS
         } catch (e: java.lang.IllegalStateException) {
-            publisher.accept(ServerConnectionResult.FAIL)
+            ServerConnectionResult.FAIL
         }
+        publisher.accept(serverConnectionResult)
+
     }
 
     private fun findData() {
@@ -96,7 +106,6 @@ object PluginServer {
         if (paneTextList.size == 1) {
             return paneTextList[0]
         }
-        //  show the message about internet connection?
         throw IllegalStateException("Got incorrect data from server")
     }
 

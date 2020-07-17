@@ -1,44 +1,38 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
-import javafx.scene.control.Label
 import javafx.scene.control.TextArea
-import javafx.scene.input.MouseEvent
-import javafx.scene.shape.Polygon
-import javafx.scene.shape.Rectangle
 import javafx.scene.text.Text
-import javafx.scene.text.TextFlow
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
+import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
+import org.jetbrains.research.ml.codetracker.ui.panes.util.*
+import java.net.URL
+import java.util.*
 import kotlin.reflect.KClass
 
-object TaskControllerManager : PaneControllerManager<TaskController>() {
+object TaskControllerManager : ServerDependentPane<TaskController>() {
     override val paneControllerClass: KClass<TaskController> = TaskController::class
-    override val paneControllers: MutableList<TaskController> = arrayListOf()
-    override val fxmlFilename: String = "task-ui-form-2.fxml"
+    override val fxmlFilename: String = "task-ui-form.fxml"
 }
 
 class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
-    //    Scalable components
-    @FXML lateinit var greenPolygon: Polygon
-    @FXML lateinit var orangePolygon: Polygon
-    @FXML lateinit var bluePolygon: Polygon
-    @FXML lateinit var yellowRectangle: Rectangle
-
     //    Task info
-    @FXML lateinit var taskTextFlow: TextFlow
-    @FXML lateinit var taskNameText: Text
+    @FXML lateinit var taskNameText: FormattedText
     @FXML lateinit var taskDescriptionText: Text
+    @FXML lateinit var taskInputHeaderText: FormattedText
     @FXML lateinit var taskInputText: Text
+    @FXML lateinit var taskOutputHeaderText: FormattedText
     @FXML lateinit var taskOutputText: Text
 
     //    Examples
-    @FXML lateinit var inputLabel: Label
-    @FXML lateinit var outputLabel: Label
+    @FXML lateinit var inputLabel: FormattedLabel
+    @FXML lateinit var outputLabel: FormattedLabel
     @FXML lateinit var firstExampleInput: TextArea
     @FXML lateinit var firstExampleOutput: TextArea
     @FXML lateinit var secondExampleInput: TextArea
@@ -48,21 +42,19 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
     private lateinit var exampleTexts: List<ExampleText>
     private data class ExampleText(val input: TextArea, val output: TextArea)
 
-
     @FXML lateinit var sendSolutionButton: Button
-    @FXML lateinit var sendSolutionText: Text
+    @FXML lateinit var sendSolutionText: FormattedText
     @FXML lateinit var backToTasksButton: Button
-    @FXML lateinit var backToTasksText: Text
+    @FXML lateinit var backToTasksText: FormattedText
 
     private val translations = PluginServer.paneText?.taskPane
 
-
-    override fun initialize() {
+    override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         initTaskInfo()
         initButtons()
         makeTranslatable()
-        super.initialize()
+        super.initialize(url, resource)
     }
 
     private fun initTaskInfo() {
@@ -92,8 +84,13 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
     }
 
     private fun initButtons() {
-//        Todo: add *send successful* pane?
-        sendSolutionButton.onMouseClicked { changeVisiblePane(TaskChooserControllerManager) }
+        sendSolutionButton.onMouseClicked {
+            ApplicationManager.getApplication().invokeLater {
+                // Todo: send file with solution here
+            }
+            changeVisiblePane(TaskChooserControllerManager)
+
+        }
         backToTasksButton.onMouseClicked { changeVisiblePane(TaskChooserControllerManager) }
     }
 
@@ -103,6 +100,8 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
                 val newLanguage = paneUiData.language.dataList[newLanguageIndex]
                 val taskPaneText = translations?.get(newLanguage)
                 taskPaneText?.let {
+                    taskInputHeaderText.text = it.inputData
+                    taskOutputHeaderText.text = it.outputData
                     inputLabel.text = it.inputData
                     outputLabel.text = it.outputData
                     sendSolutionText.text = it.submit

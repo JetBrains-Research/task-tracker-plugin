@@ -30,12 +30,13 @@
                 </VBox>
             </graphic>
         </Button>
-      <TextFlow layoutX="112.0" layoutY="120.0" prefHeight="113.0" prefWidth="353.0" textAlignment="CENTER">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" text="oops something went wrong :(" wrappingWidth="41.1220703125" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-24" text="&#10;&#10;" wrappingWidth="41.1220703125" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-20" text="please, check your internet connection and then try again" wrappingWidth="41.1220703125" />
-         </children>
-      </TextFlow>
+        <TextFlow layoutX="112.0" layoutY="120.0" prefHeight="113.0" prefWidth="353.0" textAlignment="CENTER">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20"
+                  text="oops, something went wrong :(" wrappingWidth="41.1220703125"/>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-24" text="&#10;&#10;"
+                  wrappingWidth="41.1220703125"/>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-20"
+                  text="please, check your internet connection and then try again" wrappingWidth="41.1220703125"/>
+        </TextFlow>
     </Pane>
 </Pane>

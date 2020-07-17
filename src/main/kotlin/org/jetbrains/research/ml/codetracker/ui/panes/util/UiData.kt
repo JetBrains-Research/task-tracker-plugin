@@ -1,4 +1,4 @@
-package org.jetbrains.research.ml.codetracker.ui
+package org.jetbrains.research.ml.codetracker.ui.panes.util
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.util.messages.Topic
@@ -37,7 +37,6 @@ open class UiField <T : Any?> (val defaultUiValue: T, val notifierTopic: Topic<o
 
 }
 
-//    Todo: add some sorting? (alphabetically or by solved status) and use it in ComboBoxes
 /**
  * Represents pane data, which [uiValue] is one of the [dataList] items,
  * so it can be thought of as an item index with type [Int].
@@ -80,8 +79,6 @@ abstract class PaneUiData {
      * Return if any data, that is required, is still default
      */
     fun anyRequiredDataDefault() : Boolean {
-        println("${this::class.simpleName}:anyDataRequiredAndDefault ${Thread.currentThread().name}")
-        println("${this::class.simpleName} anyRequiredDataDefault ${getData().map { "${it.uiValue} ${it.defaultUiValue} ${it.isUiValueDefault} ${it.isRequired}" } }")
         return getData().any { it.isRequired && it.isUiValueDefault }
     }
 
