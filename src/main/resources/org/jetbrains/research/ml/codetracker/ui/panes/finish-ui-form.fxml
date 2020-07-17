@@ -8,7 +8,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Polygon?>
 <?import javafx.scene.shape.Rectangle?>
-<?import org.jetbrains.research.ml.codetracker.ui.*?>
+
+<?import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText?>
+<?import org.jetbrains.research.ml.codetracker.ui.panes.util.LowerCaseFormatter?>
+<?import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel?>
 <AnchorPane id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <AnchorPane id="codetrackerPane" prefHeight="80.0" prefWidth="560.0" stylesheets="@style.css">
         <Label layoutX="193.0" layoutY="11.0" styleClass="codetracker-sign" text="CodeTracker">
