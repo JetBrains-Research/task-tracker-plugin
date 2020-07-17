@@ -11,11 +11,10 @@ import javax.crypto.spec.SecretKeySpec
 /**
  * Provides functionality to decode secret token.
  */
-internal object GitHubAccessTokenScrambler {
+internal object GitHubAccessTokenDecoder {
     private const val initVector = "RandomInitVector"
     private const val key = "GitHubErrorToken"
 
-    @Throws(Exception::class)
     fun decrypt(inputStream: InputStream?): String {
         val iv = IvParameterSpec(initVector.toByteArray(StandardCharsets.UTF_8))
         val keySpec = SecretKeySpec(key.toByteArray(StandardCharsets.UTF_8), "AES")

@@ -9,6 +9,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationNamesInfo
+import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.ex.ApplicationInfoEx
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
@@ -43,7 +44,7 @@ class GitHubErrorReporter : ErrorReportSubmitter() {
     }
 
     /**
-     * Provides functionality to show an error report message to the user that gives a click-able link to the created issue.
+     * Provides functionality to show an error report message to the user that gives a clickable link to the created issue.
      */
     internal class CallbackWithNotification(
         private val originalConsumer: Consumer<SubmittedReportInfo>,
@@ -53,7 +54,11 @@ class GitHubErrorReporter : ErrorReportSubmitter() {
         override fun consume(reportInfo: SubmittedReportInfo) {
             originalConsumer.consume(reportInfo)
             val notificationType =
-                if (reportInfo.status == SubmittedReportInfo.SubmissionStatus.FAILED) NotificationType.ERROR else NotificationType.INFORMATION
+                if (reportInfo.status == SubmittedReportInfo.SubmissionStatus.FAILED) {
+                    NotificationType.ERROR
+                } else {
+                    NotificationType.INFORMATION
+                }
             ReportMessages.GROUP.createNotification(
                 ReportMessages.ERROR_REPORT,
                 reportInfo.linkText,
@@ -64,32 +69,35 @@ class GitHubErrorReporter : ErrorReportSubmitter() {
 
     }
 
-    companion object {
-        private fun doSubmit(
-            event: IdeaLoggingEvent,
-            parentComponent: Component,
-            callback: Consumer<SubmittedReportInfo>,
-            errorInformation: ErrorInformation
-        ): Boolean {
-            if (event is IdeaReportingEvent) {
-                event.plugin?.let {
-                    errorInformation.setUserInformation(UserInformationType.PLUGIN_NAME, it.name)
-                    errorInformation.setUserInformation(UserInformationType.PLUGIN_VERSION, it.version)
-                }
+    private fun doSubmit(
+        event: IdeaLoggingEvent,
+        parentComponent: Component,
+        callback: Consumer<SubmittedReportInfo>,
+        errorInformation: ErrorInformation
+    ): Boolean {
+
+        if (event is IdeaReportingEvent) {
+            event.plugin?.let {
+                errorInformation.setUserInformation(UserInformationType.PLUGIN_NAME, it.name)
+                errorInformation.setUserInformation(UserInformationType.PLUGIN_VERSION, it.version)
             }
-            val dataContext = DataManager.getInstance().getDataContext(parentComponent)
-            val project = CommonDataKeys.PROJECT.getData(dataContext)
-            val task = ErrorReportTask(
-                project,
-                "Submitting error report",
-                true,
-                errorInformation,
-                CallbackWithNotification(callback, project)
-            )
-            project?.let { ProgressManager.getInstance().run(task) } ?: run {
+        }
+        val dataContext = DataManager.getInstance().getDataContext(parentComponent)
+        val project = CommonDataKeys.PROJECT.getData(dataContext)
+        val task = ErrorReportTask(
+            project,
+            "Submitting error report",
+            true,
+            errorInformation,
+            CallbackWithNotification(callback, project)
+        )
+        project.let {
+            if (it != null) {
+                ProgressManager.getInstance().run(task)
+            } else {
                 task.run(EmptyProgressIndicator())
             }
-            return true
         }
+        return true
     }
 }

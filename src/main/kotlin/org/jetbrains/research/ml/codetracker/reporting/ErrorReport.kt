@@ -24,9 +24,13 @@ object ErrorReport {
     fun sendFeedback(errorInformation: ErrorInformation): SubmittedReportInfo? {
         return try {
             val client = GitHubClient()
-            client.setOAuth2Token(GitHubAccessTokenScrambler.decrypt(ErrorReport::class.java.getResourceAsStream(
-                TOKEN_FILE
-            )))
+            client.setOAuth2Token(
+                GitHubAccessTokenDecoder.decrypt(
+                    ErrorReport::class.java.getResourceAsStream(
+                        TOKEN_FILE
+                    )
+                )
+            )
             val repoID = RepositoryId(GIT_REPO_USER, GIT_REPO)
             val issueService = IssueService(client)
             var newGibHubIssue: Issue = createNewGibHubIssue(errorInformation)
@@ -35,19 +39,20 @@ object ErrorReport {
                 issueService,
                 repoID
             )
-            val isNewIssue = duplicate?.let {
+            var isNewIssue = false
+            if (duplicate != null) {
                 val newErrorComment: String = generateGitHubIssueBody(errorInformation)
-                issueService.createComment(repoID, it.number, newErrorComment)
-                newGibHubIssue = it
-                false
-            } ?: {
+                issueService.createComment(repoID, duplicate.number, newErrorComment)
+                newGibHubIssue = duplicate
+            } else {
                 newGibHubIssue = issueService.createIssue(repoID, newGibHubIssue)
-                true
-            }()
+                isNewIssue = true
+            }
+            val submissionStatus = if (isNewIssue) SubmissionStatus.NEW_ISSUE else SubmissionStatus.DUPLICATE
             SubmittedReportInfo(
                 newGibHubIssue.htmlUrl,
                 "Send bug report",
-                if (isNewIssue) SubmissionStatus.NEW_ISSUE else SubmissionStatus.DUPLICATE
+                submissionStatus
             )
         } catch (e: Exception) {
             SubmittedReportInfo(
@@ -76,11 +81,12 @@ object ErrorReport {
     private fun generateGitHubIssueBody(errorInformation: ErrorInformation): String {
         val result = StringBuilder()
         enumValues<UserInformationType>().forEach {
-            result.append("- ").append(it.readableValue).append(": ").append(errorInformation.getUserInformation(it)).append("\n")
+            result.append("- ${it.readableValue}: ${errorInformation.getUserInformation(it)}\n")
         }
-        result.append("\n```\n")
-        result.append(errorInformation.getErrorInformation(ErrorInformationType.ERROR_STACKTRACE))
-        result.append("\n```\n")
+        result.append(
+            "\n```\n${errorInformation.getErrorInformation(ErrorInformationType.ERROR_STACKTRACE)}" +
+                    "\n```\n"
+        )
         return result.toString()
     }
 
@@ -90,13 +96,6 @@ object ErrorReport {
         repo: RepositoryId
     ): Issue? {
         val searchParameters: HashMap<String, String> = hashMapOf(IssueService.FILTER_STATE to IssueService.STATE_OPEN)
-        service.pageIssues(repo, searchParameters).forEach {
-            it.forEach { issue ->
-                if (issue.title == uniqueTitle) {
-                    return issue
-                }
-            }
-        }
-        return null
+        return service.pageIssues(repo, searchParameters).flatten().find { it.title == uniqueTitle }
     }
 }
