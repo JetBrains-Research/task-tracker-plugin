@@ -2,6 +2,7 @@
     -fx-accent: #C6ADD0;
     -fx-focus-color: #C6ADD0;
     -fx-background-color: #ffffff;
+    -fx-font-size: 1px;
 }
 
 .button {
@@ -13,7 +14,7 @@
 .radio-button .radio{
     -fx-background-insets: 0;
     -fx-background-color: transparent, white, transparent, white;
-    -fx-background-radius: 0, 0, 0, 0;
+    -fx-background-radius: 100, 100, 100, 100;
     -fx-box-border: none;
     -fx-focus-color: -fx-control-inner-background;
     -fx-faint-focus-color: -fx-control-inner-background;
@@ -60,7 +61,7 @@
 
 .combo-box-popup .list-view
 {
-    -fx-background-color: white, white;
+    -fx-background-color: white;
     -fx-effect: none;
     -fx-background-radius: 20;
     -fx-border-radius: 20;
@@ -90,6 +91,78 @@
     -fx-border-radius: 20;
 }
 
+/* Language Combo box */
+
+
+.combo-box.language {
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border-width: 0em;
+    /*-fx-alignment: center-left;*/
+    -fx-padding: 0em 0em 0em -3em;
+}
+
+
+.combo-box.language .list-cell
+{
+    -fx-font-size: 15em;
+    -fx-font-weight: bold;
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    /*-fx-alignment: center;*/
+}
+
+
+.combo-box.language .combo-box-popup .list-view
+{
+    -fx-background-color: transparent;
+    -fx-effect: none;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    /*-fx-alignment: center;*/
+
+}
+
+.combo-box.language .combo-box-popup .list-view .list-cell
+{
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    /*-fx-alignment: center;*/
+}
+
+.combo-box.language .combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover
+{
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    /*-fx-alignment: center;*/
+}
+
+.combo-box.language .combo-box-popup .list-view .list-cell:filled:hover
+{
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-opacity: .5;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    /*-fx-alignment: center;*/
+}
+
+.rectangle {
+    -fx-fill: TRANSPARENT;
+    -fx-stroke: black;
+    -fx-stroke-width: 2em;
+    -fx-arc-height: 25em;
+    -fx-arc-width: 25em;
+}
+
+/* Sing's and label's fonts*/
 .codetracker-sign {
     -fx-font-family: SansSerif;
     -fx-font-weight: bold;
@@ -108,9 +181,9 @@
     -fx-font-size: 15em;
 }
 
-.sanserif-15 {
+.sanserif-16 {
     -fx-font-family: SansSerif;
-    -fx-font-size: 15em;
+    -fx-font-size: 16em;
 }
 
 .sanserif-17 {
@@ -118,8 +191,26 @@
     -fx-font-size: 15em;
 }
 
+.sanserif-20 {
+    -fx-font-family: SansSerif;
+    -fx-font-size: 20em;
+}
+
 .sanserif-bold-24 {
     -fx-font-family: SansSerif;
     -fx-font-weight: bold;
     -fx-font-size: 24em;
 }
+
+/* Vertical and horizontal boxes */
+
+.h-box {
+    -fx-spacing: 10em;
+    -fx-alignment: center-left;
+}
+
+.v-box {
+    -fx-spacing: 10em;
+    -fx-alignment: top-center;
+}
+

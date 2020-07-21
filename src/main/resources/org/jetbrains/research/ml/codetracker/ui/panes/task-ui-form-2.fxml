@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<AnchorPane id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <AnchorPane id="codetrackerPane" prefHeight="80.0" prefWidth="560.0" stylesheets="@style.css">
+            <children>
+                <Label layoutX="193.0" layoutY="11.0" styleClass="codetracker-sign" text="CodeTracker">
+                </Label>
+            </children>
+        </AnchorPane>
+        <Pane fx:id="taskPane" layoutY="80.0" prefHeight="760.0" prefWidth="560.0">
+            <Polygon fx:id="greenPolygon" fill="#fff782" layoutX="56.0" layoutY="711.0" opacity="0.3" points="225.0, -311.0, 504.0, 50.0, 504.0, -491.0" stroke="WHITE" strokeType="INSIDE" />
+            <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="281.0" layoutY="460.0" opacity="0.4" points="-281.0, 300.0, 280.0, 300.0, 9.0, -54.0, -281.0, 119.0" stroke="WHITE" strokeType="INSIDE" />
+            <Rectangle fx:id="yellowRectangle" arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="72.0" layoutY="-7.0" opacity="0.3" stroke="WHITE" strokeType="INSIDE" width="560.0" />
+            <Polygon fx:id="bluePolygon" fill="#7abaf5" layoutX="28.0" layoutY="61.0" opacity="0.25" points="532.0, 700.0, 532.0, -21.0, -28.0, -21.0" stroke="WHITE" strokeType="INSIDE" />
+            <TextFlow fx:id="taskTextFlow" layoutX="16.0" prefHeight="340.0" prefWidth="483.0">
+                <Text fx:id="taskNameText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20">
+<!--                    <formatter>-->
+<!--                        <CapitalCaseFormatter/>-->
+<!--                    </formatter>-->
+                </Text>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" text="&#10;" />
+                <Text fx:id="taskDescriptionText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-16" wrappingWidth="493.3779296875" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" text="&#10;&#10;" />
+                <Text fx:id="taskInputHeaderText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20">
+<!--                    <formatter>-->
+<!--                        <LowerCaseWithColonFormatter/>-->
+<!--                    </formatter>-->
+                </Text>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" text="&#10;" />
+                <Text fx:id="taskInputText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-16" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" text="&#10;&#10;" wrappingWidth="207.900390625" />
+                <Text fx:id="taskOutputHeaderText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" wrappingWidth="207.900390625">
+<!--                    <formatter>-->
+<!--                        <LowerCaseWithColonFormatter/>-->
+<!--                    </formatter>-->
+                </Text>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" text="&#10;" wrappingWidth="207.900390625" />
+                <Text fx:id="taskOutputText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-16" />
+            </TextFlow>
+            <TextArea fx:id="firstExampleInput" editable="false" focusTraversable="false" layoutX="20.0" layoutY="378.0" prefHeight="80.0" prefWidth="260.0" styleClass="text-field" wrapText="true" />
+            <TextArea fx:id="firstExampleOutput" editable="false" focusTraversable="false" layoutX="280.0" layoutY="378.0" prefHeight="80.0" prefWidth="260.0" styleClass="text-field" wrapText="true" />
+            <TextArea fx:id="secondExampleInput" editable="false" focusTraversable="false" layoutX="20.0" layoutY="458.0" prefHeight="80.0" prefWidth="260.0" styleClass="text-field" wrapText="true" />
+            <TextArea fx:id="secondExampleOutput" editable="false" focusTraversable="false" layoutX="280.0" layoutY="458.0" prefHeight="80.0" prefWidth="260.0" styleClass="text-field" wrapText="true" />
+            <TextArea fx:id="thirdExampleInput" editable="false" focusTraversable="false" layoutX="20.0" layoutY="538.0" prefHeight="80.0" prefWidth="260.0" styleClass="text-field" wrapText="true" />
+            <TextArea fx:id="thirdExampleOutput" editable="false" focusTraversable="false" layoutX="280.0" layoutY="538.0" prefHeight="80.0" prefWidth="260.0" styleClass="text-field" wrapText="true" />
+            <Rectangle fx:id="LanguageRectangle" fill="TRANSPARENT" height="25.0" layoutX="508.0" layoutY="8.0" strokeType="INSIDE" styleClass="rectangle" width="42.0" />
+            <ComboBox fx:id="languageComboBox" layoutX="512.0" layoutY="5.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="51.0" styleClass="language" visibleRowCount="5" />            <Button fx:id="sendSolutionButton" layoutX="439.0" layoutY="647.0" mnemonicParsing="false" prefHeight="93.0" prefWidth="93.0">
+                <graphic>
+                    <VBox prefHeight="106.0" prefWidth="122.0" styleClass="v-box">
+                        <children>
+                            <ImageView fitHeight="35.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@next.png" />
+                                </image>
+                            </ImageView>
+                            <Text fx:id="sendSolutionText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="98.736328125" styleClass="sanserif-bold-15">
+<!--                                <formatter>-->
+<!--                                    <LowerCaseFormatter/>-->
+<!--                                </formatter>-->
+                            </Text>
+                        </children>
+                    </VBox>
+                </graphic>
+            </Button>
+            <Button fx:id="backToTasksButton" layoutX="30.0" layoutY="647.0" mnemonicParsing="false" prefHeight="93.0" prefWidth="87.0">
+                <graphic>
+                    <VBox prefHeight="106.0" prefWidth="122.0" styleClass="v-box">
+                        <children>
+                            <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@close.png" />
+                                </image>
+                            </ImageView>
+                            <Text fx:id="backToTasksText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="99.736328125" styleClass="sanserif-bold-15">
+<!--                                <formatter>-->
+<!--                                    <LowerCaseFormatter/>-->
+<!--                                </formatter>-->
+                            </Text>
+                        </children>
+                    </VBox>
+                </graphic>
+            </Button>
+            <Label fx:id="inputLabel" layoutX="20.0" layoutY="343.0" prefHeight="25.0" prefWidth="260.0" styleClass="sanserif-bold-20">
+<!--                <formatter>-->
+<!--                    <LowerCaseFormatter/>-->
+<!--                </formatter>-->
+            </Label>
+            <Label fx:id="outputLabel" alignment="CENTER_RIGHT" layoutX="280.0" layoutY="343.0" prefHeight="25.0" prefWidth="260.0" styleClass="sanserif-bold-20">
+<!--                <formatter>-->
+<!--                    <LowerCaseFormatter/>-->
+<!--                </formatter>-->
+            </Label>
+        </Pane>
+    </children>
+</AnchorPane>

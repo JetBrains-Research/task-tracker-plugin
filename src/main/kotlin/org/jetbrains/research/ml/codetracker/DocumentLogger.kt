@@ -11,7 +11,6 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.joda.time.DateTime
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
-import org.jetbrains.research.ml.codetracker.ui.ControllerManager
 import java.io.File
 import java.io.FileOutputStream
 import java.io.FileWriter
@@ -45,7 +44,9 @@ object DocumentLogger {
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} was cleared")
         }
         val change = document.getChange()
-        printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData().map { it.logValue })
+//        Todo: add uiData, the old version is commented out because ControllerManager was deleted
+//        printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData().map { it.logValue })
+        printer.csvPrinter.printRecord(change.getData())
     }
 
     fun logCurrentDocuments() {
@@ -88,7 +89,9 @@ object DocumentLogger {
         val file = createLogFile(document)
         val fileWriter = OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
-        csvPrinter.printRecord(DocumentChangeData.headers + ControllerManager.uiData.getData().map { it.header })
+        //        Todo: add uiData, the old version is commented out because ControllerManager was deleted
+//        csvPrinter.printRecord(DocumentChangeData.headers + ControllerManager.uiData.getData().map { it.header })
+        csvPrinter.printRecord(DocumentChangeData.headers)
         return Printer(
             csvPrinter,
             fileWriter,

@@ -1,6 +1,5 @@
 package org.jetbrains.research.ml.codetracker
 
-import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger

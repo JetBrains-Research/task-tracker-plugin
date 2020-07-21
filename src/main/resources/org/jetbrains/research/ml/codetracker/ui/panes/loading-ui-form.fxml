@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.text.Text?>
+<Pane id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <Pane id="codetrackerPane" prefHeight="80.0" prefWidth="560.0" stylesheets="@style.css">
+        <Label layoutX="193.0" layoutY="11.0" styleClass="codetracker-sign" text="CodeTracker">
+        </Label>
+    </Pane>
+    <Pane fx:id="loadingPane" layoutY="80.0" prefHeight="760.0" prefWidth="560.0" stylesheets="@style.css">
+        <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="555.0" layoutY="638.0" opacity="0.35" points="-555.0, -306.0, -558.0, -185.0, 5.0, -90.0, 5.0, -360.0" stroke="WHITE" strokeType="INSIDE" />
+        <Polygon fx:id="bluePolygon" fill="#7abaf5" layoutX="45.0" layoutY="238.0" opacity="0.25" points="-45.0, -1.0, 515.0, -175.0, 515.0, -238.0, -45.0, -238.0" stroke="WHITE" strokeType="INSIDE" />
+      <Polygon fx:id="orangePolygon1" fill="#fff782" layoutX="558.0" layoutY="470.0" opacity="0.35" points="-558.0, -355.0, -558.0, -301.0, 2.0, -112.0, 2.0, -355.0" stroke="WHITE" strokeType="INSIDE" />
+      <Text fx:id="loadingText" layoutX="129.0" layoutY="204.0" strokeType="OUTSIDE" strokeWidth="0.0" text="loading..." textAlignment="CENTER" wrappingWidth="318.5234375" styleClass="sanserif-bold-20">
+      </Text>
+    </Pane>
+</Pane>
