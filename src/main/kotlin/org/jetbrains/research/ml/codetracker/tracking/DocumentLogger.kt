@@ -1,19 +1,17 @@
-package org.jetbrains.research.ml.codetracker
+package org.jetbrains.research.ml.codetracker.tracking
 
-import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.io.FileUtil
-import org.jetbrains.research.ml.codetracker.data.DocumentChangeData
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
+import org.jetbrains.research.ml.codetracker.Plugin
 import org.joda.time.DateTime
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import java.io.File
 import java.io.FileOutputStream
-import java.io.FileWriter
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 import kotlin.math.abs
@@ -34,9 +32,7 @@ object DocumentLogger {
     private const val MAX_DIF_SIZE = 300
 
     fun log(document: Document) {
-        var printer = myDocumentsToPrinters.getOrPut(document, {
-            initPrinter(document)
-        })
+        var printer = myDocumentsToPrinters.getOrPut(document, { initPrinter(document) })
         if (isFull(printer.file.length())) {
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} is full")
             sendFile(printer.file)
@@ -51,15 +47,10 @@ object DocumentLogger {
 
     fun logCurrentDocuments() {
         logger.info("${Plugin.PLUGIN_ID}: log current documents: ${myDocumentsToPrinters.keys.size}")
-        myDocumentsToPrinters.keys.forEach {
-            log(
-                it
-            )
-        }
+        myDocumentsToPrinters.keys.forEach { log(it) }
     }
 
-    // Todo: change it. Handle a case if we get a fileSize bigger than MAX_FILE_SIZE + MAX_DIF_SIZE
-    private fun isFull(fileSize: Long): Boolean = abs(MAX_FILE_SIZE - fileSize) < MAX_DIF_SIZE
+    private fun isFull(fileSize: Long): Boolean = fileSize > MAX_FILE_SIZE - MAX_DIF_SIZE
 
     private fun sendFile(file: File) {
         TrackerQueryExecutor.sendCodeTrackerData(file)

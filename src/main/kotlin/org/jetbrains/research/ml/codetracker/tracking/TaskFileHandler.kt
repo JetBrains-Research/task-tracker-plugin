@@ -1,4 +1,4 @@
-package org.jetbrains.research.ml.codetracker
+package org.jetbrains.research.ml.codetracker.tracking
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.models.Task
 import java.io.File
@@ -46,20 +47,29 @@ object TaskFileHandler {
         TaskDocumentListener()
     }
 
+    fun createAndOpenFile(project: Project, task: Task, language: Language = Language.PYTHON): VirtualFile? {
+        val virtualFile = createFile(project, task, language)
+        addDocumentToTask(virtualFile, task)
+        openFile(project, virtualFile)
+        return virtualFile
+    }
+
     private fun createFile(project: Project, task: Task, language: Language): VirtualFile? {
-        val file = File("${project.basePath}/${PLUGIN_FOLDER}/${task.key}${language.extension.ext}")
+        val file = File("${project.basePath}/$PLUGIN_FOLDER/${task.key}${language.extension.ext}")
         FileUtil.createIfDoesntExist(file)
         return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
     }
 
-    // If the documentToTask has task null then we don't track the document
-    private fun addDocument(virtualFile: VirtualFile?, task: Task): Document? {
+    /**
+     *  If [documentToTask] doesn't have this [task] then we didn't track the document
+     */
+    private fun addDocumentToTask(virtualFile: VirtualFile?, task: Task): Document? {
         val document = virtualFile?.let { FileDocumentManager.getInstance().getDocument(it) }
         val oldTask: Task? = documentToTask[document]
         if (oldTask == null) {
             document?.let { documentToTask[it] = task; it.addDocumentListener(listener) }
         } else {
-            // It the old task is not equal the new task
+            // If the old task is not equal to the new task, we should raise an error
             if (oldTask != task) {
                 val message = "${Plugin.PLUGIN_ID}: an attempt to assign another task to the document ${document}. " +
                         "The old task is ${oldTask.key}, the new task is ${task.key}"
@@ -68,13 +78,6 @@ object TaskFileHandler {
             }
         }
         return document
-    }
-
-    fun createAndOpenFile(project: Project, task: Task, language: Language = Language.PYTHON): VirtualFile? {
-        val virtualFile = createFile(project, task, language)
-        addDocument(virtualFile, task)
-        openFile(project, virtualFile)
-        return virtualFile
     }
 
     private fun openFile(project: Project, virtualFile: VirtualFile?) {
