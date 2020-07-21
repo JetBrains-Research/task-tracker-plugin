@@ -82,12 +82,14 @@ intellij {
         "CODE_TRACKER_IDEA_VERSION",
         "192.5728.98"
     )
-    println("Using ide version: ${ideVersion}")
+    println("Using ide version: $ideVersion")
     version = ideVersion
     pluginName = "code-tracker-plugin"
     downloadSources = true
     sameSinceUntilBuild = false
     updateSinceUntilBuild = false
+    // Todo: use the latest version
+    setPlugins("Activity Tracker:0.1.9 beta")
 }
 
 javafx {
