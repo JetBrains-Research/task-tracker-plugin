@@ -39,16 +39,15 @@ object ErrorReport {
                 issueService,
                 repoID
             )
-            var isNewIssue = false
+            var submissionStatus = SubmissionStatus.DUPLICATE
             if (duplicate != null) {
                 val newErrorComment: String = generateGitHubIssueBody(errorInformation)
                 issueService.createComment(repoID, duplicate.number, newErrorComment)
                 newGibHubIssue = duplicate
             } else {
                 newGibHubIssue = issueService.createIssue(repoID, newGibHubIssue)
-                isNewIssue = true
+                submissionStatus = SubmissionStatus.NEW_ISSUE
             }
-            val submissionStatus = if (isNewIssue) SubmissionStatus.NEW_ISSUE else SubmissionStatus.DUPLICATE
             SubmittedReportInfo(
                 newGibHubIssue.htmlUrl,
                 "Send bug report",

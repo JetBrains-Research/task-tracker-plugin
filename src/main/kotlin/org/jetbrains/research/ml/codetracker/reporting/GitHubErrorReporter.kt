@@ -91,12 +91,8 @@ class GitHubErrorReporter : ErrorReportSubmitter() {
             errorInformation,
             CallbackWithNotification(callback, project)
         )
-        project.let {
-            if (it != null) {
-                ProgressManager.getInstance().run(task)
-            } else {
-                task.run(EmptyProgressIndicator())
-            }
+        project?.let { ProgressManager.getInstance().run(task) } ?: run {
+            task.run(EmptyProgressIndicator())
         }
         return true
     }
