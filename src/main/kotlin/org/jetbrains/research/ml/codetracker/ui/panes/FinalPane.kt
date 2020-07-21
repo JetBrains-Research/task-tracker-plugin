@@ -13,12 +13,12 @@ import java.net.URL
 import java.util.*
 import kotlin.reflect.KClass
 
-object FinishControllerManager : ServerDependentPane<FinishController>() {
-    override val paneControllerClass: KClass<FinishController> = FinishController::class
-    override val fxmlFilename: String = "finish-ui-form.fxml"
+object FinalControllerManager : ServerDependentPane<FinalController>() {
+    override val paneControllerClass: KClass<FinalController> = FinalController::class
+    override val fxmlFilename: String = "final-ui-form.fxml"
 }
 
-class FinishController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
+class FinalController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
     @FXML lateinit var backToTasksButton: Button
     @FXML lateinit var backToTasksText: FormattedText
     @FXML lateinit var backToProfileButton: Button
@@ -37,8 +37,8 @@ class FinishController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     }
 
     private fun initButtons() {
-        backToProfileButton.onMouseClicked { changeVisiblePane(ProfileControllerManager) }
-        backToTasksButton.onMouseClicked { changeVisiblePane(TaskChooserControllerManager) }
+        backToProfileButton.onMouseClicked { changeVisiblePane(SurveyControllerManager) }
+        backToTasksButton.onMouseClicked { changeVisiblePane(TaskChoosingControllerManager) }
     }
 
     private fun makeTranslatable() {

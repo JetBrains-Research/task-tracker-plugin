@@ -81,27 +81,22 @@ object PluginServer {
     }
 
     private fun findAvailableLanguages(): List<PaneLanguage> {
-        logger.info("${Plugin.PLUGIN_ID}: Getting available languages from server, current thread is ${Thread.currentThread().name}")
         return CollectionsQueryExecutor.getCollection("language/all", PaneLanguage.serializer())
     }
 
     private fun findTasks(): List<Task> {
-        logger.info("${Plugin.PLUGIN_ID}: Getting tasks from server, current thread is ${Thread.currentThread().name}")
         return CollectionsQueryExecutor.getCollection("task/all", Task.serializer())
     }
 
     private fun findGenders(): List<Gender> {
-        logger.info("${Plugin.PLUGIN_ID}: Getting genders from server, current thread is ${Thread.currentThread().name}")
         return CollectionsQueryExecutor.getCollection("gender/all", Gender.serializer())
     }
 
     private fun findCountries(): List<Country> {
-        logger.info("${Plugin.PLUGIN_ID}: Getting countries from server, current thread is ${Thread.currentThread().name}")
         return CollectionsQueryExecutor.getCollection("country/all", Country.serializer())
     }
 
     private fun findPaneText(): PaneText {
-        logger.info("${Plugin.PLUGIN_ID}: Getting pane text from server, current thread is ${Thread.currentThread().name}")
         val paneTextList = CollectionsQueryExecutor.getCollection("settings", PaneText.serializer())
         if (paneTextList.size == 1) {
             return paneTextList[0]

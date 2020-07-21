@@ -29,10 +29,10 @@ internal object MainController {
     private val panes: List<Pane> = arrayListOf(
         ErrorControllerManager,
         LoadingControllerManager,
-        ProfileControllerManager,
-        TaskChooserControllerManager,
+        SurveyControllerManager,
+        TaskChoosingControllerManager,
         TaskControllerManager,
-        FinishControllerManager)
+        FinalControllerManager)
 
     internal var visiblePane: Pane? = LoadingControllerManager
         set(value) {
@@ -51,7 +51,7 @@ internal object MainController {
                     ServerConnectionResult.FAIL -> ErrorControllerManager
                     ServerConnectionResult.SUCCESS -> {
                         contents.forEach { it.updatePanesToCreate() }
-                        ProfileControllerManager
+                        SurveyControllerManager
                     }
                 }
             }

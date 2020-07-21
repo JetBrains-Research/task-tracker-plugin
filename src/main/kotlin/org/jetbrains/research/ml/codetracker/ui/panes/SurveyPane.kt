@@ -19,9 +19,9 @@ import java.util.function.Consumer
 import kotlin.reflect.KClass
 
 
-object ProfileControllerManager : ServerDependentPane<ProfileController>() {
-    override val paneControllerClass: KClass<ProfileController> = ProfileController::class
-    override val fxmlFilename: String = "profile-ui-form.fxml"
+object SurveyControllerManager : ServerDependentPane<SurveyController>() {
+    override val paneControllerClass: KClass<SurveyController> = SurveyController::class
+    override val fxmlFilename: String = "survey-ui-form.fxml"
 }
 
 
@@ -57,11 +57,11 @@ interface CountryNotifier : Consumer<Int> {
 }
 
 
-object ProfileUiData : LanguagePaneUiData() {
+object SurveyUiData : LanguagePaneUiData() {
     private val countries: List<Country> = PluginServer.countries
     private val genders: List<Gender> = PluginServer.genders
 
-    val age = UiField(0, AgeNotifier.AGE_TOPIC)
+    val age = UiField(-1, AgeNotifier.AGE_TOPIC)
     val gender = ListedUiField(genders, -1, GenderNotifier.GENDER_TOPIC)
     val peYears = UiField(-1, PeYearsNotifier.PE_YEARS_TOPIC)
     val peMonths = UiField( -1, PeMonthsNotifier.PE_MONTHS_TOPIC, false)
@@ -77,7 +77,7 @@ object ProfileUiData : LanguagePaneUiData() {
     )
 }
 
-class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
+class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
     // Age
     @FXML private lateinit var ageLabel: FormattedLabel
     @FXML private lateinit var ageTextField: TextField
@@ -110,7 +110,7 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     @FXML private lateinit var startWorkingButton: Button
     @FXML private lateinit var startWorkingText: FormattedText
 
-    override val paneUiData = ProfileUiData
+    override val paneUiData = SurveyUiData
     private val translations = PluginServer.paneText?.surveyPane
 
     companion object {
@@ -132,7 +132,7 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     private fun initAge() {
         val converter = ageTextField.addIntegerFormatter(regexFilter("[1-9][0-9]{0,1}"))
         ageTextField.textProperty().addListener { _, _, new ->
-            paneUiData.age.uiValue = converter.fromString(new) ?: paneUiData.age.defaultUiValue
+            paneUiData.age.uiValue = new.toIntOrNull() ?: paneUiData.age.defaultUiValue
         }
         subscribe(AgeNotifier.AGE_TOPIC, object : AgeNotifier {
             override fun accept(newAge: Int) {
@@ -161,17 +161,19 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     }
 
     private fun initPeYears() {
-        val converter = peYearsTextField.addIntegerFormatter(regexFilter("0|[1-9][0-9]{0,1}"))
+        peYearsTextField.addIntegerFormatter(regexFilter("0|[1-9][0-9]{0,1}"))
         peYearsTextField.textProperty().addListener { _, _, new ->
-            paneUiData.peYears.uiValue = converter.fromString(new) ?: paneUiData.peYears.defaultUiValue
+            paneUiData.peYears.uiValue = new.toIntOrNull() ?: paneUiData.peYears.defaultUiValue
         }
         subscribe(PeYearsNotifier.PE_YEARS_TOPIC, object : PeYearsNotifier {
             override fun accept(newPeYears: Int) {
                 peYearsTextField.text = newPeYears.toString()
                 val isPeMonthsRequired = !paneUiData.peYears.isUiValueDefault && newPeYears < PE_YEARS_NUMBER_TO_SHOW_MONTHS
-//                todo: set default value if not required?
                 paneUiData.peMonths.isRequired = isPeMonthsRequired
                 peMonthsHBox.isVisible = isPeMonthsRequired
+                if (!isPeMonthsRequired) {
+                    paneUiData.peMonths.uiValue = paneUiData.peMonths.defaultUiValue
+                }
                 startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
         })
@@ -179,9 +181,9 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
 
     private fun initPeMonths() {
         peMonthsHBox.isVisible = paneUiData.peMonths.isRequired
-        val converter = peMonthsTextField.addIntegerFormatter(regexFilter("[0-9]|1[01]"))
-        peMonthsTextField.textProperty().addListener { _, _, new ->
-            paneUiData.peMonths.uiValue = converter.fromString(new) ?: paneUiData.peMonths.defaultUiValue
+        peMonthsTextField.addIntegerFormatter(regexFilter("[0-9]|1[01]"))
+        peMonthsTextField.textProperty().addListener { _, old, new ->
+            paneUiData.peMonths.uiValue = new.toIntOrNull() ?: paneUiData.peMonths.defaultUiValue
         }
         subscribe(PeMonthsNotifier.PE_MONTHS_TOPIC, object : PeMonthsNotifier {
             override fun accept(newPeMonths: Int) {
@@ -210,7 +212,7 @@ class ProfileController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     }
 
     private fun initStartWorkingButton() {
-        startWorkingButton.onMouseClicked { changeVisiblePane(TaskChooserControllerManager) }
+        startWorkingButton.onMouseClicked { changeVisiblePane(TaskChoosingControllerManager) }
     }
 
     private fun makeTranslatable() {

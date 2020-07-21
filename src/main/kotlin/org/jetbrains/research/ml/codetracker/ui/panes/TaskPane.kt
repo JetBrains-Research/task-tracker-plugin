@@ -65,7 +65,7 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
         )
         subscribe(ChosenTaskNotifier.CHOSEN_TASK_TOPIC, object : ChosenTaskNotifier {
             override fun accept(newTaskIndex: Int) {
-                val newTask = TaskChooserUiData.chosenTask.currentValue
+                val newTask = TaskChoosingUiData.chosenTask.currentValue
                 newTask?.let {
                     val newTaskInfo = newTask.infoTranslation[paneUiData.language.currentValue]
                     newTaskInfo?.let {
@@ -88,10 +88,10 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
             ApplicationManager.getApplication().invokeLater {
                 // Todo: send file with solution here
             }
-            changeVisiblePane(TaskChooserControllerManager)
+            changeVisiblePane(TaskChoosingControllerManager)
 
         }
-        backToTasksButton.onMouseClicked { changeVisiblePane(TaskChooserControllerManager) }
+        backToTasksButton.onMouseClicked { changeVisiblePane(TaskChoosingControllerManager) }
     }
 
     private fun makeTranslatable() {
@@ -108,7 +108,7 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
                     backToTasksText.text = it.backToTasks
                 }
 
-                val taskInfo = TaskChooserUiData.chosenTask.currentValue?.infoTranslation?.get(newLanguage)
+                val taskInfo = TaskChoosingUiData.chosenTask.currentValue?.infoTranslation?.get(newLanguage)
                 taskInfo?.let {
                     taskNameText.text = it.name
                     taskDescriptionText.text = it.description

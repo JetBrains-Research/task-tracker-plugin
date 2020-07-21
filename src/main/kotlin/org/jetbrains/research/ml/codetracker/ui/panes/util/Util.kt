@@ -14,16 +14,23 @@ import org.jetbrains.research.ml.codetracker.ui.MainController
 import java.util.function.Consumer
 import java.util.function.UnaryOperator
 
-fun TextField.addIntegerFormatter(filter: (String?) -> Boolean) : StringConverter<Int> {
-    val textFiledFilter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@ { change: TextFormatter.Change? ->
+fun TextField.addIntegerFormatter(filter: (String?) -> Boolean, defaultInt: Int = -1) {
+    val textFieldFilter: UnaryOperator<TextFormatter.Change?> = UnaryOperator label@ { change: TextFormatter.Change? ->
         val text: String? = change?.controlNewText
+        if (text?.toIntOrNull() == defaultInt) {
+            /**
+             * According to [TextFormatter.Change] documentation, replace [change] text to the empty string
+             */
+            change.setRange(0, change.controlText.length)
+            change.text = ""
+            return@label change
+        }
         if (filter(text)) {
             return@label change
         }
         null
     }
-    this.textFormatter = TextFormatter(TextFormatter.IDENTITY_STRING_CONVERTER, "", textFiledFilter)
-    return IntegerStringConverter()
+    this.textFormatter = TextFormatter<String>(textFieldFilter)
 }
 
 

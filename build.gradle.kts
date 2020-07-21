@@ -119,7 +119,3 @@ tasks.withType<ShadowJar>() {
 tasks.withType<Wrapper> {
     gradleVersion = "5.2.1"
 }
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    freeCompilerArgs = listOf("-Xinline-classes")
-}

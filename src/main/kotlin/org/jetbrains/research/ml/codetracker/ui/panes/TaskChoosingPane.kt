@@ -19,9 +19,9 @@ import java.util.function.Consumer
 import kotlin.reflect.KClass
 
 
-object TaskChooserControllerManager : ServerDependentPane<TaskChooserController>() {
-    override val paneControllerClass: KClass<TaskChooserController> = TaskChooserController::class
-    override val fxmlFilename: String = "taskChooser-ui-form.fxml"
+object TaskChoosingControllerManager : ServerDependentPane<TaskChoosingController>() {
+    override val paneControllerClass: KClass<TaskChoosingController> = TaskChoosingController::class
+    override val fxmlFilename: String = "taskChoosing-ui-form.fxml"
 }
 
 interface ChosenTaskNotifier : Consumer<Int> {
@@ -30,13 +30,13 @@ interface ChosenTaskNotifier : Consumer<Int> {
     }
 }
 
-object TaskChooserUiData : LanguagePaneUiData() {
+object TaskChoosingUiData : LanguagePaneUiData() {
     val chosenTask = ListedUiField(PluginServer.tasks,-1, ChosenTaskNotifier.CHOSEN_TASK_TOPIC)
     override fun getData(): List<UiField<*>> = listOf(chosenTask, language)
 }
 
 
-class TaskChooserController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
+class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
     @FXML private lateinit var choseTaskComboBox: ComboBox<String?>
     @FXML private lateinit var choseTaskLabel: FormattedLabel
     private lateinit var choseTaskObservableList: ObservableList<String?>
@@ -48,7 +48,7 @@ class TaskChooserController(project: Project, scale: Double, fxPanel: JFXPanel, 
     @FXML private lateinit var finishWorkButton: Button
     @FXML private lateinit var finishWorkText: FormattedText
 
-    override val paneUiData = TaskChooserUiData
+    override val paneUiData = TaskChoosingUiData
     private val translations = PluginServer.paneText?.taskChoosePane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
@@ -76,7 +76,7 @@ class TaskChooserController(project: Project, scale: Double, fxPanel: JFXPanel, 
     }
 
     private fun initButtons() {
-        backToProfileButton.onMouseClicked { changeVisiblePane(ProfileControllerManager) }
+        backToProfileButton.onMouseClicked { changeVisiblePane(SurveyControllerManager) }
         startSolvingButton.onMouseClicked {
             changeVisiblePane(TaskControllerManager)
             val currentTask = paneUiData.chosenTask.currentValue
@@ -86,7 +86,7 @@ class TaskChooserController(project: Project, scale: Double, fxPanel: JFXPanel, 
                 }
             }
         }
-        finishWorkButton.onMouseClicked { changeVisiblePane(FinishControllerManager) }
+        finishWorkButton.onMouseClicked { changeVisiblePane(FinalControllerManager) }
     }
 
     private fun makeTranslatable() {
