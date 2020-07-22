@@ -8,13 +8,11 @@ import com.intellij.openapi.util.io.FileUtil
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.jetbrains.research.ml.codetracker.Plugin
-import org.joda.time.DateTime
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
-import kotlin.math.abs
 
 
 object DocumentLogger {
@@ -27,7 +25,7 @@ object DocumentLogger {
     val documentsToPrinters: Map<Document, Printer>
         get() = documentsToPrinters.toMap()
 
-    private val folderPath = "${PathManager.getPluginsPath()}/code-tracker/"
+    private val folderPath = "${PathManager.getPluginsPath()}/codetracker/"
     private const val MAX_FILE_SIZE = 50 * 1024 * 1024
     private const val MAX_DIF_SIZE = 300
 
@@ -39,10 +37,7 @@ object DocumentLogger {
             printer = initPrinter(document)
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} was cleared")
         }
-        val change = document.getChange()
-//        Todo: add uiData, the old version is commented out because ControllerManager was deleted
-//        printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData().map { it.logValue })
-        printer.csvPrinter.printRecord(change.getData())
+        printer.csvPrinter.printRecord(DocumentLoggedData.getData(document) + UiLoggedData.getData(Unit))
     }
 
     fun logCurrentDocuments() {
@@ -80,14 +75,8 @@ object DocumentLogger {
         val file = createLogFile(document)
         val fileWriter = OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
-        //        Todo: add uiData, the old version is commented out because ControllerManager was deleted
-//        csvPrinter.printRecord(DocumentChangeData.headers + ControllerManager.uiData.getData().map { it.header })
-        csvPrinter.printRecord(DocumentChangeData.headers)
-        return Printer(
-            csvPrinter,
-            fileWriter,
-            file
-        )
+        csvPrinter.printRecord(DocumentLoggedData.headers + UiLoggedData.headers)
+        return Printer(csvPrinter, fileWriter, file)
     }
 
 
@@ -99,19 +88,4 @@ object DocumentLogger {
         FileUtil.createIfDoesntExist(logFile)
         return logFile
     }
-
-    private fun Document.getChange(): DocumentChangeData {
-        val time = DateTime.now()
-        val file = FileDocumentManager.getInstance().getFile(this)
-
-        return DocumentChangeData(
-            time,
-            this.modificationStamp,
-            file?.name,
-            file?.hashCode(),
-            this.hashCode(),
-            this.text
-        )
-    }
-
 }
