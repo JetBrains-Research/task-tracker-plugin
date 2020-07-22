@@ -78,13 +78,13 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     private fun initButtons() {
         backToProfileButton.onMouseClicked { changeVisiblePane(SurveyControllerManager) }
         startSolvingButton.onMouseClicked {
-            changeVisiblePane(TaskControllerManager)
             val currentTask = paneUiData.chosenTask.currentValue
             currentTask?.let {
                 ApplicationManager.getApplication().invokeLater {
                     TaskFileHandler.createAndOpenFile(project, it)
                 }
             }
+            changeVisiblePane(TaskControllerManager)
         }
         finishWorkButton.onMouseClicked { changeVisiblePane(FinalControllerManager) }
     }

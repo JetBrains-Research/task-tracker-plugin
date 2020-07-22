@@ -14,7 +14,9 @@ abstract class LoggedData<T, S> {
     val headers: List<String>
         get() = loggedDataGetters.map { it.header }
 
-    abstract fun getData(t: T): List<S>
+    fun getData(t: T): List<S> {
+        return loggedDataGetters.map { it.getData(t) }
+    }
 }
 
 object UiLoggedData : LoggedData<Unit, String>() {
@@ -26,10 +28,6 @@ object UiLoggedData : LoggedData<Unit, String>() {
         LoggedDataGetter("country") { SurveyUiData.country.uiValue.toString() },
         LoggedDataGetter("chosenTask") { TaskChoosingUiData.chosenTask.uiValue.toString() }
     )
-
-    override fun getData(t: Unit): List<String> {
-        return loggedDataGetters.map { it.getData(t) }
-    }
 }
 
 object DocumentLoggedData : LoggedData<Document, String?>() {
@@ -41,8 +39,4 @@ object DocumentLoggedData : LoggedData<Document, String?>() {
         LoggedDataGetter("documentHashCode") { it.hashCode().toString() },
         LoggedDataGetter("fragment") { it.text }
     )
-
-    override fun getData(t: Document): List<String?> {
-        return loggedDataGetters.map { it.getData(t) }
-    }
 }

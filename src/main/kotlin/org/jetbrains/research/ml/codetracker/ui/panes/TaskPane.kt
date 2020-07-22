@@ -9,6 +9,7 @@ import javafx.scene.control.TextArea
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler
 import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
 import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
@@ -85,8 +86,12 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
 
     private fun initButtons() {
         sendSolutionButton.onMouseClicked {
-            ApplicationManager.getApplication().invokeLater {
-                // Todo: send file with solution here
+            val currentTask = TaskChoosingUiData.chosenTask.currentValue
+            currentTask?.let {
+                ApplicationManager.getApplication().invokeLater {
+//                    TODO: send data here
+                    TaskFileHandler.closeFile(project, it)
+                }
             }
             changeVisiblePane(TaskChoosingControllerManager)
 

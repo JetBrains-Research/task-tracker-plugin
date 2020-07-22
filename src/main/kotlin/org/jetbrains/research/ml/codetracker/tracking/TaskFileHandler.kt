@@ -10,6 +10,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.ReadonlyStatusHandler
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Language
@@ -47,14 +48,17 @@ object TaskFileHandler {
         TaskDocumentListener()
     }
 
+    /**
+     * Creates file and adds [TaskDocumentListener] to it if it doesn't exist, opens it and makes it writable.
+     */
     fun createAndOpenFile(project: Project, task: Task, language: Language = Language.PYTHON): VirtualFile? {
-        val virtualFile = createFile(project, task, language)
+        val virtualFile = getOrCreateFile(project, task, language)
         addDocumentToTask(virtualFile, task)
         openFile(project, virtualFile)
         return virtualFile
     }
 
-    private fun createFile(project: Project, task: Task, language: Language): VirtualFile? {
+    private fun getOrCreateFile(project: Project, task: Task, language: Language): VirtualFile? {
         val file = File("${project.basePath}/$PLUGIN_FOLDER/${task.key}${language.extension.ext}")
         FileUtil.createIfDoesntExist(file)
         return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
@@ -80,8 +84,35 @@ object TaskFileHandler {
         return document
     }
 
+    /**
+     * Opens file and makes it writable
+     */
     private fun openFile(project: Project, virtualFile: VirtualFile?) {
-        virtualFile?.let { FileEditorManager.getInstance(project).openFile(it, true, true) }
+        virtualFile?.let {
+            // Line below makes file writable if it's not
+            ReadonlyStatusHandler.getInstance(project).ensureFilesWritable(listOf(virtualFile))
+            FileEditorManager.getInstance(project).openFile(it, true, true)
+        }
+    }
+
+    /**
+     * Gets file by [task] and [language] and closes it, making it read-only
+     */
+    fun closeFile(project: Project, task: Task, language: Language = Language.PYTHON) {
+        val virtualFile = getOrCreateFile(project, task, language)
+        closeFile(project, virtualFile)
+    }
+
+    /**
+     * Makes file read-only and closes it
+     */
+    private fun closeFile(project: Project, virtualFile: VirtualFile?) {
+        virtualFile?.let {
+            val document = FileDocumentManager.getInstance().getDocument(virtualFile)
+            document?.setReadOnly(true)
+//            document?.fireReadOnlyModificationAttempt()
+            FileEditorManager.getInstance(project).closeFile(virtualFile)
+        }
     }
 
     fun stopTracking() {
