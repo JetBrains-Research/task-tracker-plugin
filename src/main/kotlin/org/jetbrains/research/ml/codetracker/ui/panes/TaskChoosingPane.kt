@@ -49,7 +49,7 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     @FXML private lateinit var finishWorkText: FormattedText
 
     override val paneUiData = TaskChoosingUiData
-    private val translations = PluginServer.paneText?.taskChoosePane
+    private val translations = PluginServer.paneText?.taskChoosingPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")

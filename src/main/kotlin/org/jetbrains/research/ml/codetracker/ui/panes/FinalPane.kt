@@ -27,7 +27,7 @@ class FinalController(project: Project, scale: Double, fxPanel: JFXPanel, id: In
     @FXML lateinit var greatWorkLabel: FormattedLabel
     @FXML lateinit var messageText: FormattedText
 
-    private val translations = PluginServer.paneText?.finishPane
+    private val translations = PluginServer.paneText?.finalPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
