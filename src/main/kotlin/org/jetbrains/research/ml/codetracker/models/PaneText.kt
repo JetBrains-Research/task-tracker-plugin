@@ -14,7 +14,7 @@ data class SurveyPaneText(
 )
 
 @Serializable
-data class FinishPaneText(
+data class FinalPaneText(
     val praise: String,
     val backToSurvey: String,
     val finalMessage: String,
@@ -22,14 +22,14 @@ data class FinishPaneText(
 )
 
 @Serializable
-data class TaskChoosePaneText(
+data class TaskChoosingPaneText(
     val chooseTask: String,
     val finishSession: String,
     val startSolving: String
 )
 
 @Serializable
-data class TaskPaneText(
+data class TaskSolvingPaneText(
     val inputData: String,
     val outputData: String,
     val submit: String,
@@ -39,7 +39,7 @@ data class TaskPaneText(
 @Serializable
 data class PaneText(
     val surveyPane: Map<PaneLanguage, SurveyPaneText>,
-    val taskChoosingPane: Map<PaneLanguage, TaskChoosePaneText>,
-    val taskSolvingPane: Map<PaneLanguage, TaskPaneText>,
-    val finalPane: Map<PaneLanguage, FinishPaneText>
+    val taskChoosingPane: Map<PaneLanguage, TaskChoosingPaneText>,
+    val taskSolvingPane: Map<PaneLanguage, TaskSolvingPaneText>,
+    val finalPane: Map<PaneLanguage, FinalPaneText>
 )
