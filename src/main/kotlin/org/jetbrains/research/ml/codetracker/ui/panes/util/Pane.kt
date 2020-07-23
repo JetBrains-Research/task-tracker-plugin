@@ -42,14 +42,14 @@ abstract class PaneControllerManager<T : PaneController>  {
     private var lastId = 0
 
     fun createContent(project: Project, scale: Double): JFXPanel {
-        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create content")
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create content, current thread is ${Thread.currentThread().name}")
         val fxPanel = JFXPanel()
 
         Platform.setImplicitExit(false)
         Platform.runLater {
             // Need to run on Fx thread, because controller initialization includes javaFx elements
             val controller = paneControllerClass.constructors.first().call(project, scale, fxPanel, lastId++)
-            logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create controller")
+            logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create controller, current thread is ${Thread.currentThread().name}")
             paneControllers.add(controller)
             Disposer.register(project, Disposable {
                 this.removeController(controller)
@@ -60,7 +60,7 @@ abstract class PaneControllerManager<T : PaneController>  {
             loader.location = javaClass.getResource(fxmlFilename)
             loader.setController(controller)
             loader.classLoader = this::class.java.classLoader
-            logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set controller")
+            logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set controller, current thread is ${Thread.currentThread().name}")
             val root = loader.load<Parent>()
             val scene = Scene(root, Color.WHITE)
             fxPanel.scene = scene
@@ -72,6 +72,7 @@ abstract class PaneControllerManager<T : PaneController>  {
     }
 
     fun setVisible(visible: Boolean) {
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set visible, current thread is ${Thread.currentThread().name}")
         paneControllers.forEach { it.fxPanel.isVisible = visible }
     }
 

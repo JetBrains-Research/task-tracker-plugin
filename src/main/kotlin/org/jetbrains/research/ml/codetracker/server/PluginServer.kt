@@ -10,6 +10,7 @@ import org.jetbrains.research.ml.codetracker.models.*
 import java.util.function.Consumer
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.progress.Task.Backgroundable
+import org.jetbrains.research.ml.codetracker.ui.MainController
 
 enum class ServerConnectionResult {
     UNINITIALIZED,
@@ -46,6 +47,7 @@ object PluginServer {
      * Finds all data in background task and sends results about finding
      */
     fun reconnect(project: Project) {
+        logger.info("${Plugin.PLUGIN_ID} PluginServer reconnect, current thread is ${Thread.currentThread().name}")
         ProgressManager.getInstance().run(object : Backgroundable(project, "Getting data from server") {
             override fun run(indicator: ProgressIndicator) {
                 safeFind { findData() }
@@ -58,6 +60,7 @@ object PluginServer {
      * Tries to call 'find' and sends the result of it to all subscribers
      */
     private fun safeFind(find: () -> Unit) {
+        logger.info("${Plugin.PLUGIN_ID} PluginServer safeFind, current thread is ${Thread.currentThread().name}")
         val publisher = ApplicationManager.getApplication().messageBus.syncPublisher(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC)
         serverConnectionResult = ServerConnectionResult.LOADING
         publisher.accept(serverConnectionResult)
