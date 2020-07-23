@@ -1,5 +1,6 @@
 package org.jetbrains.research.ml.codetracker.ui
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
@@ -36,22 +37,24 @@ internal object MainController {
 
     internal var visiblePane: Pane? = LoadingControllerManager
         set(value) {
-            logger.info("$value set visible")
-            panes.forEach { it.setVisible(it == value) }
-            field = value
+                logger.info("$value set visible")
+                panes.forEach { it.setVisible(it == value) }
+                field = value
         }
 
     init {
-        /* Subscribes to notifications about server connectio result to update visible panes */
+        /* Subscribes to notifications about server connection result to update visible panes */
         subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
             override fun accept(connection: ServerConnectionResult) {
-                visiblePane = when (connection) {
-                    ServerConnectionResult.UNINITIALIZED -> LoadingControllerManager
-                    ServerConnectionResult.LOADING -> LoadingControllerManager
-                    ServerConnectionResult.FAIL -> ErrorControllerManager
-                    ServerConnectionResult.SUCCESS -> {
-                        contents.forEach { it.updatePanesToCreate() }
-                        SurveyControllerManager
+                Platform.runLater {
+                    visiblePane = when (connection) {
+                        ServerConnectionResult.UNINITIALIZED -> LoadingControllerManager
+                        ServerConnectionResult.LOADING -> LoadingControllerManager
+                        ServerConnectionResult.FAIL -> ErrorControllerManager
+                        ServerConnectionResult.SUCCESS -> {
+                            contents.forEach { it.updatePanesToCreate() }
+                            SurveyControllerManager
+                        }
                     }
                 }
             }
@@ -87,17 +90,19 @@ internal object MainController {
          * adds them to the [panel], and removes created panes from [panesToCreateContent]
          */
         fun updatePanesToCreate() {
-            val (canCreateContentPanes, cantCreateContentPanes) = panes.partition { it.canCreateContent }
-            if (canCreateContentPanes.isNotEmpty()) {
-                canCreateContentPanes.map { it.createContent(project, scale) }.forEach { panel.add(it) }
-                Platform.runLater {
-                    canCreateContentPanes.map { it.getLastAddedPaneController() }.forEach {
-                        if (it is Updatable) {
-                            it.update()
+            ApplicationManager.getApplication().invokeLater {
+                val (canCreateContentPanes, cantCreateContentPanes) = panes.partition { it.canCreateContent }
+                if (canCreateContentPanes.isNotEmpty()) {
+                    canCreateContentPanes.map { it.createContent(project, scale) }.forEach { panel.add(it) }
+                    Platform.runLater {
+                        canCreateContentPanes.map { it.getLastAddedPaneController() }.forEach {
+                            if (it is Updatable) {
+                                it.update()
+                            }
                         }
                     }
+                    panesToCreateContent = cantCreateContentPanes
                 }
-                panesToCreateContent = cantCreateContentPanes
             }
         }
     }
