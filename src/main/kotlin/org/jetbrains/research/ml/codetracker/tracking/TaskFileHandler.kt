@@ -1,42 +1,21 @@
 package org.jetbrains.research.ml.codetracker.tracking
 
+import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.editor.event.DocumentEvent
-import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.ReadonlyStatusHandler
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.io.ReadOnlyAttributeUtil
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.models.Task
 import java.io.File
-import java.lang.IllegalArgumentException
+import java.io.IOException
 
-private class TaskDocumentListener : DocumentListener {
-    private val logger: Logger = Logger.getInstance(javaClass)
-
-    init {
-        logger.info("${Plugin.PLUGIN_ID}: init documents listener")
-    }
-
-    // Tracking documents changes before to be consistent with activity-tracker plugin
-    override fun beforeDocumentChange(event: DocumentEvent) {
-        if (isValidChange(event)) DocumentLogger.log(event.document)
-    }
-
-    // To avoid completion events with IntellijIdeaRulezzz sign
-    // Todo: add tests for it
-    private fun isValidChange(event: DocumentEvent): Boolean {
-        return EditorFactory.getInstance().getEditors(event.document).isNotEmpty()
-                && FileDocumentManager.getInstance().getFile(event.document) != null
-    }
-}
 
 object TaskFileHandler {
     private const val PLUGIN_FOLDER = "codetracker"
@@ -56,6 +35,26 @@ object TaskFileHandler {
         addDocumentToTask(virtualFile, task)
         openFile(project, virtualFile)
         return virtualFile
+    }
+
+    /**
+     * To check whether a [document] is bound with any task or not
+     */
+    fun getTaskByDocument(document: Document?): Task? {
+        return documentToTask[document]
+    }
+
+    private fun setReadOnly(vFile: VirtualFile, readOnlyStatus: Boolean) {
+        try {
+            WriteAction.runAndWait<IOException> {
+                ReadOnlyAttributeUtil.setReadOnlyAttribute(
+                    vFile,
+                    readOnlyStatus
+                )
+            }
+        } catch (e: IOException) {
+            println("exception was raised")
+        }
     }
 
     private fun getOrCreateFile(project: Project, task: Task, language: Language): VirtualFile? {
@@ -84,13 +83,17 @@ object TaskFileHandler {
         return document
     }
 
-    /**
+    /*
      * Opens file and makes it writable
      */
     private fun openFile(project: Project, virtualFile: VirtualFile?) {
+//        val document = virtualFile?.let { FileDocumentManager.getInstance().getDocument(it) }
+//        document?.let { EditorFactory.getInstance().createViewer(document, project) }
         virtualFile?.let {
-            // Line below makes file writable if it's not
-            ReadonlyStatusHandler.getInstance(project).ensureFilesWritable(listOf(virtualFile))
+//            val handler = ReadonlyStatusHandler.getInstance(project) as ReadonlyStatusHandlerImpl
+//            handler.setClearReadOnlyInTests(false)
+            setReadOnly(it, false)
+
             FileEditorManager.getInstance(project).openFile(it, true, true)
         }
     }
@@ -108,9 +111,9 @@ object TaskFileHandler {
      */
     private fun closeFile(project: Project, virtualFile: VirtualFile?) {
         virtualFile?.let {
-            val document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            document?.setReadOnly(true)
-//            document?.fireReadOnlyModificationAttempt()
+//            val handler = ReadonlyStatusHandler.getInstance(project) as ReadonlyStatusHandlerImpl
+            setReadOnly(it, true)
+//            handler.setClearReadOnlyInTests(true)
             FileEditorManager.getInstance(project).closeFile(virtualFile)
         }
     }

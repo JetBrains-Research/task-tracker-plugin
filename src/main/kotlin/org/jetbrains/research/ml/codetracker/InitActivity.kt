@@ -6,7 +6,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.util.Disposer
-import org.jetbrains.research.ml.codetracker.ui.ServerDialogWrapper
 
 
 class InitActivity : StartupActivity {
@@ -18,12 +17,12 @@ class InitActivity : StartupActivity {
             ApplicationManager.getApplication(),
             Disposable {
                 logger.info("${Plugin.PLUGIN_ID}: dispose startup activity")
-                if (!Plugin.stopTracking()) {
-//                    Todo: don't run it there....
-                    ApplicationManager.getApplication().invokeAndWait {
-                        ServerDialogWrapper().show()
-                    }
-                }
+//                if (!Plugin.stopTracking()) {
+////                    Todo: don't run it there....
+//                    ApplicationManager.getApplication().invokeAndWait {
+//                        ServerDialogWrapper().show()
+//                    }
+//                }
             })
     }
 
