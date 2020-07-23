@@ -4,13 +4,12 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task.Backgroundable
+import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.*
 import java.util.function.Consumer
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.progress.Task.Backgroundable
-import org.jetbrains.research.ml.codetracker.ui.MainController
 
 enum class ServerConnectionResult {
     UNINITIALIZED,

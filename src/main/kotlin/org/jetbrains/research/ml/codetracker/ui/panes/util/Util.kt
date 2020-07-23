@@ -8,8 +8,6 @@ import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
 import javafx.scene.control.TextFormatter
 import javafx.scene.input.MouseEvent
-import javafx.util.StringConverter
-import javafx.util.converter.IntegerStringConverter
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import java.util.function.Consumer
 import java.util.function.UnaryOperator

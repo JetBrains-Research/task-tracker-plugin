@@ -47,9 +47,9 @@ internal object MainController {
         /* Subscribes to notifications about server connection result to update visible panes */
         subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
             override fun accept(connection: ServerConnectionResult) {
-                logger.info("${Plugin.PLUGIN_ID} server connection topic, current thread is ${Thread.currentThread().name}")
-                Platform.runLater {
-                    logger.info("${Plugin.PLUGIN_ID} server connection topic in platform block, current thread is ${Thread.currentThread().name}")
+                logger.info("${Plugin.PLUGIN_ID} MainController, server connection topic $connection, current thread is ${Thread.currentThread().name}")
+                ApplicationManager.getApplication().invokeLater {
+                    logger.info("${Plugin.PLUGIN_ID} MainController, server connection topic $connection in application block, current thread is ${Thread.currentThread().name}")
                     visiblePane = when (connection) {
                         ServerConnectionResult.UNINITIALIZED -> LoadingControllerManager
                         ServerConnectionResult.LOADING -> LoadingControllerManager
@@ -64,7 +64,7 @@ internal object MainController {
         })
     }
 
-    /*   Run on EDT (ToolWindowFactory takes care of it) */
+    /*   RUN ON EDT (ToolWindowFactory takes care of it) */
     fun createContent(project: Project): JComponent {
         logger.info("${Plugin.PLUGIN_ID} MainController create content, current thread is ${Thread.currentThread().name}")
         val screenSize = Toolkit.getDefaultToolkit().screenSize
@@ -91,26 +91,24 @@ internal object MainController {
         }
 
         /**
+         * RUN ON EDT
          * Looks to all [panesToCreateContent] and checks if any can create content. If so, creates pane contents,
          * adds them to the [panel], and removes created panes from [panesToCreateContent]
          */
         fun updatePanesToCreate() {
             logger.info("${Plugin.PLUGIN_ID} updatePanesToCreate, current thread is ${Thread.currentThread().name}")
-            ApplicationManager.getApplication().invokeLater {
-                logger.info("${Plugin.PLUGIN_ID} updatePanesToCreate application, current thread is ${Thread.currentThread().name}")
-                val (canCreateContentPanes, cantCreateContentPanes) = panes.partition { it.canCreateContent }
-                if (canCreateContentPanes.isNotEmpty()) {
-                    canCreateContentPanes.map { it.createContent(project, scale) }.forEach { panel.add(it) }
-                    Platform.runLater {
-                        logger.info("${Plugin.PLUGIN_ID} updatePanesToCreate platform, current thread is ${Thread.currentThread().name}")
-                        canCreateContentPanes.map { it.getLastAddedPaneController() }.forEach {
-                            if (it is Updatable) {
-                                it.update()
-                            }
+            val (canCreateContentPanes, cantCreateContentPanes) = panes.partition { it.canCreateContent }
+            if (canCreateContentPanes.isNotEmpty()) {
+                canCreateContentPanes.map { it.createContent(project, scale) }.forEach { panel.add(it) }
+                Platform.runLater {
+                    logger.info("${Plugin.PLUGIN_ID} updatePanesToCreate in platform block, current thread is ${Thread.currentThread().name}")
+                    canCreateContentPanes.map { it.getLastAddedPaneController() }.forEach {
+                        if (it is Updatable) {
+                            it.update()
                         }
                     }
-                    panesToCreateContent = cantCreateContentPanes
                 }
+                panesToCreateContent = cantCreateContentPanes
             }
         }
     }

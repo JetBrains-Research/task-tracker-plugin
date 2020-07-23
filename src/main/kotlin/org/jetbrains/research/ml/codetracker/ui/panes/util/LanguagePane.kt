@@ -9,8 +9,6 @@ import javafx.fxml.FXML
 import javafx.scene.control.ComboBox
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.MainController
-import java.lang.Thread.currentThread
 import java.net.URL
 import java.util.*
 import java.util.function.Consumer

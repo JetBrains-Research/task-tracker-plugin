@@ -1,16 +1,13 @@
 package org.jetbrains.research.ml.codetracker.server
 
-import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.registry.Registry
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.lang.IllegalStateException
-import java.net.UnknownHostException
+import org.jetbrains.research.ml.codetracker.Plugin
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
-import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
 abstract class QueryExecutor {
