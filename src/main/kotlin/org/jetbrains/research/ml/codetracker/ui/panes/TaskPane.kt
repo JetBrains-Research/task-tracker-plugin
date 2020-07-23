@@ -47,7 +47,7 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
     @FXML lateinit var backToTasksButton: Button
     @FXML lateinit var backToTasksText: FormattedText
 
-    private val translations = PluginServer.paneText?.taskPane
+    private val translations = PluginServer.paneText?.taskSolvingPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
