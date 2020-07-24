@@ -9,8 +9,6 @@ import javafx.scene.control.TextArea
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
-import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*

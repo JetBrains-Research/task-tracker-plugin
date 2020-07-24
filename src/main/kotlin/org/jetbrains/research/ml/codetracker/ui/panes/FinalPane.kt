@@ -6,8 +6,6 @@ import javafx.fxml.FXML
 import javafx.scene.control.Button
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
-import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
