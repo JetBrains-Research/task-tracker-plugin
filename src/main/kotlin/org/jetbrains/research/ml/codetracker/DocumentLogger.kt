@@ -1,19 +1,17 @@
 package org.jetbrains.research.ml.codetracker
 
-import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.io.FileUtil
-import org.jetbrains.research.ml.codetracker.data.DocumentChangeData
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
-import org.joda.time.DateTime
+import org.jetbrains.research.ml.codetracker.data.DocumentChangeData
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
+import org.joda.time.DateTime
 import java.io.File
 import java.io.FileOutputStream
-import java.io.FileWriter
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 import kotlin.math.abs

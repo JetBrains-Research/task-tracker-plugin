@@ -6,8 +6,6 @@ import javafx.fxml.FXML
 import javafx.scene.control.Button
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
-import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
@@ -27,7 +25,7 @@ class FinalController(project: Project, scale: Double, fxPanel: JFXPanel, id: In
     @FXML lateinit var greatWorkLabel: FormattedLabel
     @FXML lateinit var messageText: FormattedText
 
-    private val translations = PluginServer.paneText?.finishPane
+    private val translations = PluginServer.paneText?.finalPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")

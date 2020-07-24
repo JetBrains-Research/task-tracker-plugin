@@ -9,8 +9,6 @@ import javafx.scene.control.TextArea
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
-import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
@@ -47,7 +45,7 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
     @FXML lateinit var backToTasksButton: Button
     @FXML lateinit var backToTasksText: FormattedText
 
-    private val translations = PluginServer.paneText?.taskPane
+    private val translations = PluginServer.paneText?.taskSolvingPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
