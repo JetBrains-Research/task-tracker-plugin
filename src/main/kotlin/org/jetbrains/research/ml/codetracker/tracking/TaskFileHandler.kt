@@ -99,6 +99,7 @@ object TaskFileHandler {
             val document = FileDocumentManager.getInstance().getDocument(virtualFile)
             document?.let {
                 it.addDocumentListener(listener)
+                // Log the first state
                 DocumentLogger.log(it)
             }
         } else {

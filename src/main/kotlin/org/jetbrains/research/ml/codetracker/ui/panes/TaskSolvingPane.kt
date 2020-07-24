@@ -92,6 +92,8 @@ class TaskSolvingController(project: Project, scale: Double, fxPanel: JFXPanel, 
             currentTask?.let {
                 ApplicationManager.getApplication().invokeLater {
                     val document = TaskFileHandler.getDocument(project, it)
+                    // Log the last state
+                    DocumentLogger.log(document)
                     if (!DocumentLogger.sendFileByDocument(document)) {
                         // Todo: show error pane
                     }
