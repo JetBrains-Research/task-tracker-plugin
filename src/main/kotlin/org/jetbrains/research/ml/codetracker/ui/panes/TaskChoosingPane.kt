@@ -81,7 +81,7 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
             val currentTask = paneUiData.chosenTask.currentValue
             currentTask?.let {
                 ApplicationManager.getApplication().invokeLater {
-                    TaskFileHandler.createAndOpenFile(project, it)
+                    TaskFileHandler.openTaskFiles(it)
                 }
             }
             changeVisiblePane(TaskControllerManager)

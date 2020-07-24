@@ -6,6 +6,8 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectLocator
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -13,6 +15,13 @@ import com.intellij.util.io.ReadOnlyAttributeUtil
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.models.Task
+import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
+import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
+import org.jetbrains.research.ml.codetracker.ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
+import org.jetbrains.research.ml.codetracker.ui.panes.TaskControllerManager
+import org.jetbrains.research.ml.codetracker.ui.panes.util.subscribe
 import java.io.File
 import java.io.IOException
 
@@ -22,88 +31,100 @@ object TaskFileHandler {
 
     private val logger: Logger = Logger.getInstance(javaClass)
     private val documentToTask: HashMap<Document, Task> = HashMap()
+    private val projectToTaskToFiles: HashMap<Project, HashMap<Task, VirtualFile>> = HashMap()
+    private val projectsToInit = arrayListOf<Project>()
 
     private val listener by lazy {
         TaskDocumentListener()
     }
 
-    /**
-     * Creates file and adds [TaskDocumentListener] to it if it doesn't exist, opens it and makes it writable.
-     */
-    fun createAndOpenFile(project: Project, task: Task, language: Language = Language.PYTHON): VirtualFile? {
-        val virtualFile = getOrCreateFile(project, task, language)
-        addDocumentToTask(virtualFile, task)
-        openFile(project, virtualFile)
-        return virtualFile
-    }
-
-    /**
-     * To check whether a [document] is bound with any task or not
-     */
-    fun getTaskByDocument(document: Document?): Task? {
-        return documentToTask[document]
-    }
-
-    private fun setReadOnly(vFile: VirtualFile, readOnlyStatus: Boolean) {
-        try {
-            WriteAction.runAndWait<IOException> {
-                ReadOnlyAttributeUtil.setReadOnlyAttribute(
-                    vFile,
-                    readOnlyStatus
-                )
-            }
-        } catch (e: IOException) {
-            println("exception was raised")
+    init {
+        if (PluginServer.serverConnectionResult != ServerConnectionResult.SUCCESS) {
+            subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
+                override fun accept(connection: ServerConnectionResult) {
+                    if (connection == ServerConnectionResult.SUCCESS) {
+                        projectsToInit.forEach { initProject(it) }
+                        projectsToInit.clear()
+                    }
+                }
+            })
         }
     }
 
-    private fun getOrCreateFile(project: Project, task: Task, language: Language): VirtualFile? {
+    /**
+     * Call if you sure that ServerConnectionResult was successful and therefore all tasks are received
+     */
+    private fun initProject(project: Project) {
+        projectToTaskToFiles[project] = hashMapOf()
+        PluginServer.tasks.forEach {task ->
+            val virtualFile = getOrCreateFile(project, task)
+            virtualFile?.let {
+                addTaskFile(it, task, project)
+                if (task.isItsFileWritable()) {
+                    openFile(project, virtualFile)
+                } else {
+                    closeFile(project, virtualFile)
+                }
+            }
+        }
+    }
+
+    fun addProject(project: Project) {
+        if (projectsToInit.contains(project) || projectToTaskToFiles.keys.contains(project)) {
+            logger.info("Project $project is already added or set to be added")
+            return
+        }
+        if (PluginServer.serverConnectionResult == ServerConnectionResult.SUCCESS) {
+            initProject(project)
+        } else {
+            projectsToInit.add(project)
+        }
+    }
+
+
+    private fun getOrCreateFile(project: Project, task: Task, language: Language = Language.PYTHON): VirtualFile? {
         val file = File("${project.basePath}/$PLUGIN_FOLDER/${task.key}${language.extension.ext}")
         FileUtil.createIfDoesntExist(file)
         return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
     }
 
     /**
-     *  If [documentToTask] doesn't have this [task] then we didn't track the document
+     *  If [documentToTask] doesn't have this [task] then we didn't track the document. Once document is added,
+     *  DocumentListener is connected and tracks all document changes
      */
-    private fun addDocumentToTask(virtualFile: VirtualFile?, task: Task): Document? {
-        val document = virtualFile?.let { FileDocumentManager.getInstance().getDocument(it) }
-        val oldTask: Task? = documentToTask[document]
-        if (oldTask == null) {
-            document?.let { documentToTask[it] = task; it.addDocumentListener(listener) }
+    private fun addTaskFile(virtualFile: VirtualFile, task: Task, project: Project) {
+        val oldVirtualFile = projectToTaskToFiles[project]?.get(task)
+        if (oldVirtualFile == null) {
+            projectToTaskToFiles[project]?.set(task, virtualFile)
+            FileDocumentManager.getInstance().getDocument(virtualFile)?.addDocumentListener(listener)
+
         } else {
-            // If the old task is not equal to the new task, we should raise an error
-            if (oldTask != task) {
-                val message = "${Plugin.PLUGIN_ID}: an attempt to assign another task to the document ${document}. " +
-                        "The old task is ${oldTask.key}, the new task is ${task.key}"
+            // If the old document is not equal to the old document, we should raise an error
+            if (virtualFile != oldVirtualFile) {
+                val message = "${Plugin.PLUGIN_ID}: an attempt to assign another virtualFile to the task $task in " +
+                        "the project ${project}."
                 logger.error(message)
                 throw IllegalArgumentException(message)
             }
         }
-        return document
+    }
+
+    fun openTaskFiles(task: Task, language: Language = Language.PYTHON) {
+        projectToTaskToFiles.forEach { (project, taskFiles) ->  openFile(project, taskFiles[task]) }
     }
 
     /*
      * Opens file and makes it writable
      */
     private fun openFile(project: Project, virtualFile: VirtualFile?) {
-//        val document = virtualFile?.let { FileDocumentManager.getInstance().getDocument(it) }
-//        document?.let { EditorFactory.getInstance().createViewer(document, project) }
         virtualFile?.let {
-//            val handler = ReadonlyStatusHandler.getInstance(project) as ReadonlyStatusHandlerImpl
-//            handler.setClearReadOnlyInTests(false)
             setReadOnly(it, false)
-
             FileEditorManager.getInstance(project).openFile(it, true, true)
         }
     }
 
-    /**
-     * Gets file by [task] and [language] and closes it, making it read-only
-     */
-    fun closeFile(project: Project, task: Task, language: Language = Language.PYTHON) {
-        val virtualFile = getOrCreateFile(project, task, language)
-        closeFile(project, virtualFile)
+    fun closeTaskFiles(task: Task, language: Language = Language.PYTHON) {
+        projectToTaskToFiles.forEach { (project, taskFiles) ->  closeFile(project, taskFiles[task]) }
     }
 
     /**
@@ -111,15 +132,35 @@ object TaskFileHandler {
      */
     private fun closeFile(project: Project, virtualFile: VirtualFile?) {
         virtualFile?.let {
-//            val handler = ReadonlyStatusHandler.getInstance(project) as ReadonlyStatusHandlerImpl
             setReadOnly(it, true)
-//            handler.setClearReadOnlyInTests(true)
             FileEditorManager.getInstance(project).closeFile(virtualFile)
         }
     }
 
-    fun stopTracking() {
-        documentToTask.forEach { it.key.removeDocumentListener(listener) }
+    /**
+     * File is writable if it's task is null or its task is currently chosen on the TaskChoosingPane
+     */
+    fun Task?.isItsFileWritable(): Boolean {
+        return (this == null || (this == TaskChoosingUiData.chosenTask.currentValue &&
+                MainController.visiblePane == TaskControllerManager))
     }
 
+
+    private fun setReadOnly(vFile: VirtualFile, readOnlyStatus: Boolean) {
+        try {
+            WriteAction.runAndWait<IOException> {
+                ReadOnlyAttributeUtil.setReadOnlyAttribute(vFile, readOnlyStatus)
+            }
+        } catch (e: IOException) {
+            logger.info("Exception was raised in attempt to set read only status")
+        }
+    }
+
+    fun getTaskByVirtualFile(virtualFile: VirtualFile?): Task? {
+//        Due to the lazy evaluation of sequences in kotlin it not so terribly complex as you may think.
+//        Even if it is, we have only 3 tasks and only a couple of projects open at the same time, so it's not so bad.
+        return ProjectLocator.getInstance().getProjectsForFile(virtualFile).asSequence().map { project ->
+            projectToTaskToFiles[project]?.entries?.firstOrNull { it.value == virtualFile }?.key
+        }.firstOrNull()
+    }
 }

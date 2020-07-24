@@ -15,11 +15,14 @@ import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 
 
+
+
+
+
+
 object DocumentLogger {
     data class Printer(val csvPrinter: CSVPrinter, val fileWriter: OutputStreamWriter, val file: File)
-
     private val logger: Logger = Logger.getInstance(javaClass)
-
     private val myDocumentsToPrinters: HashMap<Document, Printer> = HashMap()
 
     val documentsToPrinters: Map<Document, Printer>

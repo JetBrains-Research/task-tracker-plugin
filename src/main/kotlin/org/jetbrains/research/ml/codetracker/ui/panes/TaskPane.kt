@@ -90,7 +90,7 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
             currentTask?.let {
                 ApplicationManager.getApplication().invokeLater {
 //                    TODO: send data here
-                    TaskFileHandler.closeFile(project, it)
+                    TaskFileHandler.closeTaskFiles(it)
                 }
             }
             changeVisiblePane(TaskChoosingControllerManager)

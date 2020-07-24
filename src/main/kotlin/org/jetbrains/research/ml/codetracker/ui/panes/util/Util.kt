@@ -42,6 +42,8 @@ fun <T : Any, C : Consumer<T>> subscribe(topic: Topic<C>, notifier: C) {
     ApplicationManager.getApplication().messageBus.connect().subscribe(topic, notifier)
 }
 
+
+
 fun Button.onMouseClicked(action: () -> Unit) {
     this.addEventHandler(MouseEvent.MOUSE_CLICKED) {
         action()

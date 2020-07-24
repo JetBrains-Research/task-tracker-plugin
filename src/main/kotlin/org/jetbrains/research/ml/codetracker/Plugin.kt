@@ -28,7 +28,7 @@ object Plugin {
                 ) { DocumentLogger.close(d, p) }
             }
         }
-        TaskFileHandler.stopTracking()
+//        TaskFileHandler.stopTracking()
         return TrackerQueryExecutor.isLastSuccessful
     }
 
