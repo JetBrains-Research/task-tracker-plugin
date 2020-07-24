@@ -18,12 +18,12 @@ import java.net.URL
 import java.util.*
 import kotlin.reflect.KClass
 
-object TaskControllerManager : ServerDependentPane<TaskController>() {
-    override val paneControllerClass: KClass<TaskController> = TaskController::class
-    override val fxmlFilename: String = "task-ui-form.fxml"
+object TaskSolvingControllerManager : ServerDependentPane<TaskSolvingController>() {
+    override val paneControllerClass: KClass<TaskSolvingController> = TaskSolvingController::class
+    override val fxmlFilename: String = "task-solving-ui-form.fxml"
 }
 
-class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
+class TaskSolvingController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
     //    Task info
     @FXML lateinit var taskNameText: FormattedText
     @FXML lateinit var taskDescriptionText: Text
