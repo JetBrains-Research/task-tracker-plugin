@@ -17,6 +17,7 @@ import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
+import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskSolvingControllerManager
@@ -120,6 +121,12 @@ object TaskFileHandler {
             setReadOnly(it, false)
             FileEditorManager.getInstance(project).openFile(it, true, true)
         }
+    }
+
+    fun getDocument(project: Project, task: Task): Document {
+        val virtualFile = projectToTaskToFiles[project]?.get(task)
+            ?: throw IllegalStateException("A file for the task ${task.key} in the project ${project.name} does not exist")
+        return FileDocumentManager.getInstance().getDocument(virtualFile)?: throw IllegalStateException("A document for the file ${virtualFile.name} in the project ${project.name} does not exist")
     }
 
     fun closeTaskFiles(task: Task, language: Language = Language.PYTHON) {

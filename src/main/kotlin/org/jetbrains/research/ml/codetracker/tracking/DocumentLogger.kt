@@ -19,9 +19,6 @@ object DocumentLogger {
     private val logger: Logger = Logger.getInstance(javaClass)
     private val myDocumentsToPrinters: HashMap<Document, Printer> = HashMap()
 
-    val documentsToPrinters: Map<Document, Printer>
-        get() = documentsToPrinters.toMap()
-
     private val folderPath = "${PathManager.getPluginsPath()}/codetracker/"
     private const val MAX_FILE_SIZE = 50 * 1024 * 1024
     private const val MAX_DIF_SIZE = 300
@@ -37,34 +34,18 @@ object DocumentLogger {
         printer.csvPrinter.printRecord(DocumentLoggedData.getData(document) + UiLoggedData.getData(Unit))
     }
 
-    fun logCurrentDocuments() {
-        logger.info("${Plugin.PLUGIN_ID}: log current documents: ${myDocumentsToPrinters.keys.size}")
-        myDocumentsToPrinters.keys.forEach { log(it) }
-    }
-
     private fun isFull(fileSize: Long): Boolean = fileSize > MAX_FILE_SIZE - MAX_DIF_SIZE
 
     private fun sendFile(file: File) {
         TrackerQueryExecutor.sendCodeTrackerData(file)
     }
 
-    fun getFiles(): List<File> = myDocumentsToPrinters.values.map { it.file }
-
-    fun flush() {
-        logger.info("${Plugin.PLUGIN_ID}: flush loggers")
-        myDocumentsToPrinters.values.forEach { it.csvPrinter.flush() }
-    }
-
-    fun close(document: Document, printer: Printer) {
-        printer.csvPrinter.close()
-        printer.fileWriter.close()
-        logger.info("${Plugin.PLUGIN_ID}: close ${printer.file.name}")
-    }
-
-    fun close() {
-        logger.info("${Plugin.PLUGIN_ID}: close loggers")
-        myDocumentsToPrinters.values.forEach { it.csvPrinter.close(); it.fileWriter.close() }
-        myDocumentsToPrinters.clear()
+    fun sendFileByDocument(document: Document): Boolean {
+        // Todo: what should I do if printer is null?
+        val printer = myDocumentsToPrinters[document] ?: throw IllegalStateException("A printer for the document $document does not exist")
+        printer.csvPrinter.flush()
+        sendFile(printer.file)
+        return TrackerQueryExecutor.isLastSuccessful
     }
 
     private fun initPrinter(document: Document): Printer {

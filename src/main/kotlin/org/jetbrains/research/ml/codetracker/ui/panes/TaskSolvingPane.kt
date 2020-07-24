@@ -9,6 +9,7 @@ import javafx.scene.control.TextArea
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.tracking.DocumentLogger
 import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler
 import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
 import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
@@ -90,7 +91,10 @@ class TaskSolvingController(project: Project, scale: Double, fxPanel: JFXPanel, 
             val currentTask = TaskChoosingUiData.chosenTask.currentValue
             currentTask?.let {
                 ApplicationManager.getApplication().invokeLater {
-//                    TODO: send data here
+                    val document = TaskFileHandler.getDocument(project, it)
+                    if (!DocumentLogger.sendFileByDocument(document)) {
+                        // Todo: show error pane
+                    }
                     TaskFileHandler.closeTaskFiles(it)
                 }
             }
