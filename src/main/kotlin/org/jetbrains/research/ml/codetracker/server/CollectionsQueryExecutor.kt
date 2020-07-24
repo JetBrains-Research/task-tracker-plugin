@@ -10,7 +10,7 @@ import java.net.URL
 
 object CollectionsQueryExecutor : QueryExecutor() {
 
-    inline fun <reified T : Any> parseResponse(response: Response?, serializer: KSerializer<T>): List<T> {
+    inline fun <reified T : Any> parseCollectionResponse(response: Response?, serializer: KSerializer<T>): List<T> {
 //      If IDEA says [PROTECTED_CALL_FROM_PUBLIC_INLINE] it's not right, see https://youtrack.jetbrains.com/issue/KT-15410
         if (isSuccess(response)) {
             return Json(JsonConfiguration.Stable).parse(serializer.list, response?.body?.string() ?: "")
@@ -19,7 +19,22 @@ object CollectionsQueryExecutor : QueryExecutor() {
     }
 
     inline fun <reified T : Any> getCollection(url: String, serializer: KSerializer<T>): List<T> {
-        return parseResponse(
+        return parseCollectionResponse(
+            executeQuery(
+                Request.Builder().url(URL("${baseUrl}${url}")).build()
+            ), serializer
+        )
+    }
+
+    inline fun <reified T : Any> parseItemResponse(response: Response?, serializer: KSerializer<T>): T {
+        if (isSuccess(response)) {
+            return Json(JsonConfiguration.Stable).parse(serializer, response?.body?.string() ?: "")
+        }
+        throw IllegalStateException("Unsuccessful server response")
+    }
+
+    inline fun <reified T : Any> getItemFromCollection(url: String, serializer: KSerializer<T>): T {
+        return parseItemResponse(
             executeQuery(
                 Request.Builder().url(URL("${baseUrl}${url}")).build()
             ), serializer
