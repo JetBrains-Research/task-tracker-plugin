@@ -12,6 +12,7 @@ import javafx.scene.control.ComboBox
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.tracking.TaskDocumentListener
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*

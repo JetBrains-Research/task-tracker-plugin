@@ -96,8 +96,11 @@ object TaskFileHandler {
         val oldVirtualFile = projectToTaskToFiles[project]?.get(task)
         if (oldVirtualFile == null) {
             projectToTaskToFiles[project]?.set(task, virtualFile)
-            FileDocumentManager.getInstance().getDocument(virtualFile)?.addDocumentListener(listener)
-
+            val document = FileDocumentManager.getInstance().getDocument(virtualFile)
+            document?.let {
+                it.addDocumentListener(listener)
+                DocumentLogger.log(it)
+            }
         } else {
             // If the old document is not equal to the old document, we should raise an error
             if (virtualFile != oldVirtualFile) {

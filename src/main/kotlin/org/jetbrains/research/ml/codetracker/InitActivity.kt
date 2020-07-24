@@ -18,12 +18,6 @@ class InitActivity : StartupActivity {
             ApplicationManager.getApplication(),
             Disposable {
                 logger.info("${Plugin.PLUGIN_ID}: dispose startup activity")
-//                if (!Plugin.stopTracking()) {
-////                    Todo: don't run it there....
-//                    ApplicationManager.getApplication().invokeAndWait {
-//                        ServerDialogWrapper().show()
-//                    }
-//                }
             })
     }
 
