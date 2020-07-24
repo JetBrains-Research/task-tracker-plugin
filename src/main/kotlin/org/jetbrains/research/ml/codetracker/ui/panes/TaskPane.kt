@@ -65,7 +65,7 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
             override fun accept(newTaskIndex: Int) {
                 val newTask = TaskChoosingUiData.chosenTask.currentValue
                 newTask?.let {
-                    val newTaskInfo = newTask.infoTranslation[paneUiData.language.currentValue]
+                    val newTaskInfo = newTask.infoTranslation[LanguagePaneUiData.language.currentValue]
                     newTaskInfo?.let {
                         taskNameText.text = it.name
                         taskDescriptionText.text = it.description
@@ -95,7 +95,7 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
     private fun makeTranslatable() {
         subscribe(LanguageNotifier.LANGUAGE_TOPIC, object : LanguageNotifier {
             override fun accept(newLanguageIndex: Int) {
-                val newLanguage = paneUiData.language.dataList[newLanguageIndex]
+                val newLanguage = LanguagePaneUiData.language.dataList[newLanguageIndex]
                 val taskPaneText = translations?.get(newLanguage)
                 taskPaneText?.let {
                     taskInputHeaderText.text = it.inputData

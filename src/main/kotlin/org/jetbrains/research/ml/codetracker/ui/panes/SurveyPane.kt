@@ -57,6 +57,11 @@ interface CountryNotifier : Consumer<Int> {
     }
 }
 
+interface CountryListNotifier : Consumer<List<Country>> {
+    companion object {
+        val COUNTRY_LIST_TOPIC = Topic.create("country list change", CountryListNotifier::class.java)
+    }
+}
 
 object SurveyUiData : LanguagePaneUiData() {
     private val countries: List<Country> = PluginServer.countries
@@ -66,7 +71,7 @@ object SurveyUiData : LanguagePaneUiData() {
     val gender = ListedUiField(genders, -1, GenderNotifier.GENDER_TOPIC)
     val peYears = UiField(-1, PeYearsNotifier.PE_YEARS_TOPIC)
     val peMonths = UiField( -1, PeMonthsNotifier.PE_MONTHS_TOPIC, false)
-    val country = ListedUiField(countries, -1, CountryNotifier.COUNTRY_TOPIC)
+    val country = ListedUiField(countries, -1, CountryNotifier.COUNTRY_TOPIC, CountryListNotifier.COUNTRY_LIST_TOPIC)
 
     override fun getData() = listOf(
         age,
@@ -104,8 +109,8 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
 
     // Country
     @FXML private lateinit var countryLabel: FormattedLabel
-    @FXML private lateinit var countryComboBox: ComboBox<String?>
-    private lateinit var countryObservableList: ObservableList<String?>
+    @FXML private lateinit var countryComboBox: ComboBox<String>
+    private lateinit var countryObservableList: ObservableList<String>
 
     // StartWorking
     @FXML private lateinit var startWorkingButton: Button
@@ -197,7 +202,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     private fun initCountry() {
 //        Todo: make it autocomplete https://stackoverflow.com/questions/19924852/autocomplete-combobox-in-javafx
         countryObservableList = FXCollections.observableList(paneUiData.country.dataList.map {
-            it.translation[paneUiData.language.currentValue]
+            it.translation[LanguagePaneUiData.language.currentValue]
         })
         countryComboBox.items = countryObservableList
 
@@ -210,6 +215,15 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
                 startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
         })
+
+        subscribe(CountryListNotifier.COUNTRY_LIST_TOPIC, object : CountryListNotifier {
+            override fun accept(newCountryList: List<Country>) {
+                countryObservableList.setAll(newCountryList.map {
+                    it.translation[LanguagePaneUiData.language.currentValue]
+                })
+            }
+        })
+
     }
 
     private fun initStartWorkingButton() {
@@ -219,7 +233,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     private fun makeTranslatable() {
         subscribe(LanguageNotifier.LANGUAGE_TOPIC, object : LanguageNotifier {
             override fun accept(newLanguageIndex: Int) {
-                val newLanguage = paneUiData.language.dataList[newLanguageIndex]
+                val newLanguage = LanguagePaneUiData.language.dataList[newLanguageIndex]
                 val surveyPaneText = translations?.get(newLanguage)
                 surveyPaneText?.let {
                     ageLabel.text = it.age
@@ -230,9 +244,9 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
                     countryLabel.text = it.country
                     startWorkingText.text = it.startSession
 
-                    changeComboBoxItems(countryComboBox, countryObservableList, paneUiData.country.dataList.map {
-                        it.translation.getOrDefault(newLanguage,"")
-                    })
+                    changeComboBoxItems(countryComboBox, countryObservableList, paneUiData.country.dataList.map { c ->
+                        c.translation.getOrDefault(newLanguage,"") })
+                    paneUiData.country.sortDataListBy { c -> c.translation.getOrDefault(newLanguage, "") }
                 }
                 genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g -> rb.text = g.translation[newLanguage] ?: "" }
             }

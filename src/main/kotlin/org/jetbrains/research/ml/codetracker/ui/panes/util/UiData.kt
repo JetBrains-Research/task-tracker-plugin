@@ -39,15 +39,39 @@ open class UiField <T : Any?> (val defaultUiValue: T, val notifierTopic: Topic<o
 
 /**
  * Represents pane data, which [uiValue] is one of the [dataList] items,
- * so it can be thought of as an item index with type [Int].
+ * so it can be thought of as an item index with type [Int]. If needed, an additional [listNotifierTopic] can be passed,
+ * so when [dataList] is changed, it notifies all subscribers.
  */
-open class ListedUiField<T: Any?>(
-    val dataList: List<T>, defaultValue: Int, notifierTopic: Topic<out Consumer<Int>>,
-    isRequired: Boolean = true) : UiField<Int>(defaultValue, notifierTopic, isRequired) {
+open class ListedUiField<T: Any?>(private val defaultDataList: List<T>,
+                                  defaultValue: Int,
+                                  valueNotifierTopic: Topic<out Consumer<Int>>,
+                                  private val listNotifierTopic: Topic<out Consumer<List<T>>>? = null,
+                                  isRequired: Boolean = true) : UiField<Int>(defaultValue, valueNotifierTopic, isRequired) {
 
     override var uiValue: Int by Delegates.observable(defaultUiValue) { _, old, new ->
         if (old != new && isValid(new)) {
             changeUiValue(new)
+        }
+    }
+
+    var dataList: List<T> by Delegates.observable(defaultDataList) { _, old, new ->
+        if (old != new) {
+            changeDataList(new)
+        }
+    }
+
+    inline fun <R : Comparable<R>> sortDataListBy(crossinline order: (T) -> R) {
+        val currentValue = currentValue
+        val sortedList = dataList.sortedBy { order(it) }
+        val newUiValue = sortedList.indexOf(currentValue)
+        dataList = sortedList
+        uiValue = newUiValue
+    }
+
+    private fun changeDataList(new: List<T>) {
+        listNotifierTopic?.let {
+            val publisher = ApplicationManager.getApplication().messageBus.syncPublisher(listNotifierTopic)
+            publisher.accept(new)
         }
     }
 
