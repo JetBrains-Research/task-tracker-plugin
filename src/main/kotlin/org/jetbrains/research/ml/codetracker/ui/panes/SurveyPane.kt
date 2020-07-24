@@ -12,6 +12,7 @@ import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Country
 import org.jetbrains.research.ml.codetracker.models.Gender
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*

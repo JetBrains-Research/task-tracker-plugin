@@ -1,6 +1,7 @@
 package org.jetbrains.research.ml.codetracker.ui.panes.util
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -42,37 +43,40 @@ abstract class PaneControllerManager<T : PaneController>  {
     private var lastId = 0
 
     fun createContent(project: Project, scale: Double): JFXPanel {
-        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create content")
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create content, current thread is ${Thread.currentThread().name}")
         val fxPanel = JFXPanel()
 
         Platform.setImplicitExit(false)
         Platform.runLater {
-            // Need to run on Fx thread, because controller initialization includes javaFx elements
+            // Should be RUN ON JAVAFX because controller initialization includes javaFx elements
             val controller = paneControllerClass.constructors.first().call(project, scale, fxPanel, lastId++)
-            logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create controller")
+            logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create controller, current thread is ${Thread.currentThread().name}")
             paneControllers.add(controller)
             Disposer.register(project, Disposable {
                 this.removeController(controller)
             })
-
             val loader = FXMLLoader()
             loader.namespace["scale"] = scale
             loader.location = javaClass.getResource(fxmlFilename)
             loader.setController(controller)
             loader.classLoader = this::class.java.classLoader
-            logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set controller")
+            logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set controller, current thread is ${Thread.currentThread().name}")
             val root = loader.load<Parent>()
             val scene = Scene(root, Color.WHITE)
             fxPanel.scene = scene
-            fxPanel.background = java.awt.Color.WHITE
-            fxPanel.isVisible = MainController.visiblePane == this
-        }
 
+            // Should be RUN ON EDT but after controller init
+            ApplicationManager.getApplication().invokeLater {
+                fxPanel.isVisible = MainController.visiblePane == this
+            }
+        }
+        fxPanel.background = java.awt.Color.WHITE
         return fxPanel
     }
 
-    fun setVisible(visible: Boolean) {
-        paneControllers.forEach { it.fxPanel.isVisible = visible }
+    fun setVisible(isVisible: Boolean) {
+        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} set visible ${isVisible}, current thread is ${Thread.currentThread().name}")
+        paneControllers.forEach { it.fxPanel.isVisible = isVisible }
     }
 
     fun getLastAddedPaneController() : PaneController? {

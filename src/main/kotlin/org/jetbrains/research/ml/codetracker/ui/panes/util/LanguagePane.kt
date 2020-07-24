@@ -7,8 +7,8 @@ import javafx.collections.FXCollections
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.ComboBox
+import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import java.lang.Thread.currentThread
 import java.net.URL
 import java.util.*
 import java.util.function.Consumer
@@ -42,6 +42,7 @@ open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXP
     }
 
     override fun update() {
+        logger.info("${Plugin.PLUGIN_ID} update controller ${this::javaClass.name}, current thread is ${Thread.currentThread().name}")
         paneUiData.updateUiData()
     }
 
