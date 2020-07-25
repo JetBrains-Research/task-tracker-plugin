@@ -40,6 +40,8 @@ object PluginServer {
         private set
     var taskSolvingErrorDialogText: TaskSolvingErrorDialogText? = null
         private set
+    var successfulSubmitDialogText: SuccessfulSubmitDialogText? = null
+        private set
 
     private val logger: Logger = Logger.getInstance(javaClass)
 
@@ -96,6 +98,7 @@ object PluginServer {
         genders = findGenders()
         countries = findCountries()
         taskSolvingErrorDialogText = findTaskSolvingErrorDialogText()
+        successfulSubmitDialogText = findSuccessfulSubmitDialogText()
     }
 
     private fun findAvailableLanguages(): List<PaneLanguage> {
@@ -124,6 +127,10 @@ object PluginServer {
 
     private fun findTaskSolvingErrorDialogText(): TaskSolvingErrorDialogText {
         return CollectionsQueryExecutor.getItemFromCollection("dialog-text/task_solving_error", TaskSolvingErrorDialogText.serializer())
+    }
+
+    private fun findSuccessfulSubmitDialogText(): SuccessfulSubmitDialogText {
+        return CollectionsQueryExecutor.getItemFromCollection("dialog-text/successful_submit", SuccessfulSubmitDialogText.serializer())
     }
 
 }
