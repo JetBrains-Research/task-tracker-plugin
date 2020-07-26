@@ -30,7 +30,7 @@ class ReadOnlyDialogWrapper(private val task: Task) : DialogWrapper(true) {
         val currentLanguage = SurveyUiData.language.currentValue
         return "<html>Для начала решения задачи <b>${task.infoTranslation[currentLanguage]?.name}</b>" +
                 "выберите эту задачу на панели codetracker и нажмите " +
-                "<b>${PluginServer.paneText?.taskChoosePane?.get(currentLanguage)?.startSolving?.let { formatter.format(it)} }</b>"
+                "<b>${PluginServer.paneText?.taskChoosingPane?.get(currentLanguage)?.startSolving?.let { formatter.format(it)} }</b>"
     }
 
     init {
