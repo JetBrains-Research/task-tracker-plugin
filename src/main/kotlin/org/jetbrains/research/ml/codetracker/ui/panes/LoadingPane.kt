@@ -29,9 +29,6 @@ class LoadingController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     @FXML private lateinit var orangePolygon1: Polygon
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
-        /*
-        Nothing to do here, it's only needed for UI components initializing
-         */
         mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
         scalePolygons(arrayListOf(orangePolygon, bluePolygon, orangePolygon1))
     }

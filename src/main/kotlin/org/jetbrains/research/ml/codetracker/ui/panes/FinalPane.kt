@@ -8,6 +8,7 @@ import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
+import javafx.scene.shape.Polygon
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
@@ -32,11 +33,15 @@ class FinalController(project: Project, scale: Double, fxPanel: JFXPanel, id: In
 
     @FXML private lateinit var mainPane: AnchorPane
 
+    @FXML private lateinit var orangePolygon: Polygon
+    @FXML private lateinit var yellowPolygon: Polygon
+
     private val translations = PluginServer.paneText?.finalPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
+        scalePolygons(arrayListOf(orangePolygon, yellowPolygon))
         initButtons()
         makeTranslatable()
         super.initialize(url, resource)

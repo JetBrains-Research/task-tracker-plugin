@@ -9,6 +9,7 @@ import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextArea
 import javafx.scene.layout.Pane
+import javafx.scene.shape.Polygon
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
@@ -56,11 +57,16 @@ class TaskSolvingController(project: Project, scale: Double, fxPanel: JFXPanel, 
 
     @FXML private lateinit var mainPane: Pane
 
+    @FXML private lateinit var orangePolygon: Polygon
+    @FXML private lateinit var bluePolygon: Polygon
+    @FXML private lateinit var greenPolygon: Polygon
+
     private val translations = PluginServer.paneText?.taskSolvingPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
+        scalePolygons(arrayListOf(orangePolygon, bluePolygon, greenPolygon))
         initTaskInfo()
         initButtons()
         makeTranslatable()

@@ -14,13 +14,13 @@
         </Label>
     </AnchorPane>
     <Pane fx:id="taskPane" layoutY="80.0" prefHeight="${760.0 * scale}" prefWidth="${560.0 * scale}">
-        <Polygon fx:id="greenPolygon" fill="#fff782" layoutX="56.0" layoutY="711.0" opacity="0.3"
+        <Polygon fx:id="greenPolygon" fill="#fff782" layoutX="${56.0 * scale}" layoutY="${711.0 * scale}" opacity="0.3"
                  points="225.0, -311.0, 504.0, 50.0, 504.0, -491.0" stroke="WHITE" strokeType="INSIDE"/>
-        <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="281.0" layoutY="460.0" opacity="0.4"
+        <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="${281.0 * scale}" layoutY="${460.0 * scale}" opacity="0.4"
                  points="-281.0, 300.0, 280.0, 300.0, 9.0, -54.0, -281.0, 119.0" stroke="WHITE" strokeType="INSIDE"/>
         <Rectangle fx:id="yellowRectangle" arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="${72.0 * scale}" layoutY="-7.0"
                    opacity="0.3" stroke="WHITE" strokeType="INSIDE" width="${560.0 * scale}"/>
-        <Polygon fx:id="bluePolygon" fill="#7abaf5" layoutX="28.0" layoutY="61.0" opacity="0.25"
+        <Polygon fx:id="bluePolygon" fill="#7abaf5" layoutX="${28.0 * scale}" layoutY="${61.0 * scale}" opacity="0.25"
                  points="532.0, 700.0, 532.0, -21.0, -28.0, -21.0" stroke="WHITE" strokeType="INSIDE"/>
         <TextFlow fx:id="taskTextFlow" layoutX="16.0" prefHeight="${340.0 * scale}" prefWidth="${483.0 * scale}">
             <Text fx:id="taskNameText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20">

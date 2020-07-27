@@ -17,8 +17,8 @@
     </AnchorPane>
     <Pane fx:id="finishPane" layoutY="80.0" prefHeight="${760.0 * scale}" prefWidth="${560.0 * scale}">
         <Rectangle fx:id="blueRectangle" arcHeight="5.0" arcWidth="5.0" fill="#7abaf5" height="${232.0 * scale}" layoutY="210.0" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="${560.0 * scale}" />
-        <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="60.0" layoutY="314.0" opacity="0.41" points="-60.0, 12.0, 500.0, -314.0, -60.0, -314.0" stroke="WHITE" strokeType="INSIDE" />
-        <Polygon fx:id="yellowPolygon" fill="#fff782" layoutX="87.0" layoutY="482.0" opacity="0.3" points="-80.0, 30.0, 473.0, 135.0, 473.0, -132.0" stroke="WHITE" strokeType="INSIDE" />
+        <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="${60.0 * scale}" layoutY="${314.0 * scale}" opacity="0.41" points="-60.0, 12.0, 500.0, -314.0, -60.0, -314.0" stroke="WHITE" strokeType="INSIDE" />
+        <Polygon fx:id="yellowPolygon" fill="#fff782" layoutX="${87.0 * scale}" layoutY="${482.0 * scale}" opacity="0.3" points="-80.0, 30.0, 473.0, 135.0, 473.0, -132.0" stroke="WHITE" strokeType="INSIDE" />
         <Button fx:id="backToTasksButton" layoutX="374.0" layoutY="340.0" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${126.0 * scale}">
             <graphic>
                 <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
