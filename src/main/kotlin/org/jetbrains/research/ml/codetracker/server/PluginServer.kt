@@ -84,7 +84,6 @@ object PluginServer {
             ServerConnectionResult.FAIL
         }
         publisher.accept(serverConnectionResult)
-
     }
 
     private fun findData() {

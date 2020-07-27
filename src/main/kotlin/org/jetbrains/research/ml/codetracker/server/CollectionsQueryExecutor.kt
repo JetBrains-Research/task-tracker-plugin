@@ -23,7 +23,7 @@ object CollectionsQueryExecutor : QueryExecutor() {
         serializer: KSerializer<T>,
         transform: (KSerializer<T>) -> KSerializer<R>
     ): R {
-        if (isSuccess(response)) {
+        if (response.isSuccessful()) {
             return Json(JsonConfiguration.Stable).parse(transform(serializer), response?.body?.string() ?: "")
         }
         throw IllegalStateException("Unsuccessful server response")

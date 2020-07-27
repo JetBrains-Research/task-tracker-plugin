@@ -69,7 +69,7 @@ object DocumentLogger {
             val document = TaskFileHandler.getDocument(project, task)
 //        todo: add task name to title
             ProgressManager.getInstance()
-                .run(object : com.intellij.openapi.progress.Task.Backgroundable(project, "Sending task solution") {
+                .run(object : com.intellij.openapi.progress.Task.Backgroundable(project, "Sending task ${task.key} solution") {
                     override fun run(indicator: ProgressIndicator) {
                         sendFileByDocument(document)
                     }
@@ -83,18 +83,17 @@ object DocumentLogger {
                 ApplicationManager.getApplication().messageBus.syncPublisher(DataSendingNotifier.DATA_SENDING_TOPIC)
             dataSendingResult = DataSendingResult.LOADING
             publisher.accept(dataSendingResult)
-            // Log the last state (need to RUN ON EDT)
-            ApplicationManager.getApplication().invokeAndWait { log(document) }
+            dataSendingResult = try {
+                // Log the last state (need to RUN ON EDT)
+                ApplicationManager.getApplication().invokeAndWait { log(document) }
 
-            // Todo: what should I do if printer is null?
-            val printer = myDocumentsToPrinters[document]
-                ?: throw IllegalStateException("A printer for the document $document does not exist")
-            printer.csvPrinter.flush()
-            sendFile(printer.file)
-
-            dataSendingResult = if (TrackerQueryExecutor.isLastSuccessful) {
+                // Todo: what should I do if printer is null?
+                val printer = myDocumentsToPrinters[document]
+                    ?: throw IllegalStateException("A printer for the document $document does not exist")
+                printer.csvPrinter.flush()
+                sendFile(printer.file)
                 DataSendingResult.SUCCESS
-            } else {
+            } catch (e: java.lang.IllegalStateException) {
                 DataSendingResult.FAIL
             }
             publisher.accept(dataSendingResult)
