@@ -14,17 +14,6 @@ class InitActivity : StartupActivity {
 
     init {
         logger.info("${Plugin.PLUGIN_ID}: startup activity")
-        Disposer.register(
-            ApplicationManager.getApplication(),
-            Disposable {
-                logger.info("${Plugin.PLUGIN_ID}: dispose startup activity")
-//                if (!Plugin.stopTracking()) {
-////                    Todo: don't run it there....
-//                    ApplicationManager.getApplication().invokeAndWait {
-//                        ServerDialogWrapper().show()
-//                    }
-//                }
-            })
     }
 
     override fun runActivity(project: Project) {
