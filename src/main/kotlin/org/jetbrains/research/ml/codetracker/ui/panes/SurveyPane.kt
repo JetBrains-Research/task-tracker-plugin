@@ -220,8 +220,8 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
             }
         }
 
-        countryComboBox.setButtonCell(cellFactory.call(null))
-        countryComboBox.setCellFactory(cellFactory)
+        countryComboBox.buttonCell = cellFactory.call(null)
+        countryComboBox.cellFactory = cellFactory
 
         countryComboBox.selectionModel.selectedItemProperty().addListener { _ ->
             paneUiData.country.uiValue = countryComboBox.selectionModel.selectedIndex
