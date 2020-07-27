@@ -41,8 +41,17 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     }
 
     private fun initSuccessText() {
-        // Todo: add task
-        successText.text = translations?.get(LanguagePaneUiData.language.currentValue)?.successMessage ?: defaultSuccessPaneText.successMessage
+        val text = translations?.get(LanguagePaneUiData.language.currentValue)?.successMessage ?: defaultSuccessPaneText.successMessage
+        successText.text = getFormattedText(text)
+    }
+
+    private fun getFormattedText(text: String): String {
+        // Todo: task always is null. Why?
+        val currentTask = TaskChoosingUiData.chosenTask.currentValue
+        currentTask?.let {
+            return java.lang.String.format(text, currentTask.key)
+        }
+        return java.lang.String.format(text, "")
     }
 
     private fun initButtons() {
@@ -53,9 +62,11 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     private fun makeTranslatable() {
         subscribe(LanguageNotifier.LANGUAGE_TOPIC, object : LanguageNotifier {
             override fun accept(newLanguageIndex: Int) {
-                val newLanguage = LanguagePaneUiData.language.dataList[newLanguageIndex].let {
-                    successText.text = translations?.get(it)?.successMessage
-                    backToTasksText.text = translations?.get(it)?.backToTasks
+                val newLanguage = LanguagePaneUiData.language.dataList[newLanguageIndex]
+                val successPaneText = translations?.get(newLanguage)
+                successPaneText?.let {
+                    successText.text = getFormattedText(it.successMessage)
+                    backToTasksText.text = it.backToTasks
                 }
             }
         })
