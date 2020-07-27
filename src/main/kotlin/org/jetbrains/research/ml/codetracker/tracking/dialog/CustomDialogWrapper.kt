@@ -21,7 +21,9 @@ abstract class CustomDialogWrapper : DialogWrapper(true) {
         val dialogPanel = JPanel(BorderLayout())
         val label = JLabel(createMessage())
         // Todo: should I set it?
-        label.preferredSize = preferredSize
+        customPreferredSize?.let {
+            label.preferredSize = it
+        }
         dialogPanel.add(label, BorderLayout.CENTER)
         return dialogPanel
     }
