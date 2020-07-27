@@ -25,8 +25,7 @@ data class FinalPaneText(
 data class TaskChoosingPaneText(
     val chooseTask: String,
     val finishSession: String,
-    val startSolving: String,
-    val description: String
+    val startSolving: String
 )
 
 @Serializable
