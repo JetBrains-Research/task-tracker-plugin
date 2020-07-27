@@ -24,8 +24,7 @@ interface LanguageNotifier : Consumer<Int> {
 
 open class LanguagePaneUiData : PaneUiData() {
     companion object {
-        val language = ListedUiField(
-            PluginServer.availableLanguages, 0,
+        val language = ListedUiField(PluginServer.availableLanguages, 0,
             LanguageNotifier.LANGUAGE_TOPIC, isRequired = false)
     }
 

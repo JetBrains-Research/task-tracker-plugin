@@ -8,15 +8,16 @@ import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.layout.HBox
+import javafx.util.Callback
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Country
 import org.jetbrains.research.ml.codetracker.models.Gender
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
 import java.util.function.Consumer
+import kotlin.Comparator
 import kotlin.reflect.KClass
 
 
@@ -57,9 +58,9 @@ interface CountryNotifier : Consumer<Int> {
     }
 }
 
-interface CountryListNotifier : Consumer<List<Country>> {
+interface CountryComparatorNotifier : Consumer<Comparator<Country>> {
     companion object {
-        val COUNTRY_LIST_TOPIC = Topic.create("country list change", CountryListNotifier::class.java)
+        val COUNTRY_COMPARATOR_TOPIC = Topic.create("country list change", CountryComparatorNotifier::class.java)
     }
 }
 
@@ -71,7 +72,9 @@ object SurveyUiData : LanguagePaneUiData() {
     val gender = ListedUiField(genders, -1, GenderNotifier.GENDER_TOPIC)
     val peYears = UiField(-1, PeYearsNotifier.PE_YEARS_TOPIC)
     val peMonths = UiField( -1, PeMonthsNotifier.PE_MONTHS_TOPIC, false)
-    val country = ListedUiField(countries, -1, CountryNotifier.COUNTRY_TOPIC, CountryListNotifier.COUNTRY_LIST_TOPIC)
+    val country = ListedUiField(countries, -1, CountryNotifier.COUNTRY_TOPIC,
+        compareBy { c -> c.translation.getOrDefault(language.currentValue,"") },
+        CountryComparatorNotifier.COUNTRY_COMPARATOR_TOPIC)
 
     override fun getData() = listOf(
         age,
@@ -109,8 +112,8 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
 
     // Country
     @FXML private lateinit var countryLabel: FormattedLabel
-    @FXML private lateinit var countryComboBox: ComboBox<String>
-    private lateinit var countryObservableList: ObservableList<String>
+    @FXML private lateinit var countryComboBox: ComboBox<Country>
+    private lateinit var countryObservableList: ObservableList<Country>
 
     // StartWorking
     @FXML private lateinit var startWorkingButton: Button
@@ -201,10 +204,24 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
 
     private fun initCountry() {
 //        Todo: make it autocomplete https://stackoverflow.com/questions/19924852/autocomplete-combobox-in-javafx
-        countryObservableList = FXCollections.observableList(paneUiData.country.dataList.map {
-            it.translation[LanguagePaneUiData.language.currentValue]
-        })
+        countryObservableList = FXCollections.observableList(paneUiData.country.dataList)
         countryComboBox.items = countryObservableList
+
+        val cellFactory = Callback<ListView<Country>, ListCell<Country>> {
+            object : ListCell<Country>() {
+                override fun updateItem(item: Country?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    if (item == null || empty) {
+                        graphic = null;
+                    } else {
+                        text = item.translation.getOrDefault(LanguagePaneUiData.language.currentValue, "")
+                    }
+                }
+            }
+        }
+
+        countryComboBox.setButtonCell(cellFactory.call(null))
+        countryComboBox.setCellFactory(cellFactory)
 
         countryComboBox.selectionModel.selectedItemProperty().addListener { _ ->
             paneUiData.country.uiValue = countryComboBox.selectionModel.selectedIndex
@@ -216,11 +233,9 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
             }
         })
 
-        subscribe(CountryListNotifier.COUNTRY_LIST_TOPIC, object : CountryListNotifier {
-            override fun accept(newCountryList: List<Country>) {
-                countryObservableList.setAll(newCountryList.map {
-                    it.translation[LanguagePaneUiData.language.currentValue]
-                })
+        subscribe(CountryComparatorNotifier.COUNTRY_COMPARATOR_TOPIC, object : CountryComparatorNotifier {
+            override fun accept(newComparator: Comparator<Country>) {
+                countryComboBox.items = countryObservableList.sorted(newComparator)
             }
         })
 
@@ -243,10 +258,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
                     peMonthsLabel.text = it.months
                     countryLabel.text = it.country
                     startWorkingText.text = it.startSession
-
-                    changeComboBoxItems(countryComboBox, countryObservableList, paneUiData.country.dataList.map { c ->
-                        c.translation.getOrDefault(newLanguage,"") })
-                    paneUiData.country.sortDataListBy { c -> c.translation.getOrDefault(newLanguage, "") }
+                    paneUiData.country.dataListComparator = compareBy {  c -> c.translation.getOrDefault(newLanguage, "") }
                 }
                 genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g -> rb.text = g.translation[newLanguage] ?: "" }
             }
