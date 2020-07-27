@@ -2,10 +2,13 @@ package org.jetbrains.research.ml.codetracker.ui.panes
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
+import javafx.beans.binding.Bindings
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
+import javafx.scene.control.Label
 import javafx.scene.control.TextArea
+import javafx.scene.layout.Pane
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
@@ -27,16 +30,16 @@ object TaskSolvingControllerManager : ServerDependentPane<TaskSolvingController>
 
 class TaskSolvingController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
     //    Task info
-    @FXML lateinit var taskNameText: FormattedText
+    @FXML lateinit var taskNameText: Text
     @FXML lateinit var taskDescriptionText: Text
-    @FXML lateinit var taskInputHeaderText: FormattedText
+    @FXML lateinit var taskInputHeaderText: Text
     @FXML lateinit var taskInputText: Text
-    @FXML lateinit var taskOutputHeaderText: FormattedText
+    @FXML lateinit var taskOutputHeaderText: Text
     @FXML lateinit var taskOutputText: Text
 
     //    Examples
-    @FXML lateinit var inputLabel: FormattedLabel
-    @FXML lateinit var outputLabel: FormattedLabel
+    @FXML lateinit var inputLabel: Label
+    @FXML lateinit var outputLabel: Label
     @FXML lateinit var firstExampleInput: TextArea
     @FXML lateinit var firstExampleOutput: TextArea
     @FXML lateinit var secondExampleInput: TextArea
@@ -47,14 +50,17 @@ class TaskSolvingController(project: Project, scale: Double, fxPanel: JFXPanel, 
     private data class ExampleText(val input: TextArea, val output: TextArea)
 
     @FXML lateinit var sendSolutionButton: Button
-    @FXML lateinit var sendSolutionText: FormattedText
+    @FXML lateinit var sendSolutionText: Text
     @FXML lateinit var backToTasksButton: Button
-    @FXML lateinit var backToTasksText: FormattedText
+    @FXML lateinit var backToTasksText: Text
+
+    @FXML private lateinit var mainPane: Pane
 
     private val translations = PluginServer.paneText?.taskSolvingPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+        mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
         initTaskInfo()
         initButtons()
         makeTranslatable()
