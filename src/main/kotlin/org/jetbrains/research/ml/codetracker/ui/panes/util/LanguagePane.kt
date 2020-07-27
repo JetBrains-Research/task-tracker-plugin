@@ -23,9 +23,10 @@ interface LanguageNotifier : Consumer<Int> {
 }
 
 open class LanguagePaneUiData : PaneUiData() {
-    val language = ListedUiField(
-        PluginServer.availableLanguages, 0,
-        LanguageNotifier.LANGUAGE_TOPIC, false)
+    companion object {
+        val language = ListedUiField(PluginServer.availableLanguages, 0,
+            LanguageNotifier.LANGUAGE_TOPIC, isRequired = false)
+    }
 
     override fun getData(): List<UiField<*>> = arrayListOf(language)
 }
@@ -47,9 +48,9 @@ open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXP
     }
 
     private fun initLanguageComboBox() {
-        languageComboBox.items = FXCollections.observableList(paneUiData.language.dataList.map { it.key })
+        languageComboBox.items = FXCollections.observableList(LanguagePaneUiData.language.dataList.map { it.key })
         languageComboBox.selectionModel.selectedItemProperty().addListener { _ ->
-            paneUiData.language.uiValue = languageComboBox.selectionModel.selectedIndex
+            LanguagePaneUiData.language.uiValue = languageComboBox.selectionModel.selectedIndex
         }
         subscribe(LanguageNotifier.LANGUAGE_TOPIC, object : LanguageNotifier {
             override fun accept(newLanguageIndex: Int) {
