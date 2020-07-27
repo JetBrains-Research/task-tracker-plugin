@@ -3,12 +3,16 @@ package org.jetbrains.research.ml.codetracker.ui
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.ui.components.JBScrollPane
 import javafx.application.Platform
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
+import org.jetbrains.research.ml.codetracker.tracking.DataSendingNotifier
+import org.jetbrains.research.ml.codetracker.tracking.DataSendingResult
+import org.jetbrains.research.ml.codetracker.tracking.DocumentLogger
 import org.jetbrains.research.ml.codetracker.ui.panes.*
 import org.jetbrains.research.ml.codetracker.ui.panes.util.PaneController
 import org.jetbrains.research.ml.codetracker.ui.panes.util.PaneControllerManager
@@ -53,7 +57,10 @@ internal object MainController {
                     visiblePane = when (connection) {
                         ServerConnectionResult.UNINITIALIZED -> LoadingControllerManager
                         ServerConnectionResult.LOADING -> LoadingControllerManager
-                        ServerConnectionResult.FAIL -> ErrorControllerManager
+                        ServerConnectionResult.FAIL -> {
+//                            ErrorControllerManager.setRefreshAction { PluginServer.reconnect(it) }
+                            ErrorControllerManager
+                        }
                         ServerConnectionResult.SUCCESS -> {
                             contents.forEach { it.updatePanesToCreate() }
                             SurveyControllerManager
@@ -62,6 +69,25 @@ internal object MainController {
                 }
             }
         })
+
+//        subscribe(DataSendingNotifier.DATA_SENDING_TOPIC, object : DataSendingNotifier {
+//            override fun accept(result: DataSendingResult) {
+//                ApplicationManager.getApplication().invokeLater {
+//                    visiblePane = when (result) {
+//                        DataSendingResult.LOADING -> LoadingControllerManager
+//                        DataSendingResult.FAIL -> {
+//                            val currentTask = TaskChoosingUiData.chosenTask.currentValue
+////                            Todo: what pane to show if task is null? ErrorController with outdated refresh action?
+//                            currentTask?.let {task ->
+//                                ErrorControllerManager.setRefreshAction { DocumentLogger.sendTaskFile(task, it) }
+//                            }
+//                            ErrorControllerManager
+//                        }
+//                        DataSendingResult.SUCCESS -> SuccessControllerManager
+//                    }
+//                }
+//            }
+//        })
     }
 
     /*   RUN ON EDT (ToolWindowFactory takes care of it) */

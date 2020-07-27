@@ -1,21 +1,46 @@
 package org.jetbrains.research.ml.codetracker.tracking
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.util.messages.Topic
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.jetbrains.research.ml.codetracker.Plugin
+import org.jetbrains.research.ml.codetracker.models.Task
+import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
+import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
+import java.util.function.Consumer
+
+enum class DataSendingResult {
+    LOADING,
+    SUCCESS,
+    FAIL
+}
+
+interface DataSendingNotifier : Consumer<DataSendingResult> {
+    companion object {
+        val DATA_SENDING_TOPIC = Topic.create("data sending result", DataSendingNotifier::class.java)
+    }
+}
+
 
 object DocumentLogger {
     data class Printer(val csvPrinter: CSVPrinter, val fileWriter: OutputStreamWriter, val file: File)
+
+    var dataSendingResult: DataSendingResult = DataSendingResult.SUCCESS
+    private set
+
     private val logger: Logger = Logger.getInstance(javaClass)
     private val myDocumentsToPrinters: HashMap<Document, Printer> = HashMap()
 
@@ -40,12 +65,33 @@ object DocumentLogger {
         TrackerQueryExecutor.sendCodeTrackerData(file)
     }
 
-    fun sendFileByDocument(document: Document): Boolean {
-        // Todo: what should I do if printer is null?
-        val printer = myDocumentsToPrinters[document] ?: throw IllegalStateException("A printer for the document $document does not exist")
-        printer.csvPrinter.flush()
-        sendFile(printer.file)
-        return TrackerQueryExecutor.isLastSuccessful
+    fun sendTaskFile(task: Task, project: Project) {
+        val document = TaskFileHandler.getDocument(project, task)
+        DocumentLogger.sendFileByDocument(document)
+    }
+
+    fun sendFileByDocument(document: Document) {
+        if (dataSendingResult != DataSendingResult.LOADING) {
+            val publisher =
+                ApplicationManager.getApplication().messageBus.syncPublisher(DataSendingNotifier.DATA_SENDING_TOPIC)
+            dataSendingResult = DataSendingResult.LOADING
+            publisher.accept(dataSendingResult)
+            // Log the last state
+            log(document)
+
+            // Todo: what should I do if printer is null?
+            val printer = myDocumentsToPrinters[document]
+                ?: throw IllegalStateException("A printer for the document $document does not exist")
+            printer.csvPrinter.flush()
+            sendFile(printer.file)
+
+            dataSendingResult = if (TrackerQueryExecutor.isLastSuccessful) {
+                DataSendingResult.SUCCESS
+            } else {
+                DataSendingResult.FAIL
+            }
+            publisher.accept(dataSendingResult)
+        }
     }
 
     private fun initPrinter(document: Document): Printer {

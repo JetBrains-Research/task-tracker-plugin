@@ -92,18 +92,7 @@ class TaskSolvingController(project: Project, scale: Double, fxPanel: JFXPanel, 
             val currentTask = TaskChoosingUiData.chosenTask.currentValue
             currentTask?.let {
                 ApplicationManager.getApplication().invokeLater {
-                    val document = TaskFileHandler.getDocument(project, it)
-                    // Log the last state
-                    DocumentLogger.log(document)
-                    if (DocumentLogger.sendFileByDocument(document)) {
-                        ApplicationManager.getApplication().invokeAndWait {
-                            SuccessfulSubmitDialogWrapper(
-                                it
-                            ).show()
-                        }
-                    } else {
-                         // Todo: show error pane with another action
-                    }
+                    DocumentLogger.sendTaskFile(it, project)
                     TaskFileHandler.closeTaskFiles(it)
                 }
             }

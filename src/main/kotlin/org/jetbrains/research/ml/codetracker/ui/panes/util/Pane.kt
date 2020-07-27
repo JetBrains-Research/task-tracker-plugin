@@ -37,7 +37,7 @@ abstract class PaneController(val project: Project, val scale: Double, val fxPan
 abstract class PaneControllerManager<T : PaneController>  {
     abstract val canCreateContent: Boolean
     protected abstract val paneControllerClass: KClass<T>
-    private val paneControllers: MutableList<T> = arrayListOf()
+    protected val paneControllers: MutableList<T> = arrayListOf()
     protected abstract val fxmlFilename: String
     protected val logger = Logger.getInstance(javaClass)
     private var lastId = 0

@@ -17,14 +17,21 @@ object ErrorControllerManager : PaneControllerManager<ErrorController>() {
     override val canCreateContent: Boolean = true
     override val paneControllerClass: KClass<ErrorController> = ErrorController::class
     override val fxmlFilename: String = "error-ui-form.fxml"
+
+    fun setRefreshAction(action: (Project) -> Unit) {
+        paneControllers.forEach { it.refreshAction = action }
+    }
 }
 
 class ErrorController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController(project, scale, fxPanel, id) {
     @FXML private lateinit var refreshButton: Button
 
+    var refreshAction: (Project) -> Unit = { }
+
+
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         refreshButton.addEventHandler(MouseEvent.MOUSE_CLICKED) {
-            PluginServer.reconnect(project)
+            refreshAction(project)
         }
     }
 }
