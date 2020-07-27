@@ -6,6 +6,7 @@ import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
+import org.jetbrains.research.ml.codetracker.models.SuccessPaneText
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
@@ -22,6 +23,10 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     @FXML lateinit var backToTasksText: Text
     @FXML lateinit var successText: Text
 
+    private val translations = PluginServer.paneText?.successPane
+    private val defaultSuccessPaneText = SuccessPaneText("back to tasks",
+        "The data for the %s task has been submitted successfully.")
+
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         initSuccessText()
@@ -31,23 +36,22 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     }
 
     private fun initSuccessText() {
-        //        todo: get text from server according to LanguagePaneUiData.language.currentValue
-        successText.text = "The data for the %s task has been submitted successfully."
+        // Todo: add task
+        successText.text = translations?.get(LanguagePaneUiData.language.currentValue)?.successMessage ?: defaultSuccessPaneText.successMessage
     }
 
     private fun initButtons() {
-//        todo: get text from server according to LanguagePaneUiData.language.currentValue
-        backToTasksText.text = "back to tasks"
+        backToTasksText.text = translations?.get(LanguagePaneUiData.language.currentValue)?.backToTasks ?: defaultSuccessPaneText.backToTasks
         backToTasksButton.onMouseClicked { changeVisiblePane(TaskChoosingControllerManager) }
     }
 
     private fun makeTranslatable() {
         subscribe(LanguageNotifier.LANGUAGE_TOPIC, object : LanguageNotifier {
             override fun accept(newLanguageIndex: Int) {
-                val newLanguage = LanguagePaneUiData.language.dataList[newLanguageIndex]
-//                    todo: add translation
-                    successText.text = "The data for the %s task has been submitted successfully."
-                    backToTasksText.text = "back to tasks"
+                val newLanguage = LanguagePaneUiData.language.dataList[newLanguageIndex].let {
+                    successText.text = translations?.get(it)?.successMessage
+                    backToTasksText.text = translations?.get(it)?.backToTasks
+                }
             }
         })
 
