@@ -1,9 +1,11 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
 import com.intellij.openapi.project.Project
+import javafx.beans.binding.Bindings
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
+import javafx.scene.layout.Pane
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.SuccessPaneText
@@ -23,12 +25,15 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     @FXML lateinit var backToTasksText: Text
     @FXML lateinit var successText: Text
 
+    @FXML private lateinit var mainPane: Pane
+
     private val translations = PluginServer.paneText?.successPane
     private val defaultSuccessPaneText = SuccessPaneText("back to tasks",
         "The data for the %s task has been submitted successfully.")
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+        mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
         initSuccessText()
         initButtons()
         makeTranslatable()
