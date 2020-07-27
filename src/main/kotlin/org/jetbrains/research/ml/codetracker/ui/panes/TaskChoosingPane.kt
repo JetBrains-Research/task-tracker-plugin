@@ -111,7 +111,7 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
                         choseTaskComboBox,
                         choseTaskObservableList,
                         paneUiData.chosenTask.dataList.map { task ->
-                            task.infoTranslation[paneUiData.language.currentValue]?.name
+                            task.infoTranslation[LanguagePaneUiData.language.currentValue]?.name
                         })
                 }
             }

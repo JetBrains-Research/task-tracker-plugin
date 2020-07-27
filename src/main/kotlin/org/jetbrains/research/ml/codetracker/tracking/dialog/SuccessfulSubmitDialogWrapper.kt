@@ -5,6 +5,7 @@ import org.jetbrains.research.ml.codetracker.models.SuccessfulSubmitText
 import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.panes.SurveyUiData
+import org.jetbrains.research.ml.codetracker.ui.panes.util.LanguagePaneUiData
 import java.awt.Dimension
 
 
@@ -25,7 +26,7 @@ class SuccessfulSubmitDialogWrapper(private val task: Task) : CustomDialogWrappe
 
     init {
         init()
-        val currentLanguage = SurveyUiData.language.currentValue
+        val currentLanguage = LanguagePaneUiData.language.currentValue
         title = PluginServer.successfulSubmitDialogText?.translation?.get(currentLanguage)?.header
             ?: defaultSuccessfulSubmitDialogText.header
     }

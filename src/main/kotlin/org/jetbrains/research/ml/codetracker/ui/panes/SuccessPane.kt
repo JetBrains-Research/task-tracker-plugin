@@ -44,7 +44,7 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     private fun makeTranslatable() {
         subscribe(LanguageNotifier.LANGUAGE_TOPIC, object : LanguageNotifier {
             override fun accept(newLanguageIndex: Int) {
-                val newLanguage = paneUiData.language.dataList[newLanguageIndex]
+                val newLanguage = LanguagePaneUiData.language.dataList[newLanguageIndex]
 //                    todo: add translation
                     successText.text = "The data for the %s task has been submitted successfully."
                     backToTasksText.text = "back to tasks"
