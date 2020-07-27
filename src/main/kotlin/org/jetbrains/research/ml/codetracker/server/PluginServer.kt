@@ -52,22 +52,14 @@ object PluginServer {
      * Finds all data in background task and sends results about finding
      */
     fun reconnect(project: Project) {
-<<<<<<< HEAD
         if (serverConnectionResult != ServerConnectionResult.LOADING) {
+            logger.info("${Plugin.PLUGIN_ID} PluginServer reconnect, current thread is ${Thread.currentThread().name}")
             ProgressManager.getInstance().run(object : Backgroundable(project, "Getting data from server") {
                 override fun run(indicator: ProgressIndicator) {
                     safeFind { findData() }
                 }
             })
         }
-=======
-        logger.info("${Plugin.PLUGIN_ID} PluginServer reconnect, current thread is ${Thread.currentThread().name}")
-        ProgressManager.getInstance().run(object : Backgroundable(project, "Getting data from server") {
-            override fun run(indicator: ProgressIndicator) {
-                safeFind { findData() }
-            }
-        })
->>>>>>> dev
 
     }
 

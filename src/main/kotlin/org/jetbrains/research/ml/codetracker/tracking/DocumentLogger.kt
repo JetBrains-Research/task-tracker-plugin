@@ -7,13 +7,8 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.io.FileUtil
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
-<<<<<<< HEAD:src/main/kotlin/org/jetbrains/research/ml/codetracker/tracking/DocumentLogger.kt
 import org.jetbrains.research.ml.codetracker.Plugin
-=======
-import org.jetbrains.research.ml.codetracker.data.DocumentChangeData
->>>>>>> dev:src/main/kotlin/org/jetbrains/research/ml/codetracker/DocumentLogger.kt
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
-import org.joda.time.DateTime
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
