@@ -9,17 +9,21 @@ import javafx.scene.control.TextArea
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler
+import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
+import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
+
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
 import kotlin.reflect.KClass
 
-object TaskControllerManager : ServerDependentPane<TaskController>() {
-    override val paneControllerClass: KClass<TaskController> = TaskController::class
-    override val fxmlFilename: String = "task-ui-form.fxml"
+object TaskSolvingControllerManager : ServerDependentPane<TaskSolvingController>() {
+    override val paneControllerClass: KClass<TaskSolvingController> = TaskSolvingController::class
+    override val fxmlFilename: String = "task-solving-ui-form.fxml"
 }
 
-class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
+class TaskSolvingController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
     //    Task info
     @FXML lateinit var taskNameText: FormattedText
     @FXML lateinit var taskDescriptionText: Text
@@ -83,8 +87,12 @@ class TaskController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int
 
     private fun initButtons() {
         sendSolutionButton.onMouseClicked {
-            ApplicationManager.getApplication().invokeLater {
-                // Todo: send file with solution here
+            val currentTask = TaskChoosingUiData.chosenTask.currentValue
+            currentTask?.let {
+                ApplicationManager.getApplication().invokeLater {
+//                    TODO: send data here
+                    TaskFileHandler.closeTaskFiles(it)
+                }
             }
             changeVisiblePane(TaskChoosingControllerManager)
 

@@ -41,12 +41,25 @@ object PluginServer {
 
     private val logger: Logger = Logger.getInstance(javaClass)
 
+    fun checkItInitialized(project: Project) {
+        if (serverConnectionResult == ServerConnectionResult.UNINITIALIZED) {
+            reconnect(project)
+        }
+    }
+
 
     /**
      * Finds all data in background task and sends results about finding
      */
     fun reconnect(project: Project) {
-        logger.info("${Plugin.PLUGIN_ID} PluginServer reconnect, current thread is ${Thread.currentThread().name}")
+        if (serverConnectionResult != ServerConnectionResult.LOADING) {
+            logger.info("${Plugin.PLUGIN_ID} PluginServer reconnect, current thread is ${Thread.currentThread().name}")
+            ProgressManager.getInstance().run(object : Backgroundable(project, "Getting data from server") {
+                override fun run(indicator: ProgressIndicator) {
+                    safeFind { findData() }
+                }
+            })
+        }
         ProgressManager.getInstance().run(object : Backgroundable(project, "Getting data from server") {
             override fun run(indicator: ProgressIndicator) {
                 safeFind { findData() }

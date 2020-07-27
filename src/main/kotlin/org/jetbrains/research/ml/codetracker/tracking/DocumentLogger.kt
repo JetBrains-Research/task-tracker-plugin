@@ -1,4 +1,4 @@
-package org.jetbrains.research.ml.codetracker
+package org.jetbrains.research.ml.codetracker.tracking
 
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
@@ -7,57 +7,43 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.io.FileUtil
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
-import org.jetbrains.research.ml.codetracker.data.DocumentChangeData
+import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
-import org.joda.time.DateTime
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
-import kotlin.math.abs
 
 
 object DocumentLogger {
     data class Printer(val csvPrinter: CSVPrinter, val fileWriter: OutputStreamWriter, val file: File)
-
     private val logger: Logger = Logger.getInstance(javaClass)
-
     private val myDocumentsToPrinters: HashMap<Document, Printer> = HashMap()
 
     val documentsToPrinters: Map<Document, Printer>
         get() = documentsToPrinters.toMap()
 
-    private val folderPath = "${PathManager.getPluginsPath()}/code-tracker/"
+    private val folderPath = "${PathManager.getPluginsPath()}/codetracker/"
     private const val MAX_FILE_SIZE = 50 * 1024 * 1024
     private const val MAX_DIF_SIZE = 300
 
     fun log(document: Document) {
-        var printer = myDocumentsToPrinters.getOrPut(document, {
-            initPrinter(document)
-        })
+        var printer = myDocumentsToPrinters.getOrPut(document, { initPrinter(document) })
         if (isFull(printer.file.length())) {
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} is full")
             sendFile(printer.file)
             printer = initPrinter(document)
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} was cleared")
         }
-        val change = document.getChange()
-//        Todo: add uiData, the old version is commented out because ControllerManager was deleted
-//        printer.csvPrinter.printRecord(change.getData() + ControllerManager.uiData.getData().map { it.logValue })
-        printer.csvPrinter.printRecord(change.getData())
+        printer.csvPrinter.printRecord(DocumentLoggedData.getData(document) + UiLoggedData.getData(Unit))
     }
 
     fun logCurrentDocuments() {
         logger.info("${Plugin.PLUGIN_ID}: log current documents: ${myDocumentsToPrinters.keys.size}")
-        myDocumentsToPrinters.keys.forEach {
-            log(
-                it
-            )
-        }
+        myDocumentsToPrinters.keys.forEach { log(it) }
     }
 
-    // Todo: change it. Handle a case if we get a fileSize bigger than MAX_FILE_SIZE + MAX_DIF_SIZE
-    private fun isFull(fileSize: Long): Boolean = abs(MAX_FILE_SIZE - fileSize) < MAX_DIF_SIZE
+    private fun isFull(fileSize: Long): Boolean = fileSize > MAX_FILE_SIZE - MAX_DIF_SIZE
 
     private fun sendFile(file: File) {
         TrackerQueryExecutor.sendCodeTrackerData(file)
@@ -87,14 +73,8 @@ object DocumentLogger {
         val file = createLogFile(document)
         val fileWriter = OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
-        //        Todo: add uiData, the old version is commented out because ControllerManager was deleted
-//        csvPrinter.printRecord(DocumentChangeData.headers + ControllerManager.uiData.getData().map { it.header })
-        csvPrinter.printRecord(DocumentChangeData.headers)
-        return Printer(
-            csvPrinter,
-            fileWriter,
-            file
-        )
+        csvPrinter.printRecord(DocumentLoggedData.headers + UiLoggedData.headers)
+        return Printer(csvPrinter, fileWriter, file)
     }
 
 
@@ -106,19 +86,4 @@ object DocumentLogger {
         FileUtil.createIfDoesntExist(logFile)
         return logFile
     }
-
-    private fun Document.getChange(): DocumentChangeData {
-        val time = DateTime.now()
-        val file = FileDocumentManager.getInstance().getFile(this)
-
-        return DocumentChangeData(
-            time,
-            this.modificationStamp,
-            file?.name,
-            file?.hashCode(),
-            this.hashCode(),
-            this.text
-        )
-    }
-
 }
