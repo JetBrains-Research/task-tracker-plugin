@@ -1,5 +1,6 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML

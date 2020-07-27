@@ -5,6 +5,8 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.messages.Topic
@@ -12,9 +14,6 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Task
-import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
-import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import java.io.File
 import java.io.FileOutputStream
@@ -66,18 +65,26 @@ object DocumentLogger {
     }
 
     fun sendTaskFile(task: Task, project: Project) {
-        val document = TaskFileHandler.getDocument(project, task)
-        DocumentLogger.sendFileByDocument(document)
+        ApplicationManager.getApplication().invokeAndWait {
+            val document = TaskFileHandler.getDocument(project, task)
+//        todo: add task name to title
+            ProgressManager.getInstance()
+                .run(object : com.intellij.openapi.progress.Task.Backgroundable(project, "Sending task solution") {
+                    override fun run(indicator: ProgressIndicator) {
+                        sendFileByDocument(document)
+                    }
+                })
+        }
     }
 
-    fun sendFileByDocument(document: Document) {
+    private fun sendFileByDocument(document: Document) {
         if (dataSendingResult != DataSendingResult.LOADING) {
             val publisher =
                 ApplicationManager.getApplication().messageBus.syncPublisher(DataSendingNotifier.DATA_SENDING_TOPIC)
             dataSendingResult = DataSendingResult.LOADING
             publisher.accept(dataSendingResult)
-            // Log the last state
-            log(document)
+            // Log the last state (need to RUN ON EDT)
+            ApplicationManager.getApplication().invokeAndWait { log(document) }
 
             // Todo: what should I do if printer is null?
             val printer = myDocumentsToPrinters[document]

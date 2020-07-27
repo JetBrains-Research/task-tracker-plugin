@@ -19,7 +19,7 @@ object SuccessControllerManager : ServerDependentPane<SuccessController>() {
 
 class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
     @FXML lateinit var backToTasksButton: Button
-    @FXML lateinit var backToTasksText: FormattedText
+    @FXML lateinit var backToTasksText: Text
     @FXML lateinit var successText: Text
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {

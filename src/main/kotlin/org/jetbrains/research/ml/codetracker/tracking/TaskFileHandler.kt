@@ -1,5 +1,6 @@
 package org.jetbrains.research.ml.codetracker.tracking
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
@@ -60,10 +61,12 @@ object TaskFileHandler {
             val virtualFile = getOrCreateFile(project, task)
             virtualFile?.let {
                 addTaskFile(it, task, project)
-                if (task.isItsFileWritable()) {
-                    openFile(project, virtualFile)
-                } else {
-                    closeFile(project, virtualFile)
+                ApplicationManager.getApplication().invokeAndWait {
+                    if (task.isItsFileWritable()) {
+                        openFile(project, virtualFile)
+                    } else {
+                        closeFile(project, virtualFile)
+                    }
                 }
             }
         }
@@ -96,12 +99,16 @@ object TaskFileHandler {
         val oldVirtualFile = projectToTaskToFiles[project]?.get(task)
         if (oldVirtualFile == null) {
             projectToTaskToFiles[project]?.set(task, virtualFile)
-            val document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            document?.let {
-                it.addDocumentListener(listener)
-                // Log the first state
-                DocumentLogger.log(it)
+//          need to RUN ON EDT cause of read and write actions
+            ApplicationManager.getApplication().invokeAndWait {
+                val document = FileDocumentManager.getInstance().getDocument(virtualFile)
+                document?.let {
+                    it.addDocumentListener(listener)
+                    // Log the first state
+                    DocumentLogger.log(it)
+                }
             }
+
         } else {
             // If the old document is not equal to the old document, we should raise an error
             if (virtualFile != oldVirtualFile) {

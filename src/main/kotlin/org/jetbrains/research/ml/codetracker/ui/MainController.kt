@@ -38,7 +38,9 @@ internal object MainController {
         SurveyControllerManager,
         TaskChoosingControllerManager,
         TaskSolvingControllerManager,
-        FinalControllerManager)
+        FinalControllerManager,
+        SuccessControllerManager
+    )
 
     internal var visiblePane: Pane? = LoadingControllerManager
         set(value) {
@@ -58,7 +60,7 @@ internal object MainController {
                         ServerConnectionResult.UNINITIALIZED -> LoadingControllerManager
                         ServerConnectionResult.LOADING -> LoadingControllerManager
                         ServerConnectionResult.FAIL -> {
-//                            ErrorControllerManager.setRefreshAction { PluginServer.reconnect(it) }
+                            ErrorControllerManager.setRefreshAction { PluginServer.reconnect(it) }
                             ErrorControllerManager
                         }
                         ServerConnectionResult.SUCCESS -> {
@@ -70,24 +72,24 @@ internal object MainController {
             }
         })
 
-//        subscribe(DataSendingNotifier.DATA_SENDING_TOPIC, object : DataSendingNotifier {
-//            override fun accept(result: DataSendingResult) {
-//                ApplicationManager.getApplication().invokeLater {
-//                    visiblePane = when (result) {
-//                        DataSendingResult.LOADING -> LoadingControllerManager
-//                        DataSendingResult.FAIL -> {
-//                            val currentTask = TaskChoosingUiData.chosenTask.currentValue
-////                            Todo: what pane to show if task is null? ErrorController with outdated refresh action?
-//                            currentTask?.let {task ->
-//                                ErrorControllerManager.setRefreshAction { DocumentLogger.sendTaskFile(task, it) }
-//                            }
-//                            ErrorControllerManager
-//                        }
-//                        DataSendingResult.SUCCESS -> SuccessControllerManager
-//                    }
-//                }
-//            }
-//        })
+        subscribe(DataSendingNotifier.DATA_SENDING_TOPIC, object : DataSendingNotifier {
+            override fun accept(result: DataSendingResult) {
+                ApplicationManager.getApplication().invokeLater {
+                    visiblePane = when (result) {
+                        DataSendingResult.LOADING -> LoadingControllerManager
+                        DataSendingResult.FAIL -> {
+                            val currentTask = TaskChoosingUiData.chosenTask.currentValue
+//                            Todo: what pane to show if task is null? ErrorController with outdated refresh action?
+                            currentTask?.let {task ->
+                                ErrorControllerManager.setRefreshAction { DocumentLogger.sendTaskFile(task, it) }
+                            }
+                            ErrorControllerManager
+                        }
+                        DataSendingResult.SUCCESS -> SuccessControllerManager
+                    }
+                }
+            }
+        })
     }
 
     /*   RUN ON EDT (ToolWindowFactory takes care of it) */
@@ -119,7 +121,7 @@ internal object MainController {
          */
         fun updatePanesToCreate() {
             logger.info("${Plugin.PLUGIN_ID} updatePanesToCreate, current thread is ${Thread.currentThread().name}")
-            val (canCreateContentPanes, cantCreateContentPanes) = panes.partition { it.canCreateContent }
+            val (canCreateContentPanes, cantCreateContentPanes) = panesToCreateContent.partition { it.canCreateContent }
             if (canCreateContentPanes.isNotEmpty()) {
                 canCreateContentPanes.map { it.createContent(project, scale) }.forEach { panel.add(it) }
                 Platform.runLater {
