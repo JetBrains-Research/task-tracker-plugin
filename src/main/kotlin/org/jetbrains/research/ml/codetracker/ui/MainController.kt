@@ -33,7 +33,7 @@ internal object MainController {
         LoadingControllerManager,
         SurveyControllerManager,
         TaskChoosingControllerManager,
-        TaskControllerManager,
+        TaskSolvingControllerManager,
         FinalControllerManager)
 
     internal var visiblePane: Pane? = LoadingControllerManager
@@ -71,12 +71,8 @@ internal object MainController {
         val scale = screenSize.height / SCREEN_HEIGHT
         val panel = JPanel()
         panel.background = java.awt.Color.WHITE
-
         contents.add(Content(panel, project, scale, panes))
-
-        if (PluginServer.serverConnectionResult == ServerConnectionResult.UNINITIALIZED) {
-            PluginServer.reconnect(project)
-        }
+        PluginServer.checkItInitialized(project)
         return JBScrollPane(panel)
     }
 

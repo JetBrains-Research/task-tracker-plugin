@@ -75,18 +75,8 @@ object TrackerQueryExecutor : QueryExecutor() {
     fun sendCodeTrackerData(file: File, deleteAfter: () -> Boolean = { false }, postActivity: () -> Unit = {}) {
         val currentUrl = baseUrl + "org.jetbrains.research.ml.codetracker.data-item"
         logger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
-        val response = executeQuery(
-            Request.Builder()
-                .url(currentUrl)
-                .post(
-                    createTrackerRequestBody(
-                        CODE_TRACKER_FILE_FIELD,
-                        file,
-                        activityTrackerKey != null
-                    ).build()
-                )
-                .build()
-        )
+        val requestBody = createTrackerRequestBody(CODE_TRACKER_FILE_FIELD, file,activityTrackerKey != null).build()
+        val response = executeQuery(Request.Builder().url(currentUrl).post(requestBody).build())
         if (isSuccess(response)) {
             if (deleteAfter()) {
                 logger.info("${Plugin.PLUGIN_ID}: delete file ${file.name}")

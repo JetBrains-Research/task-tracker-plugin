@@ -10,7 +10,7 @@ import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import org.jetbrains.research.ml.codetracker.Plugin
-import org.jetbrains.research.ml.codetracker.TaskFileHandler
+import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
 
 object TaskChoosingControllerManager : ServerDependentPane<TaskChoosingController>() {
     override val paneControllerClass: KClass<TaskChoosingController> = TaskChoosingController::class
-    override val fxmlFilename: String = "taskChoosing-ui-form.fxml"
+    override val fxmlFilename: String = "task-choosing-ui-form.fxml"
 }
 
 interface ChosenTaskNotifier : Consumer<Int> {
@@ -78,13 +78,13 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     private fun initButtons() {
         backToProfileButton.onMouseClicked { changeVisiblePane(SurveyControllerManager) }
         startSolvingButton.onMouseClicked {
-            changeVisiblePane(TaskControllerManager)
             val currentTask = paneUiData.chosenTask.currentValue
             currentTask?.let {
                 ApplicationManager.getApplication().invokeLater {
-                    TaskFileHandler.createAndOpenFile(project, it)
+                    TaskFileHandler.openTaskFiles(it)
                 }
             }
+            changeVisiblePane(TaskSolvingControllerManager)
         }
         finishWorkButton.onMouseClicked { changeVisiblePane(FinalControllerManager) }
     }

@@ -16,6 +16,7 @@
         <toolWindow id="codetracker" anchor="right" factoryClass="org.jetbrains.research.ml.codetracker.ui.PluginToolWindowFactory"/>
         <registryKey key="codetracker.org.jetbrains.research.ml.codetracker.server.url" defaultValue="http://localhost:3000/api/" description="Base url for the codetracker org.jetbrains.research.ml.codetracker.server"/>
         <errorHandler implementation="org.jetbrains.research.ml.codetracker.reporting.GitHubErrorReporter"/>
+        <writingAccessProvider implementation="org.jetbrains.research.ml.codetracker.tracking.PluginAccessProvider"/>
     </extensions>
 
 </idea-plugin>
