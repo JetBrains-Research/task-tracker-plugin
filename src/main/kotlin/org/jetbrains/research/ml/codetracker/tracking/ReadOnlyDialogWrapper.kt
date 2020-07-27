@@ -5,10 +5,8 @@ import com.intellij.openapi.ui.DialogWrapper
 import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.panes.SurveyUiData
-import org.jetbrains.research.ml.codetracker.ui.panes.util.LanguagePaneUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.util.LowerCaseFormatter
 import java.awt.BorderLayout
-import java.awt.Dimension
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel

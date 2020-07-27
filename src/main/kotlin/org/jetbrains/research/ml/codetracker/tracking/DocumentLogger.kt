@@ -15,11 +15,6 @@ import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 
 
-
-
-
-
-
 object DocumentLogger {
     data class Printer(val csvPrinter: CSVPrinter, val fileWriter: OutputStreamWriter, val file: File)
     private val logger: Logger = Logger.getInstance(javaClass)

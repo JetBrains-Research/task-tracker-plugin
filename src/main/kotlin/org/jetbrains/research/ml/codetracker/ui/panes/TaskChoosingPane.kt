@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
 
 object TaskChoosingControllerManager : ServerDependentPane<TaskChoosingController>() {
     override val paneControllerClass: KClass<TaskChoosingController> = TaskChoosingController::class
-    override val fxmlFilename: String = "taskChoosing-ui-form.fxml"
+    override val fxmlFilename: String = "task-choosing-ui-form.fxml"
 }
 
 interface ChosenTaskNotifier : Consumer<Int> {

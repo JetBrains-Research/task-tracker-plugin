@@ -137,7 +137,7 @@ object TaskFileHandler {
     }
 
     /**
-     * File is writable if it's task is null or its task is currently chosen on the TaskChoosingPane
+     * File is writable if it's task is null or its task is currently chosen on the TaskSolvingPane
      */
     fun Task?.isItsFileWritable(): Boolean {
         return (this == null || (this == TaskChoosingUiData.chosenTask.currentValue &&
