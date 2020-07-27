@@ -11,7 +11,6 @@ import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.tracking.DocumentLogger
 import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler
-import org.jetbrains.research.ml.codetracker.tracking.dialog.ReadOnlyDialogWrapper
 import org.jetbrains.research.ml.codetracker.tracking.dialog.SuccessfulSubmitDialogWrapper
 import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
 import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
@@ -103,7 +102,7 @@ class TaskSolvingController(project: Project, scale: Double, fxPanel: JFXPanel, 
                             ).show()
                         }
                     } else {
-                         // Todo: show error pane
+                         // Todo: show error pane with another action
                     }
                     TaskFileHandler.closeTaskFiles(it)
                 }

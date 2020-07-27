@@ -15,6 +15,16 @@ class SuccessfulSubmitText(
     val description: String
 )
 
+@Serializable
+class ErrorSubmitText(
+    val header: String,
+    val description: String
+)
+
+@Serializable
+data class ErrorSubmitDialogText(
+    val translation: Map<PaneLanguage, ErrorSubmitText>
+)
 
 @Serializable
 data class TaskSolvingErrorDialogText(

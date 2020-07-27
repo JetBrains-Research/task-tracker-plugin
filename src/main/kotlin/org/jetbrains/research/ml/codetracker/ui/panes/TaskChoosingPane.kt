@@ -32,22 +32,30 @@ interface ChosenTaskNotifier : Consumer<Int> {
 }
 
 object TaskChoosingUiData : LanguagePaneUiData() {
-    val chosenTask = ListedUiField(PluginServer.tasks,-1, ChosenTaskNotifier.CHOSEN_TASK_TOPIC)
+    val chosenTask = ListedUiField(PluginServer.tasks, -1, ChosenTaskNotifier.CHOSEN_TASK_TOPIC)
     override fun getData(): List<UiField<*>> = listOf(chosenTask, language)
 }
 
 
-class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
-    @FXML private lateinit var choseTaskComboBox: ComboBox<String?>
-    @FXML private lateinit var choseTaskLabel: FormattedLabel
+class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) :
+    LanguagePaneController(project, scale, fxPanel, id) {
+    @FXML
+    private lateinit var choseTaskComboBox: ComboBox<String?>
+    @FXML
+    private lateinit var choseTaskLabel: FormattedLabel
     private lateinit var choseTaskObservableList: ObservableList<String?>
 
     //    Todo: maybe we need a text under this button because when user comes back from TaskPane it becomes unclear
-    @FXML private lateinit var backToProfileButton: Button
-    @FXML private lateinit var startSolvingButton: Button
-    @FXML private lateinit var startSolvingText: FormattedText
-    @FXML private lateinit var finishWorkButton: Button
-    @FXML private lateinit var finishWorkText: FormattedText
+    @FXML
+    private lateinit var backToProfileButton: Button
+    @FXML
+    private lateinit var startSolvingButton: Button
+    @FXML
+    private lateinit var startSolvingText: FormattedText
+    @FXML
+    private lateinit var finishWorkButton: Button
+    @FXML
+    private lateinit var finishWorkText: FormattedText
 
     override val paneUiData = TaskChoosingUiData
     private val translations = PluginServer.paneText?.taskChoosingPane
@@ -95,13 +103,16 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
             override fun accept(newLanguageIndex: Int) {
                 val newLanguage = paneUiData.language.dataList[newLanguageIndex]
                 val taskChooserPaneText = translations?.get(newLanguage)
-                taskChooserPaneText?.let {
+                taskChooserPaneText?.let { it ->
                     choseTaskLabel.text = it.chooseTask
                     startSolvingText.text = it.startSolving
                     finishWorkText.text = it.finishSession
-                    changeComboBoxItems(choseTaskComboBox, choseTaskObservableList, paneUiData.chosenTask.dataList.map {
-                        it.infoTranslation[paneUiData.language.currentValue]?.name
-                    })
+                    changeComboBoxItems(
+                        choseTaskComboBox,
+                        choseTaskObservableList,
+                        paneUiData.chosenTask.dataList.map { task ->
+                            task.infoTranslation[paneUiData.language.currentValue]?.name
+                        })
                 }
             }
         })

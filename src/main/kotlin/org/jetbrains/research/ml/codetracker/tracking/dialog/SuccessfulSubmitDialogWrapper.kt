@@ -11,7 +11,7 @@ import java.awt.Dimension
 class SuccessfulSubmitDialogWrapper(private val task: Task) : CustomDialogWrapper() {
     private val defaultSuccessfulSubmitDialogText = SuccessfulSubmitText(
         "Successful submit",
-        "The data for the %s task was submitted successfully."
+        "The data for the %s task has been submitted successfully."
     )
     override val customPreferredSize: Dimension? = Dimension(400, 100)
 
