@@ -14,6 +14,7 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Task
+import com.intellij.openapi.progress.Task as IntellijTask
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import java.io.File
 import java.io.FileOutputStream
@@ -38,7 +39,7 @@ object DocumentLogger {
     data class Printer(val csvPrinter: CSVPrinter, val fileWriter: OutputStreamWriter, val file: File)
 
     var dataSendingResult: DataSendingResult = DataSendingResult.SUCCESS
-    private set
+        private set
 
     private val logger: Logger = Logger.getInstance(javaClass)
     private val myDocumentsToPrinters: HashMap<Document, Printer> = HashMap()
@@ -51,6 +52,7 @@ object DocumentLogger {
         var printer = myDocumentsToPrinters.getOrPut(document, { initPrinter(document) })
         if (isFull(printer.file.length())) {
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} is full")
+//            Todo: don't send it without user permission
             sendFile(printer.file)
             printer = initPrinter(document)
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} was cleared")
@@ -59,47 +61,6 @@ object DocumentLogger {
     }
 
     private fun isFull(fileSize: Long): Boolean = fileSize > MAX_FILE_SIZE - MAX_DIF_SIZE
-
-    private fun sendFile(file: File) {
-        TrackerQueryExecutor.sendCodeTrackerData(file)
-    }
-
-    fun sendTaskFile(task: Task, project: Project) {
-        ApplicationManager.getApplication().invokeAndWait {
-            val document = TaskFileHandler.getDocument(project, task)
-//        todo: add task name to title
-            ProgressManager.getInstance()
-                .run(object : com.intellij.openapi.progress.Task.Backgroundable(project, "Sending task solution") {
-                    override fun run(indicator: ProgressIndicator) {
-                        sendFileByDocument(document)
-                    }
-                })
-        }
-    }
-
-    private fun sendFileByDocument(document: Document) {
-        if (dataSendingResult != DataSendingResult.LOADING) {
-            val publisher =
-                ApplicationManager.getApplication().messageBus.syncPublisher(DataSendingNotifier.DATA_SENDING_TOPIC)
-            dataSendingResult = DataSendingResult.LOADING
-            publisher.accept(dataSendingResult)
-            // Log the last state (need to RUN ON EDT)
-            ApplicationManager.getApplication().invokeAndWait { log(document) }
-
-            // Todo: what should I do if printer is null?
-            val printer = myDocumentsToPrinters[document]
-                ?: throw IllegalStateException("A printer for the document $document does not exist")
-            printer.csvPrinter.flush()
-            sendFile(printer.file)
-
-            dataSendingResult = if (TrackerQueryExecutor.isLastSuccessful) {
-                DataSendingResult.SUCCESS
-            } else {
-                DataSendingResult.FAIL
-            }
-            publisher.accept(dataSendingResult)
-        }
-    }
 
     private fun initPrinter(document: Document): Printer {
         logger.info("${Plugin.PLUGIN_ID}: init printer")
@@ -118,5 +79,42 @@ object DocumentLogger {
         val logFile = File("$folderPath${file?.nameWithoutExtension}_${file.hashCode()}_${document.hashCode()}.csv")
         FileUtil.createIfDoesntExist(logFile)
         return logFile
+    }
+
+    private fun sendFile(file: File) {
+        TrackerQueryExecutor.sendCodeTrackerData(file)
+    }
+
+    fun sendTaskFile(task: Task, project: Project) {
+        ApplicationManager.getApplication().invokeAndWait {
+            val document = TaskFileHandler.getDocument(project, task)
+            ProgressManager.getInstance().run(
+                object : IntellijTask.Backgroundable(project,"Sending task ${task.key} solution", false) {
+                    override fun run(indicator: ProgressIndicator) {
+                        sendFileByDocument(document)
+                    }
+                })
+        }
+    }
+
+    private fun sendFileByDocument(document: Document) {
+        if (dataSendingResult != DataSendingResult.LOADING) {
+            val publisher =
+                ApplicationManager.getApplication().messageBus.syncPublisher(DataSendingNotifier.DATA_SENDING_TOPIC)
+            dataSendingResult = DataSendingResult.LOADING
+            publisher.accept(dataSendingResult)
+            dataSendingResult = try {
+                // Log the last state (need to RUN ON EDT)
+                ApplicationManager.getApplication().invokeAndWait { log(document) }
+                val printer = myDocumentsToPrinters[document]
+                    ?: throw IllegalStateException("No printer for the document $document exists")
+                printer.csvPrinter.flush()
+                sendFile(printer.file)
+                DataSendingResult.SUCCESS
+            } catch (e: java.lang.IllegalStateException) {
+                DataSendingResult.FAIL
+            }
+            publisher.accept(dataSendingResult)
+        }
     }
 }

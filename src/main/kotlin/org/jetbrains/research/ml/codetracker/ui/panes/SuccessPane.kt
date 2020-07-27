@@ -12,6 +12,7 @@ import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.SuccessPaneText
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
+import java.lang.String.format
 import java.net.URL
 import java.util.*
 import kotlin.reflect.KClass
@@ -47,17 +48,23 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     }
 
     private fun initSuccessText() {
-        val text = translations?.get(LanguagePaneUiData.language.currentValue)?.successMessage ?: defaultSuccessPaneText.successMessage
-        successText.text = getFormattedText(text)
+        subscribe(ChosenTaskNotifier.CHOSEN_TASK_TOPIC, object : ChosenTaskNotifier {
+            override fun accept(newTaskIndex: Int) {
+                val language = LanguagePaneUiData.language.currentValue
+                val text = translations?.get(language)?.successMessage ?: defaultSuccessPaneText.successMessage
+                successText.text = getFormattedText(text)
+            }
+        })
+
     }
 
-    private fun getFormattedText(text: String): String {
-        // Todo: task always is null. Why?
+    private fun getFormattedText(text: String, default: String = ""): String {
         val currentTask = TaskChoosingUiData.chosenTask.currentValue
         currentTask?.let {
-            return java.lang.String.format(text, currentTask.key)
+            val language = LanguagePaneUiData.language.currentValue
+            return format(text, currentTask.infoTranslation[language]?.name ?: default)
         }
-        return java.lang.String.format(text, "")
+        return format(text, default)
     }
 
     private fun initButtons() {
