@@ -7,7 +7,6 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectLocator
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -20,7 +19,7 @@ import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
-import org.jetbrains.research.ml.codetracker.ui.panes.TaskControllerManager
+import org.jetbrains.research.ml.codetracker.ui.panes.TaskSolvingControllerManager
 import org.jetbrains.research.ml.codetracker.ui.panes.util.subscribe
 import java.io.File
 import java.io.IOException
@@ -142,7 +141,7 @@ object TaskFileHandler {
      */
     fun Task?.isItsFileWritable(): Boolean {
         return (this == null || (this == TaskChoosingUiData.chosenTask.currentValue &&
-                MainController.visiblePane == TaskControllerManager))
+                MainController.visiblePane == TaskSolvingControllerManager))
     }
 
 

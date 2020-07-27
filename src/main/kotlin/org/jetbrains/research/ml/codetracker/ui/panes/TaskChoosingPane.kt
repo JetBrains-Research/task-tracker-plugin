@@ -84,7 +84,7 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
                     TaskFileHandler.openTaskFiles(it)
                 }
             }
-            changeVisiblePane(TaskControllerManager)
+            changeVisiblePane(TaskSolvingControllerManager)
         }
         finishWorkButton.onMouseClicked { changeVisiblePane(FinalControllerManager) }
     }

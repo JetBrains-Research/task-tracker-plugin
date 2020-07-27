@@ -33,7 +33,7 @@ internal object MainController {
         LoadingControllerManager,
         SurveyControllerManager,
         TaskChoosingControllerManager,
-        TaskControllerManager,
+        TaskSolvingControllerManager,
         FinalControllerManager)
 
     internal var visiblePane: Pane? = LoadingControllerManager
