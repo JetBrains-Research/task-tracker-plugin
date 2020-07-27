@@ -2,12 +2,14 @@ package org.jetbrains.research.ml.codetracker.server
 
 import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.application.PathManager
+import io.reactivex.internal.operators.maybe.MaybeDoAfterSuccess
 import org.jetbrains.research.ml.codetracker.models.Extension
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import java.io.File
 import java.lang.IllegalStateException
 import java.net.URL
@@ -33,46 +35,39 @@ object TrackerQueryExecutor : QueryExecutor() {
         activityTrackerKey = executeQuery(request)?.let { it.body?.string() }
     }
 
-    private fun createTrackerRequestBody(
-        fileFieldName: String, file: File,
-        toAddActivityTrackerKey: Boolean = false
-    ): MultipartBody.Builder {
-        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-        requestBody.addFormDataPart(fileFieldName, file.name, file.asRequestBody("text/csv".toMediaType()))
-        if (toAddActivityTrackerKey) {
-            activityTrackerKey?.let { requestBody.addFormDataPart("activityTrackerKey", it) }
-        }
-        return requestBody
-    }
-
-    private fun sendActivityTrackerData() {
-        val file = File(activityTrackerPath)
+    private fun sendTrackerData(file: File,
+                                fileFieldName: String,
+                                baseUrlSuffix: String,
+                                method: String,
+                                toAddActivityTrackerKey: Boolean = false,
+                                afterSuccessfulResponse: () -> Unit = { }) {
         if (file.exists()) {
-            val currentUrl = baseUrl + "activity-tracker-item/" + activityTrackerKey
+            val currentUrl = baseUrl + baseUrlSuffix
             logger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
-            val requestBody = createTrackerRequestBody(ACTIVITY_TRACKER_FILE_FIELD, file).build()
-            val response = executeQuery(Request.Builder().url(currentUrl).put(requestBody).build())
-            if (!response.isSuccessful()) {
-                logger.info("${Plugin.PLUGIN_ID}: cannot send activity tracker data")
+            val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+            requestBody.addFormDataPart(fileFieldName, file.name, file.asRequestBody("text/csv".toMediaType()))
+            if (toAddActivityTrackerKey) {
+                activityTrackerKey?.let { requestBody.addFormDataPart("activityTrackerKey", it) }
+            }
+            val response =  executeQuery(Request.Builder().url(currentUrl).method(method, requestBody.build()).build())
+            if (response.isSuccessful()) {
+                afterSuccessfulResponse()
+            } else {
+                logger.info("${Plugin.PLUGIN_ID}: cannot send $fileFieldName data")
                 throw IllegalStateException("Unsuccessful server response")
             }
         } else {
-            logger.info("${Plugin.PLUGIN_ID}: activity-tracker file doesn't exist")
+            logger.info("${Plugin.PLUGIN_ID}: file ${file.name} for $fileFieldName doesn't exist")
         }
     }
 
     fun sendCodeTrackerData(file: File) {
-        val currentUrl = baseUrl + "data-item"
-        logger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
-        val requestBody = createTrackerRequestBody(CODE_TRACKER_FILE_FIELD, file,activityTrackerKey != null).build()
-        val response = executeQuery(Request.Builder().url(currentUrl).post(requestBody).build())
-        if (response.isSuccessful()) {
-            if (activityTrackerKey != null) {
-                sendActivityTrackerData()
+        val isKeyNull = activityTrackerKey == null
+        sendTrackerData(file, CODE_TRACKER_FILE_FIELD, "data-item", "POST", !isKeyNull) {
+            if (!isKeyNull) {
+                sendTrackerData(File(activityTrackerPath), ACTIVITY_TRACKER_FILE_FIELD,
+                    "activity-tracker-item/$activityTrackerKey", "PUT")
             }
-        } else {
-            logger.info("${Plugin.PLUGIN_ID}: cannot send codetracker data")
-            throw IllegalStateException("Unsuccessful server response")
         }
     }
 }
