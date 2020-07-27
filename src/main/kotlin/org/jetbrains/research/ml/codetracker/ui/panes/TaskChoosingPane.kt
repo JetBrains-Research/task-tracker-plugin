@@ -3,12 +3,16 @@ package org.jetbrains.research.ml.codetracker.ui.panes
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
+import javafx.beans.binding.Bindings
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
+import javafx.scene.control.Label
+import javafx.scene.layout.Pane
+import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler
 import org.jetbrains.research.ml.codetracker.server.PluginServer
@@ -42,7 +46,7 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     @FXML
     private lateinit var choseTaskComboBox: ComboBox<String?>
     @FXML
-    private lateinit var choseTaskLabel: FormattedLabel
+    private lateinit var choseTaskLabel: Label
     private lateinit var choseTaskObservableList: ObservableList<String?>
 
     //    Todo: maybe we need a text under this button because when user comes back from TaskPane it becomes unclear
@@ -51,17 +55,20 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     @FXML
     private lateinit var startSolvingButton: Button
     @FXML
-    private lateinit var startSolvingText: FormattedText
+    private lateinit var startSolvingText: Text
     @FXML
     private lateinit var finishWorkButton: Button
     @FXML
-    private lateinit var finishWorkText: FormattedText
+    private lateinit var finishWorkText: Text
+
+    @FXML private lateinit var mainPane: Pane
 
     override val paneUiData = TaskChoosingUiData
     private val translations = PluginServer.paneText?.taskChoosingPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+        mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
         initChoseTaskComboBox()
         initButtons()
         makeTranslatable()
