@@ -1,9 +1,14 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
 import com.intellij.openapi.project.Project
+import javafx.beans.binding.Bindings
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
+import javafx.scene.control.Label
+import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.Pane
+import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
@@ -18,17 +23,20 @@ object FinalControllerManager : ServerDependentPane<FinalController>() {
 
 class FinalController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
     @FXML lateinit var backToTasksButton: Button
-    @FXML lateinit var backToTasksText: FormattedText
+    @FXML lateinit var backToTasksText: Text
     @FXML lateinit var backToProfileButton: Button
-    @FXML lateinit var backToProfileText: FormattedText
+    @FXML lateinit var backToProfileText: Text
 
-    @FXML lateinit var greatWorkLabel: FormattedLabel
-    @FXML lateinit var messageText: FormattedText
+    @FXML lateinit var greatWorkLabel: Label
+    @FXML lateinit var messageText: Text
+
+    @FXML private lateinit var mainPane: AnchorPane
 
     private val translations = PluginServer.paneText?.finalPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+        mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
         initButtons()
         makeTranslatable()
         super.initialize(url, resource)
