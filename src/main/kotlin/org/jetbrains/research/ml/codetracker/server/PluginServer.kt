@@ -66,12 +66,6 @@ object PluginServer {
                 }
             })
         }
-        ProgressManager.getInstance().run(object : Backgroundable(project, "Getting data from server") {
-            override fun run(indicator: ProgressIndicator) {
-                safeFind { findData() }
-            }
-        })
-
     }
 
     /**
