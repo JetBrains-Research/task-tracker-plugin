@@ -10,6 +10,7 @@ import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
+import javafx.scene.shape.Polygon
 import javafx.scene.text.Text
 import javafx.util.Callback
 import org.jetbrains.research.ml.codetracker.Plugin
@@ -124,6 +125,9 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
 
     @FXML private lateinit var mainPane: Pane
 
+    @FXML private lateinit var orangePolygon: Polygon
+    @FXML private lateinit var bluePolygon: Polygon
+
     override val paneUiData = SurveyUiData
     private val translations = PluginServer.paneText?.surveyPane
 
@@ -134,6 +138,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
+        scalePolygons(arrayListOf(orangePolygon, bluePolygon))
         initAge()
         initGender()
         initPeYears()
