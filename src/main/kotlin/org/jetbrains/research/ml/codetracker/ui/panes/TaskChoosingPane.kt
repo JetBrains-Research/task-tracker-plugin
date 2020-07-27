@@ -70,7 +70,7 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
 
     private fun initChoseTaskComboBox() {
         choseTaskObservableList = FXCollections.observableList(paneUiData.chosenTask.dataList.map {
-            it.infoTranslation[paneUiData.language.currentValue]?.name
+            it.infoTranslation[LanguagePaneUiData.language.currentValue]?.name
         })
         choseTaskComboBox.items = choseTaskObservableList
         choseTaskComboBox.selectionModel.selectedItemProperty().addListener { _ ->
@@ -101,7 +101,7 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     private fun makeTranslatable() {
         subscribe(LanguageNotifier.LANGUAGE_TOPIC, object : LanguageNotifier {
             override fun accept(newLanguageIndex: Int) {
-                val newLanguage = paneUiData.language.dataList[newLanguageIndex]
+                val newLanguage = LanguagePaneUiData.language.dataList[newLanguageIndex]
                 val taskChooserPaneText = translations?.get(newLanguage)
                 taskChooserPaneText?.let { it ->
                     choseTaskLabel.text = it.chooseTask

@@ -42,7 +42,7 @@ class FinalController(project: Project, scale: Double, fxPanel: JFXPanel, id: In
     private fun makeTranslatable() {
         subscribe(LanguageNotifier.LANGUAGE_TOPIC, object : LanguageNotifier {
             override fun accept(newLanguageIndex: Int) {
-                val newLanguage = paneUiData.language.dataList[newLanguageIndex]
+                val newLanguage = LanguagePaneUiData.language.dataList[newLanguageIndex]
                 val finishPaneText = translations?.get(newLanguage)
                 finishPaneText?.let {
                     greatWorkLabel.text = it.praise
