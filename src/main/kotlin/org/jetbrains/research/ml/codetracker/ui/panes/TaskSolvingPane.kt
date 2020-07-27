@@ -15,10 +15,6 @@ import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.tracking.DocumentLogger
 import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler
-import org.jetbrains.research.ml.codetracker.tracking.dialog.SuccessfulSubmitDialogWrapper
-import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel
-import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText
-
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*

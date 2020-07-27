@@ -26,10 +26,10 @@ class LoadingController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
 
     @FXML private lateinit var orangePolygon: Polygon
     @FXML private lateinit var bluePolygon: Polygon
-    @FXML private lateinit var orangePolygon1: Polygon
+    @FXML private lateinit var yellowPolygon: Polygon
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
-        scalePolygons(arrayListOf(orangePolygon, bluePolygon, orangePolygon1))
+        scalePolygons(arrayListOf(orangePolygon, bluePolygon, yellowPolygon))
     }
 }

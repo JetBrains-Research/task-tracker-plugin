@@ -31,7 +31,7 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
 
     @FXML private lateinit var orangePolygon: Polygon
     @FXML private lateinit var bluePolygon: Polygon
-    @FXML private lateinit var orangePolygon1: Polygon
+    @FXML private lateinit var yellowPolygon: Polygon
 
     private val translations = PluginServer.paneText?.successPane
     private val defaultSuccessPaneText = SuccessPaneText("back to tasks",
@@ -40,7 +40,7 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
         mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
-        scalePolygons(arrayListOf(orangePolygon, bluePolygon, orangePolygon1))
+        scalePolygons(arrayListOf(orangePolygon, bluePolygon, yellowPolygon))
         initSuccessText()
         initButtons()
         makeTranslatable()
