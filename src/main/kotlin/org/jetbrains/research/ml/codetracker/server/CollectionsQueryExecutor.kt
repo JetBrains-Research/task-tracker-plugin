@@ -10,20 +10,27 @@ import java.net.URL
 
 object CollectionsQueryExecutor : QueryExecutor() {
 
-    inline fun <reified T : Any> parseResponse(response: Response?, serializer: KSerializer<T>): List<T> {
-//      If IDEA says [PROTECTED_CALL_FROM_PUBLIC_INLINE] it's not right, see https://youtrack.jetbrains.com/issue/KT-15410
+    fun <T> getCollection(url: String, serializer: KSerializer<T>): List<T> {
+        return parseResponse(getResponse(url), serializer) { it.list }
+    }
+
+    fun <T> getItemFromCollection(url: String, serializer: KSerializer<T>): T {
+        return parseResponse(getResponse(url), serializer) { it }
+    }
+
+    private fun <T, R> parseResponse(
+        response: Response?,
+        serializer: KSerializer<T>,
+        transform: (KSerializer<T>) -> KSerializer<R>
+    ): R {
         if (isSuccess(response)) {
-            return Json(JsonConfiguration.Stable).parse(serializer.list, response?.body?.string() ?: "")
+            return Json(JsonConfiguration.Stable).parse(transform(serializer), response?.body?.string() ?: "")
         }
         throw IllegalStateException("Unsuccessful server response")
     }
 
-    inline fun <reified T : Any> getCollection(url: String, serializer: KSerializer<T>): List<T> {
-        return parseResponse(
-            executeQuery(
-                Request.Builder().url(URL("${baseUrl}${url}")).build()
-            ), serializer
-        )
+    private fun getResponse(url: String): Response? {
+        return executeQuery(Request.Builder().url(URL("${baseUrl}${url}")).build())
     }
 
 }

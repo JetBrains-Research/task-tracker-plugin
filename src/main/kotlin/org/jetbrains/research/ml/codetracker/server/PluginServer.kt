@@ -38,6 +38,8 @@ object PluginServer {
         private set
     var serverConnectionResult: ServerConnectionResult = ServerConnectionResult.UNINITIALIZED
         private set
+    var taskSolvingErrorDialogText: TaskSolvingErrorDialogText? = null
+        private set
 
     private val logger: Logger = Logger.getInstance(javaClass)
 
@@ -93,6 +95,7 @@ object PluginServer {
         tasks = findTasks()
         genders = findGenders()
         countries = findCountries()
+        taskSolvingErrorDialogText = findTaskSolvingErrorDialogText()
     }
 
     private fun findAvailableLanguages(): List<PaneLanguage> {
@@ -117,6 +120,10 @@ object PluginServer {
             return paneTextList[0]
         }
         throw IllegalStateException("Got incorrect data from server")
+    }
+
+    private fun findTaskSolvingErrorDialogText(): TaskSolvingErrorDialogText {
+        return CollectionsQueryExecutor.getItemFromCollection("dialog-text/task_solving_error", TaskSolvingErrorDialogText.serializer())
     }
 
 }
