@@ -29,8 +29,6 @@ abstract class QueryExecutor {
             .build()
     }
 
-    var isLastSuccessful: Boolean = false
-
     protected val baseUrl: String = Registry.get("codetracker.org.jetbrains.research.ml.codetracker.server.url").asString()
 
     protected fun executeQuery(request: Request): Response? {
@@ -41,31 +39,29 @@ abstract class QueryExecutor {
             val error = "The query ${request.method} ${request.url} was failed"
             try {
                 curCountAttempts++
-                logger.info("${Plugin.PLUGIN_ID}: An attempt ${curCountAttempts} of execute the query ${request.method} ${request.url} has been started")
+                logger.info("${Plugin.PLUGIN_ID}: An attempt $curCountAttempts of execute the query ${request.method} ${request.url} has been started")
                 val response = client.newCall(request).execute()
                 logger.info("${Plugin.PLUGIN_ID}: HTTP status code is ${response.code}")
 
                 if (response.isSuccessful) {
                     logger.info("${Plugin.PLUGIN_ID}: The query ${request.method} ${request.url} was successfully received")
-                    isLastSuccessful = true
                     return response
                 }
             } catch (e: Exception) {
                 logger.info("${Plugin.PLUGIN_ID}: ${error}: internet connection exception")
             }
-            isLastSuccessful = false
             logger.info("${Plugin.PLUGIN_ID}: $error")
             return null
         }
 
-        var response = daemon.schedule(Callable<Response?> { executeQueryHelper() }, 0, TimeUnit.SECONDS).get()
+        var response = daemon.schedule(Callable { executeQueryHelper() }, 0, TimeUnit.SECONDS).get()
         while (curCountAttempts < MAX_COUNT_ATTEMPTS && response == null) {
-            response = daemon.schedule(Callable<Response?> { executeQueryHelper() }, SLEEP_TIME, TimeUnit.SECONDS).get()
+            response = daemon.schedule(Callable { executeQueryHelper() }, SLEEP_TIME, TimeUnit.SECONDS).get()
         }
         return response
     }
 
-    protected fun isSuccess(response: Response?): Boolean {
-        return response?.isSuccessful == true
+    protected fun Response?.isSuccessful() : Boolean {
+        return this?.isSuccessful == true
     }
 }

@@ -1,27 +1,48 @@
 package org.jetbrains.research.ml.codetracker.tracking
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.util.messages.Topic
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.jetbrains.research.ml.codetracker.Plugin
+import org.jetbrains.research.ml.codetracker.models.Task
+import com.intellij.openapi.progress.Task as IntellijTask
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
+import java.util.function.Consumer
+
+enum class DataSendingResult {
+    LOADING,
+    SUCCESS,
+    FAIL
+}
+
+interface DataSendingNotifier : Consumer<DataSendingResult> {
+    companion object {
+        val DATA_SENDING_TOPIC = Topic.create("data sending result", DataSendingNotifier::class.java)
+    }
+}
 
 
 object DocumentLogger {
     data class Printer(val csvPrinter: CSVPrinter, val fileWriter: OutputStreamWriter, val file: File)
+
+    var dataSendingResult: DataSendingResult = DataSendingResult.SUCCESS
+        private set
+
     private val logger: Logger = Logger.getInstance(javaClass)
     private val myDocumentsToPrinters: HashMap<Document, Printer> = HashMap()
-
-    val documentsToPrinters: Map<Document, Printer>
-        get() = documentsToPrinters.toMap()
 
     private val folderPath = "${PathManager.getPluginsPath()}/codetracker/"
     private const val MAX_FILE_SIZE = 50 * 1024 * 1024
@@ -31,6 +52,7 @@ object DocumentLogger {
         var printer = myDocumentsToPrinters.getOrPut(document, { initPrinter(document) })
         if (isFull(printer.file.length())) {
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} is full")
+//            Todo: don't send it without user permission
             sendFile(printer.file)
             printer = initPrinter(document)
             logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} was cleared")
@@ -38,35 +60,7 @@ object DocumentLogger {
         printer.csvPrinter.printRecord(DocumentLoggedData.getData(document) + UiLoggedData.getData(Unit))
     }
 
-    fun logCurrentDocuments() {
-        logger.info("${Plugin.PLUGIN_ID}: log current documents: ${myDocumentsToPrinters.keys.size}")
-        myDocumentsToPrinters.keys.forEach { log(it) }
-    }
-
     private fun isFull(fileSize: Long): Boolean = fileSize > MAX_FILE_SIZE - MAX_DIF_SIZE
-
-    private fun sendFile(file: File) {
-        TrackerQueryExecutor.sendCodeTrackerData(file)
-    }
-
-    fun getFiles(): List<File> = myDocumentsToPrinters.values.map { it.file }
-
-    fun flush() {
-        logger.info("${Plugin.PLUGIN_ID}: flush loggers")
-        myDocumentsToPrinters.values.forEach { it.csvPrinter.flush() }
-    }
-
-    fun close(document: Document, printer: Printer) {
-        printer.csvPrinter.close()
-        printer.fileWriter.close()
-        logger.info("${Plugin.PLUGIN_ID}: close ${printer.file.name}")
-    }
-
-    fun close() {
-        logger.info("${Plugin.PLUGIN_ID}: close loggers")
-        myDocumentsToPrinters.values.forEach { it.csvPrinter.close(); it.fileWriter.close() }
-        myDocumentsToPrinters.clear()
-    }
 
     private fun initPrinter(document: Document): Printer {
         logger.info("${Plugin.PLUGIN_ID}: init printer")
@@ -85,5 +79,42 @@ object DocumentLogger {
         val logFile = File("$folderPath${file?.nameWithoutExtension}_${file.hashCode()}_${document.hashCode()}.csv")
         FileUtil.createIfDoesntExist(logFile)
         return logFile
+    }
+
+    private fun sendFile(file: File) {
+        TrackerQueryExecutor.sendCodeTrackerData(file)
+    }
+
+    fun sendTaskFile(task: Task, project: Project) {
+        ApplicationManager.getApplication().invokeAndWait {
+            val document = TaskFileHandler.getDocument(project, task)
+            ProgressManager.getInstance().run(
+                object : IntellijTask.Backgroundable(project,"Sending task ${task.key} solution", false) {
+                    override fun run(indicator: ProgressIndicator) {
+                        sendFileByDocument(document)
+                    }
+                })
+        }
+    }
+
+    private fun sendFileByDocument(document: Document) {
+        if (dataSendingResult != DataSendingResult.LOADING) {
+            val publisher =
+                ApplicationManager.getApplication().messageBus.syncPublisher(DataSendingNotifier.DATA_SENDING_TOPIC)
+            dataSendingResult = DataSendingResult.LOADING
+            publisher.accept(dataSendingResult)
+            dataSendingResult = try {
+                // Log the last state (need to RUN ON EDT)
+                ApplicationManager.getApplication().invokeAndWait { log(document) }
+                val printer = myDocumentsToPrinters[document]
+                    ?: throw IllegalStateException("No printer for the document $document exists")
+                printer.csvPrinter.flush()
+                sendFile(printer.file)
+                DataSendingResult.SUCCESS
+            } catch (e: java.lang.IllegalStateException) {
+                DataSendingResult.FAIL
+            }
+            publisher.accept(dataSendingResult)
+        }
     }
 }

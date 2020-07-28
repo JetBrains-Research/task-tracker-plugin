@@ -1,5 +1,6 @@
 package org.jetbrains.research.ml.codetracker.tracking
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
@@ -17,6 +18,7 @@ import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
+import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskSolvingControllerManager
@@ -59,10 +61,12 @@ object TaskFileHandler {
             val virtualFile = getOrCreateFile(project, task)
             virtualFile?.let {
                 addTaskFile(it, task, project)
-                if (task.isItsFileWritable()) {
-                    openFile(project, virtualFile)
-                } else {
-                    closeFile(project, virtualFile)
+                ApplicationManager.getApplication().invokeAndWait {
+                    if (task.isItsFileWritable()) {
+                        openFile(project, virtualFile)
+                    } else {
+                        closeFile(project, virtualFile)
+                    }
                 }
             }
         }
@@ -95,7 +99,15 @@ object TaskFileHandler {
         val oldVirtualFile = projectToTaskToFiles[project]?.get(task)
         if (oldVirtualFile == null) {
             projectToTaskToFiles[project]?.set(task, virtualFile)
-            FileDocumentManager.getInstance().getDocument(virtualFile)?.addDocumentListener(listener)
+//          need to RUN ON EDT cause of read and write actions
+            ApplicationManager.getApplication().invokeAndWait {
+                val document = FileDocumentManager.getInstance().getDocument(virtualFile)
+                document?.let {
+                    it.addDocumentListener(listener)
+                    // Log the first state
+                    DocumentLogger.log(it)
+                }
+            }
 
         } else {
             // If the old document is not equal to the old document, we should raise an error
@@ -120,6 +132,12 @@ object TaskFileHandler {
             setReadOnly(it, false)
             FileEditorManager.getInstance(project).openFile(it, true, true)
         }
+    }
+
+    fun getDocument(project: Project, task: Task): Document {
+        val virtualFile = projectToTaskToFiles[project]?.get(task)
+            ?: throw IllegalStateException("A file for the task ${task.key} in the project ${project.name} does not exist")
+        return FileDocumentManager.getInstance().getDocument(virtualFile)?: throw IllegalStateException("A document for the file ${virtualFile.name} in the project ${project.name} does not exist")
     }
 
     fun closeTaskFiles(task: Task, language: Language = Language.PYTHON) {

@@ -38,9 +38,16 @@ data class TaskSolvingPaneText(
 )
 
 @Serializable
+data class SuccessPaneText(
+    val backToTasks: String,
+    val successMessage: String
+)
+
+@Serializable
 data class PaneText(
     val surveyPane: Map<PaneLanguage, SurveyPaneText>,
     val taskChoosingPane: Map<PaneLanguage, TaskChoosingPaneText>,
     val taskSolvingPane: Map<PaneLanguage, TaskSolvingPaneText>,
-    val finalPane: Map<PaneLanguage, FinalPaneText>
+    val finalPane: Map<PaneLanguage, FinalPaneText>,
+    val successPane: Map<PaneLanguage, SuccessPaneText>
 )

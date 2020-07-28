@@ -5,6 +5,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.WritingAccessProvider
 import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler.isItsFileWritable
+import org.jetbrains.research.ml.codetracker.tracking.dialog.ReadOnlyDialogWrapper
 
 class PluginAccessProvider : WritingAccessProvider() {
     override fun requestWriting(files: MutableCollection<out VirtualFile>): MutableCollection<VirtualFile> {
@@ -22,7 +23,9 @@ class PluginAccessProvider : WritingAccessProvider() {
 
         if (tasksOfReadOnlyFiles.isNotEmpty()) {
             ApplicationManager.getApplication().invokeAndWait {
-                ReadOnlyDialogWrapper(tasksOfReadOnlyFiles.first()).show()
+                ReadOnlyDialogWrapper(
+                    tasksOfReadOnlyFiles.first()
+                ).show()
             }
         }
 

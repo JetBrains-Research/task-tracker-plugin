@@ -2,13 +2,16 @@ package org.jetbrains.research.ml.codetracker.server
 
 import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.application.PathManager
+import io.reactivex.internal.operators.maybe.MaybeDoAfterSuccess
 import org.jetbrains.research.ml.codetracker.models.Extension
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import java.io.File
+import java.lang.IllegalStateException
 import java.net.URL
 
 object TrackerQueryExecutor : QueryExecutor() {
@@ -27,65 +30,44 @@ object TrackerQueryExecutor : QueryExecutor() {
     private fun initActivityTrackerInfo() {
         val currentUrl = URL(baseUrl + "activity-tracker-item")
         logger.info("${Plugin.PLUGIN_ID}: ...generating activity tracker key")
-
-        val request = Request.Builder().url(currentUrl).post(
-            ByteArray(0)
-                .toRequestBody(null, 0, 0)
-        ).build()
+        val requestBody = ByteArray(0).toRequestBody(null, 0, 0)
+        val request = Request.Builder().url(currentUrl).post(requestBody).build()
         activityTrackerKey = executeQuery(request)?.let { it.body?.string() }
     }
 
-    private fun createTrackerRequestBody(
-        fileFieldName: String, file: File,
-        toAddActivityTrackerKey: Boolean = false
-    ): MultipartBody.Builder {
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart(
-                fileFieldName, file.name,
-                file.asRequestBody("text/csv".toMediaType())
-            )
-        if (toAddActivityTrackerKey) {
-            activityTrackerKey?.let { requestBody.addFormDataPart("activityTrackerKey", it) }
-        }
-        return requestBody
-    }
-
-    private fun sendActivityTrackerData() {
-        val file = File(activityTrackerPath)
+    private fun sendTrackerData(file: File,
+                                fileFieldName: String,
+                                baseUrlSuffix: String,
+                                method: String,
+                                toAddActivityTrackerKey: Boolean = false,
+                                afterSuccessfulResponse: () -> Unit = { }) {
         if (file.exists()) {
-            val currentUrl = baseUrl + "activity-tracker-item/" + activityTrackerKey
+            val currentUrl = baseUrl + baseUrlSuffix
             logger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
-            executeQuery(
-                Request.Builder()
-                    .url(currentUrl)
-                    .put(
-                        createTrackerRequestBody(
-                            ACTIVITY_TRACKER_FILE_FIELD,
-                            file
-                        ).build()
-                    )
-                    .build()
-            )
+            val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+            requestBody.addFormDataPart(fileFieldName, file.name, file.asRequestBody("text/csv".toMediaType()))
+            if (toAddActivityTrackerKey) {
+                activityTrackerKey?.let { requestBody.addFormDataPart("activityTrackerKey", it) }
+            }
+            val response =  executeQuery(Request.Builder().url(currentUrl).method(method, requestBody.build()).build())
+            if (response.isSuccessful()) {
+                afterSuccessfulResponse()
+            } else {
+                logger.info("${Plugin.PLUGIN_ID}: cannot send $fileFieldName data")
+                throw IllegalStateException("Unsuccessful server response")
+            }
         } else {
-            logger.info("${Plugin.PLUGIN_ID}: activity-tracker file doesn't exist")
+            logger.info("${Plugin.PLUGIN_ID}: file ${file.name} for $fileFieldName doesn't exist")
         }
     }
 
-    fun sendCodeTrackerData(file: File, deleteAfter: () -> Boolean = { false }, postActivity: () -> Unit = {}) {
-        val currentUrl = baseUrl + "org.jetbrains.research.ml.codetracker.data-item"
-        logger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
-        val requestBody = createTrackerRequestBody(CODE_TRACKER_FILE_FIELD, file,activityTrackerKey != null).build()
-        val response = executeQuery(Request.Builder().url(currentUrl).post(requestBody).build())
-        if (isSuccess(response)) {
-            if (deleteAfter()) {
-                logger.info("${Plugin.PLUGIN_ID}: delete file ${file.name}")
-                file.delete()
-            }
-            if (activityTrackerKey != null) {
-                sendActivityTrackerData()
+    fun sendCodeTrackerData(file: File) {
+        val isKeyNull = activityTrackerKey == null
+        sendTrackerData(file, CODE_TRACKER_FILE_FIELD, "data-item", "POST", !isKeyNull) {
+            if (!isKeyNull) {
+                sendTrackerData(File(activityTrackerPath), ACTIVITY_TRACKER_FILE_FIELD,
+                    "activity-tracker-item/$activityTrackerKey", "PUT")
             }
         }
-        postActivity()
     }
 }
