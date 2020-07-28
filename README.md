@@ -6,7 +6,7 @@
 
 ### Code changes tracking
 
-This plugin writes changes in all open documents in a .csv files and sends them after all to the [codetracker server](https://github.com/nbirillo/coding-assistant-server). 
+This plugin only writes changes in open documents, which was created automatically for the tasks by the plugin, in a .csv files and sends them after all to the [codetracker server](https://github.com/nbirillo/coding-assistant-server). **It happens only if you press the submit button.**
 All data is sent **anonymously**, the only information is file names and the source code. This data can be helpful for 
 analyzing students programming patterns or collecting diverse solutions of given problems. For example, 
 see [automated hint generation system](https://github.com/JetBrains-Research/codetracker-org.jetbrains.research.ml.codetracker.data), 
