@@ -21,7 +21,7 @@ object TrackerQueryExecutor : QueryExecutor() {
     private const val ACTIVITY_TRACKER_FILE_FIELD = "activitytracker"
     private val activityTrackerPath = "${PathManager.getPluginsPath()}/activity-tracker/" + ACTIVITY_TRACKER_FILE
 
-    private var activityTrackerKey: String? = null
+    var activityTrackerKey: String? = null
 
     init {
         initActivityTrackerInfo()
