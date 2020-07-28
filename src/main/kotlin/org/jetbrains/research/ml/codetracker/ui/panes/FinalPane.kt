@@ -31,7 +31,7 @@ class FinalController(project: Project, scale: Double, fxPanel: JFXPanel, id: In
     @FXML lateinit var greatWorkLabel: Label
     @FXML lateinit var messageText: Text
 
-    @FXML private lateinit var mainPane: AnchorPane
+    @FXML private lateinit var mainPane: Pane
 
     @FXML private lateinit var orangePolygon: Polygon
     @FXML private lateinit var yellowPolygon: Polygon

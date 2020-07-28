@@ -8,7 +8,6 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Polygon?>
-<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
 <Pane fx:id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
