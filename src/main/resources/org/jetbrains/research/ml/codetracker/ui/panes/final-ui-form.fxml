@@ -11,9 +11,11 @@
 
 <?import javafx.scene.text.Text?>
 <Pane fx:id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-    <Pane id="codetrackerPane" prefHeight="${80.0 * scale}" prefWidth="${560.0 * scale}" stylesheets="@style.css">
-        <Label layoutX="${193.0 * scale}" layoutY="${11.0 * scale}" styleClass="codetracker-sign" text="CodeTracker">
-        </Label>
+    <Pane id="codetrackerPane" prefHeight="${80.0 * scale}" prefWidth="${560.0 * scale}">
+        <HBox layoutX="${12.0 * scale}" layoutY="${11.0 * scale}" style="-fx-alignment: center-right;" prefHeight="${59.0 * scale}" prefWidth="${536.0 * scale}">
+            <Label alignment="CENTER_RIGHT" styleClass="codetracker-sign" text="CodeTracker">
+            </Label>
+        </HBox>
     </Pane>
     <Pane fx:id="finishPane" layoutY="${80.0 * scale}" prefHeight="${760.0 * scale}" prefWidth="${560.0 * scale}">
         <Rectangle fx:id="blueRectangle" arcHeight="5.0" arcWidth="5.0" fill="#7abaf5" height="${232.0 * scale}" layoutY="${210.0 * scale}" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="${560.0 * scale}" />

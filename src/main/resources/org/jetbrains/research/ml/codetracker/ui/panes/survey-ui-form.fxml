@@ -20,9 +20,11 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.layout.BorderPane?>
 <Pane fx:id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-    <Pane id="codetrackerPane" prefHeight="${80.0 * scale}" prefWidth="${560.0 * scale}" stylesheets="@style.css">
-        <Label layoutX="${193.0 * scale}" layoutY="${11.0 * scale}" styleClass="codetracker-sign" text="CodeTracker">
-        </Label>
+    <Pane id="codetrackerPane" prefHeight="${80.0 * scale}" prefWidth="${560.0 * scale}">
+        <HBox layoutX="${12.0 * scale}" layoutY="${11.0 * scale}" style="-fx-alignment: center-right;" prefHeight="${59.0 * scale}" prefWidth="${536.0 * scale}">
+            <Label alignment="CENTER_RIGHT" styleClass="codetracker-sign" text="CodeTracker">
+            </Label>
+        </HBox>
     </Pane>
     <Pane fx:id="profilePane" layoutY="${80.0 * scale}" prefHeight="${760.0 * scale}" prefWidth="${560.0 * scale}" stylesheets="@style.css">
         <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="${552.0 * scale}" layoutY="${62.0 * scale}" opacity="0.35" points="-552.0, -64.0, -552.0, 110.0, 8.0, -22.0, 8.0, -64.0" stroke="WHITE" strokeType="INSIDE" />
