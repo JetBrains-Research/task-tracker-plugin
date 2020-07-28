@@ -21,7 +21,7 @@ abstract class QueryExecutor {
     protected val logger: Logger = Logger.getInstance(javaClass)
 
     private val client: OkHttpClient by lazy {
-        logger.info("${Plugin.PLUGIN_ID}: init the server. API base url is ${baseUrl}. Max count attempt of sending org.jetbrains.research.ml.codetracker.data to org.jetbrains.research.ml.codetracker.server = ${MAX_COUNT_ATTEMPTS}\"")
+        logger.info("${Plugin.PLUGIN_ID}: init the server. API base url is ${baseUrl}. Max count attempt of server = ${MAX_COUNT_ATTEMPTS}\"")
         OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
