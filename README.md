@@ -1,3 +1,5 @@
+[![JetBrains Research](https://jb.gg/badges/research.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+
 # Codetracker
 
 **Codetracker** is an IntelliJ-based IDE plugin for tracking code changes while solving programming problems.
@@ -18,7 +20,7 @@ when the plugin starts.
 It is also possible for user to set their age and programming experience. Currently, it's only available on russian language. 
 
 
-![](readme-img/codetracker-ui.png)
+![](readme-img/codetracker-ui-new.png)
 
 ## Installation
 
@@ -26,5 +28,6 @@ It is also possible for user to set their age and programming experience. Curren
 
 Just clone the repo by `git clone https://github.com/JetBrains-Research/codetracker.git` and run `./gradlew build shadowJar` to build a .zip-file. 
 You will find it at the path `build/distributions/codetracker-1.0-SNAPSHOT.zip`. Then add it to the IntelliJ-based IDE you want to use by installing from disk 
-(see [this guide](https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk) for example). 
+(see [this guide](https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk) for example). Also, we created the details [guide](https://github.com/JetBrains-Research/codetracker/wiki) about 
+installing and uninstalling the **codetracker**. This guide is available in two languages: English and Russian.
 
