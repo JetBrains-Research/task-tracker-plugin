@@ -17,7 +17,7 @@ based on this data.
 Plugin's ui is designed for choosing different problems to solve and seeing correct examples of 
 problem's behaviour. All data about problems is received from the [codetracker server](https://github.com/nbirillo/coding-assistant-server) 
 when the plugin starts. 
-It is also possible for user to set their age and programming experience. Currently, it's only available on russian language. 
+It is also possible for user to set their age and programming experience. Currently, it's available on two languages: English and Russian.
 
 
 <img src="https://github.com/JetBrains-Research/codetracker/blob/master/readme-img/codetracker.gif" width="250">
@@ -29,5 +29,5 @@ It is also possible for user to set their age and programming experience. Curren
 Just clone the repo by `git clone https://github.com/JetBrains-Research/codetracker.git` and run `./gradlew build shadowJar` to build a .zip-file. 
 You will find it at the path `build/distributions/codetracker-1.0-SNAPSHOT.zip`. Then add it to the IntelliJ-based IDE you want to use by installing from disk 
 (see [this guide](https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk) for example). Also, we created the details [guide](https://github.com/JetBrains-Research/codetracker/wiki) about 
-installing and uninstalling the **codetracker**. This guide is available in two languages: English and Russian.
+installing and uninstalling the **codetracker**. This guide is available on two languages: English and Russian.
 
