@@ -20,14 +20,41 @@ abstract class LoggedData<T, S> {
 }
 
 object UiLoggedData : LoggedData<Unit, String>() {
+
     override val loggedDataGetters: List<LoggedDataGetter<Unit, String>> = arrayListOf(
         LoggedDataGetter("age") { SurveyUiData.age.uiValue.toString() },
-        LoggedDataGetter("gender") { SurveyUiData.gender.uiValue.toString() },
-        LoggedDataGetter("programExperienceYears") { SurveyUiData.peYears.toString() },
-        LoggedDataGetter("programExperienceMonths") { SurveyUiData.peMonths.toString() },
-        LoggedDataGetter("country") { SurveyUiData.country.uiValue.toString() },
-        LoggedDataGetter("chosenTask") { TaskChoosingUiData.chosenTask.uiValue.toString() }
+        LoggedDataGetter("gender") {
+            // Todo: make it better: delete duplicates of code
+            val currentValue = SurveyUiData.gender.uiValue
+            if (!isDefaultValue(currentValue)) {
+                SurveyUiData.gender.dataList[currentValue].key
+            } else {
+                currentValue.toString()
+            }
+        },
+        LoggedDataGetter("programExperienceYears") { SurveyUiData.peYears.uiValue.toString() },
+        LoggedDataGetter("programExperienceMonths") { SurveyUiData.peMonths.uiValue.toString() },
+        LoggedDataGetter("country") {
+            val currentValue = SurveyUiData.country.uiValue
+            if (!isDefaultValue(currentValue)) {
+                SurveyUiData.country.dataList[currentValue].key
+            } else {
+                currentValue.toString()
+            }
+        },
+        LoggedDataGetter("chosenTask") {
+            val currentValue = TaskChoosingUiData.chosenTask.uiValue
+            if (!isDefaultValue(currentValue)) {
+                TaskChoosingUiData.chosenTask.dataList[currentValue].key
+            } else {
+                currentValue.toString()
+            }
+        }
     )
+
+    private fun isDefaultValue(value: Int, defaultValue: Int = -1): Boolean {
+        return value == defaultValue
+    }
 }
 
 object DocumentLoggedData : LoggedData<Document, String?>() {

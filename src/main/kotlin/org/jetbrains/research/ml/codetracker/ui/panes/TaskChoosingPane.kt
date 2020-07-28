@@ -3,12 +3,17 @@ package org.jetbrains.research.ml.codetracker.ui.panes
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
+import javafx.beans.binding.Bindings
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
+import javafx.scene.control.Label
+import javafx.scene.layout.Pane
+import javafx.scene.shape.Polygon
+import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler
 import org.jetbrains.research.ml.codetracker.server.PluginServer
@@ -42,7 +47,7 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     @FXML
     private lateinit var choseTaskComboBox: ComboBox<String?>
     @FXML
-    private lateinit var choseTaskLabel: FormattedLabel
+    private lateinit var choseTaskLabel: Label
     private lateinit var choseTaskObservableList: ObservableList<String?>
 
     //    Todo: maybe we need a text under this button because when user comes back from TaskPane it becomes unclear
@@ -51,18 +56,28 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     @FXML
     private lateinit var startSolvingButton: Button
     @FXML
-    private lateinit var startSolvingText: FormattedText
+    private lateinit var startSolvingText: Text
     @FXML
     private lateinit var finishWorkButton: Button
     @FXML
-    private lateinit var finishWorkText: FormattedText
+    private lateinit var finishWorkText: Text
+    @FXML
+    private lateinit var instructionText: Text
+
+    @FXML private lateinit var mainPane: Pane
+
+    @FXML private lateinit var orangePolygon: Polygon
+    @FXML private lateinit var bluePolygon: Polygon
 
     override val paneUiData = TaskChoosingUiData
     private val translations = PluginServer.paneText?.taskChoosingPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+        mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
+        scalePolygons(arrayListOf(orangePolygon, bluePolygon))
         initChoseTaskComboBox()
+        initInstruction()
         initButtons()
         makeTranslatable()
         super.initialize(url, resource)
@@ -82,6 +97,19 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
                 startSolvingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
         })
+    }
+
+    private fun initInstruction() {
+        val language = LanguagePaneUiData.language.currentValue
+        val text = translations?.get(language)?.description ?: ""
+        instructionText.text = getFormattedText(text)
+    }
+
+    private fun getFormattedText(text: String, default: String = ""): String {
+        val language = LanguagePaneUiData.language.currentValue
+        val startSolving = translations?.get(language)?.startSolving ?: default
+        val submit = PluginServer.paneText?.taskSolvingPane?.get(language)?.submit ?: default
+        return java.lang.String.format(text, startSolving, submit, submit)
     }
 
     private fun initButtons() {
@@ -107,6 +135,8 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
                     choseTaskLabel.text = it.chooseTask
                     startSolvingText.text = it.startSolving
                     finishWorkText.text = it.finishSession
+                    val text = translations?.get(newLanguage)?.description ?: ""
+                    instructionText.text = getFormattedText(text)
                     changeComboBoxItems(
                         choseTaskComboBox,
                         choseTaskObservableList,

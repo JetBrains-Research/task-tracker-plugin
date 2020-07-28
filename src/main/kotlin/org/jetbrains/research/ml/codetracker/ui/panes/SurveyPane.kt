@@ -2,12 +2,16 @@ package org.jetbrains.research.ml.codetracker.ui.panes
 
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
+import javafx.beans.binding.Bindings
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.layout.HBox
+import javafx.scene.layout.Pane
+import javafx.scene.shape.Polygon
+import javafx.scene.text.Text
 import javafx.util.Callback
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Country
@@ -88,36 +92,41 @@ object SurveyUiData : LanguagePaneUiData() {
 
 class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
     // Age
-    @FXML private lateinit var ageLabel: FormattedLabel
+    @FXML private lateinit var ageLabel: Label
     @FXML private lateinit var ageTextField: TextField
 
     // Gender
-    @FXML private lateinit var genderLabel: FormattedLabel
+    @FXML private lateinit var genderLabel: Label
     @FXML private lateinit var genderGroup: ToggleGroup
-    @FXML private lateinit var gender1: FormattedRadioButton
-    @FXML private lateinit var gender2: FormattedRadioButton
-    @FXML private lateinit var gender3: FormattedRadioButton
-    @FXML private lateinit var gender4: FormattedRadioButton
-    @FXML private lateinit var gender5: FormattedRadioButton
-    @FXML private lateinit var gender6: FormattedRadioButton
-    @FXML private lateinit var genderRadioButtons: List<FormattedRadioButton>
+    @FXML private lateinit var gender1: RadioButton
+    @FXML private lateinit var gender2: RadioButton
+    @FXML private lateinit var gender3: RadioButton
+    @FXML private lateinit var gender4: RadioButton
+    @FXML private lateinit var gender5: RadioButton
+    @FXML private lateinit var gender6: RadioButton
+    @FXML private lateinit var genderRadioButtons: List<RadioButton>
 
     // Program Experience
-    @FXML private lateinit var experienceLabel: FormattedLabel
-    @FXML private lateinit var peYearsLabel: FormattedLabel
+    @FXML private lateinit var experienceLabel: Label
+    @FXML private lateinit var peYearsLabel: Label
     @FXML private lateinit var peYearsTextField: TextField
     @FXML private lateinit var peMonthsHBox: HBox
-    @FXML private lateinit var peMonthsLabel: FormattedLabel
+    @FXML private lateinit var peMonthsLabel: Label
     @FXML private lateinit var peMonthsTextField: TextField
 
     // Country
-    @FXML private lateinit var countryLabel: FormattedLabel
+    @FXML private lateinit var countryLabel: Label
     @FXML private lateinit var countryComboBox: ComboBox<Country>
     private lateinit var countryObservableList: ObservableList<Country>
 
     // StartWorking
     @FXML private lateinit var startWorkingButton: Button
-    @FXML private lateinit var startWorkingText: FormattedText
+    @FXML private lateinit var startWorkingText: Text
+
+    @FXML private lateinit var mainPane: Pane
+
+    @FXML private lateinit var orangePolygon: Polygon
+    @FXML private lateinit var bluePolygon: Polygon
 
     override val paneUiData = SurveyUiData
     private val translations = PluginServer.paneText?.surveyPane
@@ -128,6 +137,8 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+        mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
+        scalePolygons(arrayListOf(orangePolygon, bluePolygon))
         initAge()
         initGender()
         initPeYears()

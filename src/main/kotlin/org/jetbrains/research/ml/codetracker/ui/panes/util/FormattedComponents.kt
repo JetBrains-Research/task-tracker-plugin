@@ -31,33 +31,3 @@ class CapitalCaseFormatter : Formatter<String> {
     }
 
 }
-
-
-/**
- * Several quite similar classes looks strange but it's the only way to extend
- * existing classes and make them formatted.
- * It's possible not to make additional classes and call textProperty().addListener
- * directly while initializing component in Controller, but since we had a lot of
- * formatted labels/buttons/texts it's a little annoying. So it's better to move it
- * to the .fxml files, which requires class extension.
- */
-
-
-class FormattedLabel(@NamedArg("formatter") private val formatter: Formatter<String>) : Label() {
-    init {
-        textProperty().addListener { _, _, new -> text = formatter.format(new) }
-    }
-}
-
-class FormattedText(@NamedArg("formatter") private val formatter: Formatter<String>) : Text() {
-    init {
-        textProperty().addListener { _, _, new -> text = formatter.format(new) }
-    }
-}
-
-class FormattedRadioButton(@NamedArg("formatter") private val formatter: Formatter<String>) : RadioButton() {
-    init {
-        textProperty().addListener { _, _, new -> text = formatter.format(new) }
-    }
-}
-

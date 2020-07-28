@@ -12,6 +12,8 @@ import javafx.fxml.Initializable
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.paint.Color
+import javafx.scene.shape.Polygon
+import javafx.scene.transform.Scale
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import kotlin.reflect.KClass
@@ -29,7 +31,17 @@ interface Updatable {
  * Its instance is created every time new IDE window opens.
  */
 abstract class PaneController(val project: Project, val scale: Double, val fxPanel: JFXPanel, val id: Int) :
-    Initializable
+    Initializable {
+
+    protected fun scalePolygons(polygons: List<Polygon>) {
+        val polygonScale = Scale()
+        polygonScale.x = scale
+        polygonScale.y = scale
+        polygonScale.pivotX = 0.0
+        polygonScale.pivotY = 0.0
+        polygons.forEach { it.transforms.addAll(polygonScale)}
+    }
+}
 
 /**
  * Creates [PaneController] content by loading .fxml file.

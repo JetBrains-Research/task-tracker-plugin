@@ -9,57 +9,47 @@
 <?import javafx.scene.shape.Polygon?>
 <?import javafx.scene.shape.Rectangle?>
 
-<?import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedText?>
-<?import org.jetbrains.research.ml.codetracker.ui.panes.util.LowerCaseFormatter?>
-<?import org.jetbrains.research.ml.codetracker.ui.panes.util.FormattedLabel?>
-<AnchorPane id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-    <AnchorPane id="codetrackerPane" prefHeight="80.0" prefWidth="560.0" stylesheets="@style.css">
-        <Label layoutX="193.0" layoutY="11.0" styleClass="codetracker-sign" text="CodeTracker">
-        </Label>
-    </AnchorPane>
-    <Pane fx:id="finishPane" layoutY="80.0" prefHeight="760.0" prefWidth="560.0">
-        <Rectangle fx:id="blueRectangle" arcHeight="5.0" arcWidth="5.0" fill="#7abaf5" height="232.0" layoutY="210.0" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="560.0" />
-        <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="60.0" layoutY="314.0" opacity="0.41" points="-60.0, 12.0, 500.0, -314.0, -60.0, -314.0" stroke="WHITE" strokeType="INSIDE" />
-        <Polygon fx:id="yellowPolygon" fill="#fff782" layoutX="87.0" layoutY="482.0" opacity="0.3" points="-80.0, 30.0, 473.0, 135.0, 473.0, -132.0" stroke="WHITE" strokeType="INSIDE" />
-        <Button fx:id="backToTasksButton" layoutX="374.0" layoutY="340.0" mnemonicParsing="false" prefHeight="93.0" prefWidth="126.0">
+<?import javafx.scene.text.Text?>
+<Pane fx:id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <Pane id="codetrackerPane" prefHeight="${80.0 * scale}" prefWidth="${560.0 * scale}">
+        <HBox layoutX="${12.0 * scale}" layoutY="${11.0 * scale}" style="-fx-alignment: center-right;" prefHeight="${59.0 * scale}" prefWidth="${536.0 * scale}">
+            <Label alignment="CENTER_RIGHT" styleClass="codetracker-sign" text="CodeTracker">
+            </Label>
+        </HBox>
+    </Pane>
+    <Pane fx:id="finishPane" layoutY="${80.0 * scale}" prefHeight="${760.0 * scale}" prefWidth="${560.0 * scale}">
+        <Rectangle fx:id="blueRectangle" arcHeight="5.0" arcWidth="5.0" fill="#7abaf5" height="${232.0 * scale}" layoutY="${210.0 * scale}" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="${560.0 * scale}" />
+        <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="${60.0 * scale}" layoutY="${314.0 * scale}" opacity="0.41" points="-60.0, 12.0, 500.0, -314.0, -60.0, -314.0" stroke="WHITE" strokeType="INSIDE" />
+        <Polygon fx:id="yellowPolygon" fill="#fff782" layoutX="${87.0 * scale}" layoutY="${482.0 * scale}" opacity="0.3" points="-80.0, 30.0, 473.0, 135.0, 473.0, -132.0" stroke="WHITE" strokeType="INSIDE" />
+        <Button fx:id="backToTasksButton" layoutX="${374.0 * scale}" layoutY="${340.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${126.0 * scale}">
             <graphic>
-                <VBox prefHeight="106.0" prefWidth="122.0" styleClass="v-box">
-                    <ImageView fitHeight="35.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
+                <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
+                    <ImageView fitHeight="${35.0 * scale}" fitWidth="${75.0 * scale}" pickOnBounds="true" preserveRatio="true">
                         <Image url="@next.png" />
                     </ImageView>
-                    <FormattedText fx:id="backToTasksText" strokeType="OUTSIDE" strokeWidth="0.0" text="вернуться к задачам" textAlignment="CENTER" wrappingWidth="121.736328125" styleClass="sanserif-bold-15">
-                        <formatter>
-                            <LowerCaseFormatter/>
-                        </formatter>
-                    </FormattedText>
+                    <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />
+
+                    <Text fx:id="backToTasksText" strokeType="OUTSIDE" strokeWidth="0.0" text="вернуться к задачам" textAlignment="CENTER" wrappingWidth="${121.736328125 * scale}" styleClass="sanserif-bold-15">
+                    </Text>
                 </VBox>
             </graphic>
         </Button>
-        <FormattedLabel fx:id="greatWorkLabel" alignment="CENTER" layoutX="144.0" layoutY="154.0" prefHeight="71.0" prefWidth="280.0" styleClass="sanserif-bold-24" textAlignment="CENTER">
-            <formatter>
-                <LowerCaseFormatter/>
-            </formatter>
-        </FormattedLabel>
-        <FormattedText fx:id="messageText" layoutX="98.0" layoutY="261.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="364.0" styleClass="sanserif-20">
-            <formatter>
-                <LowerCaseFormatter/>
-            </formatter>
-        </FormattedText>
-        <Rectangle fx:id="LanguageRectangle" fill="TRANSPARENT" height="25.0" layoutX="508.0" layoutY="8.0" strokeType="INSIDE" styleClass="rectangle" width="42.0" />
-        <ComboBox fx:id="languageComboBox" layoutX="512.0" layoutY="5.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="51.0" styleClass="language" visibleRowCount="5" />
-        <Button fx:id="backToProfileButton" layoutX="60.0" layoutY="340.0" mnemonicParsing="false" prefHeight="93.0" prefWidth="126.0">
+        <Label fx:id="greatWorkLabel" alignment="CENTER" layoutX="${144.0 * scale}" layoutY="${154.0 * scale}" prefHeight="${71.0 * scale}" prefWidth="${280.0 * scale}" styleClass="sanserif-bold-24" textAlignment="CENTER">
+        </Label>
+        <Text fx:id="messageText" layoutX="${98.0 * scale}" layoutY="${261.0 * scale}" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="${364.0 * scale}" styleClass="sanserif-20">
+        </Text>
+        <ComboBox fx:id="languageComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${40.0 * scale}" layoutX="${510.0 * scale}" layoutY="${8.0 * scale}" styleClass="language" visibleRowCount="5" />
+        <Button fx:id="backToProfileButton" layoutX="${60.0 * scale}" layoutY="${340.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${126.0 * scale}">
             <graphic>
-                <VBox prefHeight="106.0" prefWidth="122.0" styleClass="v-box">
-                    <ImageView fitHeight="35.0" fitWidth="75.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true">
+                <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
+                    <ImageView fitHeight="${35.0 * scale}" fitWidth="${75.0 * scale}" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true">
                         <Image url="@next.png" />
                     </ImageView>
-                    <FormattedText fx:id="backToProfileText" strokeType="OUTSIDE" strokeWidth="0.0" text="вернуться к анкете " textAlignment="CENTER" wrappingWidth="121.736328125" styleClass="sanserif-bold-15">
-                        <formatter>
-                            <LowerCaseFormatter/>
-                        </formatter>
-                    </FormattedText>
+                    <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />
+                    <Text fx:id="backToProfileText" strokeType="OUTSIDE" strokeWidth="0.0" text="вернуться к анкете " textAlignment="CENTER" wrappingWidth="${121.736328125 * scale}" styleClass="sanserif-bold-15">
+                    </Text>
                 </VBox>
             </graphic>
         </Button>
     </Pane>
-</AnchorPane>
+</Pane>
