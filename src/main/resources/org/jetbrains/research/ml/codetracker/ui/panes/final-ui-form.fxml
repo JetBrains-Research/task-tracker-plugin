@@ -23,10 +23,12 @@
         <Polygon fx:id="yellowPolygon" fill="#fff782" layoutX="${87.0 * scale}" layoutY="${482.0 * scale}" opacity="0.3" points="-80.0, 30.0, 473.0, 135.0, 473.0, -132.0" stroke="WHITE" strokeType="INSIDE" />
         <Button fx:id="backToTasksButton" layoutX="${374.0 * scale}" layoutY="${340.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${126.0 * scale}">
             <graphic>
-                <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
+                <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
                     <ImageView fitHeight="${35.0 * scale}" fitWidth="${75.0 * scale}" pickOnBounds="true" preserveRatio="true">
                         <Image url="@next.png" />
                     </ImageView>
+                    <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />
+
                     <Text fx:id="backToTasksText" strokeType="OUTSIDE" strokeWidth="0.0" text="вернуться к задачам" textAlignment="CENTER" wrappingWidth="${121.736328125 * scale}" styleClass="sanserif-bold-15">
                     </Text>
                 </VBox>
@@ -39,10 +41,11 @@
         <ComboBox fx:id="languageComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${40.0 * scale}" layoutX="${510.0 * scale}" layoutY="${8.0 * scale}" styleClass="language" visibleRowCount="5" />
         <Button fx:id="backToProfileButton" layoutX="${60.0 * scale}" layoutY="${340.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${126.0 * scale}">
             <graphic>
-                <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
+                <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
                     <ImageView fitHeight="${35.0 * scale}" fitWidth="${75.0 * scale}" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true">
                         <Image url="@next.png" />
                     </ImageView>
+                    <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />
                     <Text fx:id="backToProfileText" strokeType="OUTSIDE" strokeWidth="0.0" text="вернуться к анкете " textAlignment="CENTER" wrappingWidth="${121.736328125 * scale}" styleClass="sanserif-bold-15">
                     </Text>
                 </VBox>

@@ -25,10 +25,11 @@
 
         <Button fx:id="refreshButton" layoutX="${238.0 * scale}" layoutY="${243.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${93.0 * scale}">
             <graphic>
-                <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
+                <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
                     <ImageView fitHeight="${70.0 * scale}" fitWidth="${100.0 * scale}" pickOnBounds="true" preserveRatio="true">
                         <Image url="@refresh.png" />
                     </ImageView>
+                    <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />
                     <Text fx:id="refreshText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-15" text="try again" textAlignment="CENTER" wrappingWidth="${98.736328125 * scale}" />
                 </VBox>
             </graphic>

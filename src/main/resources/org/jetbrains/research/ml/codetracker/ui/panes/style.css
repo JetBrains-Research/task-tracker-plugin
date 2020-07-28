@@ -10,25 +10,40 @@
     -fx-border-width: 0;
     -fx-background-radius: 0;
     -fx-background-color: transparent;
+    -fx-font-size: 16em;
 }
+/* see https://stackoverflow.com/questions/26482047/resize-togglebutton-in-javafx
+For some reason it doesn't work with em :( */
+
+/*.radio-button {*/
+/*    -fx-font-family: SansSerif;*/
+/*    -fx-font-size: 16em;*/
+/*}*/
+
+/*.radio-button .label {*/
+/*    -fx-font-family: SansSerif;*/
+/*    -fx-font-size: 16em;*/
+/*}*/
+
 .radio-button .radio{
     -fx-background-insets: 0;
     -fx-background-color: transparent, white, transparent, white;
     -fx-background-radius: 100em;
+    -fx-padding: 0.4em;
     -fx-box-border: none;
     -fx-focus-color: black;
     -fx-faint-focus-color: -fx-control-inner-background;
     -fx-text-box-border: -fx-control-inner-background;
     -fx-border-width: 0em;
-    -fx-padding: 0.5em;
 }
 
-.radio-button .dot {
+.radio-button .radio .dot {
+    -fx-padding: 0.3em;
     -fx-background-radius: 100em;
-    -fx-padding: 0.5em;
     -fx-mark-highlight-color: black ;
     -fx-mark-color: black ;
 }
+
 .text-field {
     -fx-font-size: 17em;
     -fx-background-insets: 0;
@@ -228,7 +243,6 @@
 }
 
 .v-box {
-    -fx-spacing: 10em;
     -fx-alignment: top-center;
 }
 

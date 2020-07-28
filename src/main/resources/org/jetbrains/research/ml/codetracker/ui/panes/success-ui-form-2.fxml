@@ -25,12 +25,13 @@
         <Text fx:id="successText" layoutX="${129.0 * scale}" layoutY="${204.0 * scale}" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-20" text="loading..." textAlignment="CENTER" wrappingWidth="${318.5234375 * scale}">
         </Text>
         <ComboBox fx:id="languageComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${40.0 * scale}" layoutX="${510.0 * scale}" layoutY="${8.0 * scale}" styleClass="language" visibleRowCount="5" />
-        <Button fx:id="backToTasksButton" layoutX="${412.0 * scale}" layoutY="${380.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${126.0 * scale}">
+        <Button fx:id="backToTasksButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" layoutX="${412.0 * scale}" layoutY="${380.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${126.0 * scale}">
             <graphic>
-                <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
+                <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="v-box">
                     <ImageView fitHeight="${35.0 * scale}" fitWidth="${75.0 * scale}" pickOnBounds="true" preserveRatio="true">
                         <Image url="@next.png" />
                     </ImageView>
+                    <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />
                     <Text fx:id="backToTasksText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-15" text="вернуться к задачам" textAlignment="CENTER" wrappingWidth="${121.736328125 * scale}">
                     </Text>
                 </VBox>

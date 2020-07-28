@@ -77,12 +77,13 @@
         </Label>
         <ComboBox fx:id="countryComboBox" layoutX="${80.0 * scale}" layoutY="${440.0 * scale}" prefHeight="${20.0 * scale}" prefWidth="${396.0 * scale}" />
         <ComboBox fx:id="languageComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${40.0 * scale}" layoutX="${510.0 * scale}" layoutY="${8.0 * scale}" styleClass="language" visibleRowCount="5" />
-        <Button fx:id="startWorkingButton" layoutX="${451.0 * scale}" layoutY="${501.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${93.0 * scale}">
+        <Button fx:id="startWorkingButton" layoutX="${440.0 * scale}" layoutY="${501.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${93.0 * scale}">
             <graphic>
-                <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
+                <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
                     <ImageView fitHeight="${35.0 * scale}" fitWidth="${75.0 * scale}" pickOnBounds="true" preserveRatio="true">
                         <Image url="@next.png" />
                     </ImageView>
+                    <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />
                     <Text fx:id="startWorkingText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="${98.736328125 * scale}" styleClass="sanserif-bold-15">
                     </Text>
                 </VBox>

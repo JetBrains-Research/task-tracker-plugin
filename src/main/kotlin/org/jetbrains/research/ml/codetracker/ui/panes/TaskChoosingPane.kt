@@ -61,6 +61,8 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     private lateinit var finishWorkButton: Button
     @FXML
     private lateinit var finishWorkText: Text
+    @FXML
+    private lateinit var instructionText: Text
 
     @FXML private lateinit var mainPane: Pane
 
@@ -75,6 +77,7 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
         mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
         scalePolygons(arrayListOf(orangePolygon, bluePolygon))
         initChoseTaskComboBox()
+        initInstruction()
         initButtons()
         makeTranslatable()
         super.initialize(url, resource)
@@ -94,6 +97,19 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
                 startSolvingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
         })
+    }
+
+    private fun initInstruction() {
+        val language = LanguagePaneUiData.language.currentValue
+        val text = translations?.get(language)?.description ?: ""
+        instructionText.text = getFormattedText(text)
+    }
+
+    private fun getFormattedText(text: String, default: String = ""): String {
+        val language = LanguagePaneUiData.language.currentValue
+        val startSolving = translations?.get(language)?.startSolving ?: default
+        val submit = PluginServer.paneText?.taskSolvingPane?.get(language)?.submit ?: default
+        return java.lang.String.format(text, startSolving, submit, submit)
     }
 
     private fun initButtons() {
@@ -119,6 +135,8 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
                     choseTaskLabel.text = it.chooseTask
                     startSolvingText.text = it.startSolving
                     finishWorkText.text = it.finishSession
+                    val text = translations?.get(newLanguage)?.description ?: ""
+                    instructionText.text = getFormattedText(text)
                     changeComboBoxItems(
                         choseTaskComboBox,
                         choseTaskObservableList,

@@ -39,10 +39,11 @@
         <Button fx:id="startSolvingButton" layoutX="${440.0 * scale}" layoutY="${485.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}"
                 prefWidth="${93.0 * scale}">
             <graphic>
-                <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
+                <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
                     <ImageView fitHeight="${35.0 * scale}" fitWidth="${75.0 * scale}" pickOnBounds="true" preserveRatio="true">
                         <Image url="@next.png"/>
                     </ImageView>
+                    <Pane prefHeight="${15.0 * scale}" prefWidth="${75.0 * scale}" />
                     <Text fx:id="startSolvingText" strokeType="OUTSIDE" strokeWidth="0.0"
                           textAlignment="CENTER"
                           wrappingWidth="${98.736328125 * scale}" styleClass="sanserif-bold-15">
@@ -50,18 +51,32 @@
                 </VBox>
             </graphic>
         </Button>
+<!--        <Button fx:id="startSolvingButton" layoutX="${432.0 * scale}" layoutY="${485.0 * scale}" mnemonicParsing="false" prefHeight="${118.0 * scale}" prefWidth="${117.0 * scale}">-->
+<!--            <graphic>-->
+<!--                <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${96.0 * scale}" prefWidth="${84.0 * scale}">-->
+<!--                    <ImageView fitHeight="${35.0 * scale}" fitWidth="${75.0 * scale}" pickOnBounds="true" preserveRatio="true">-->
+<!--                        <Image url="@next.png" />-->
+<!--                    </ImageView>-->
+<!--                    <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />-->
+<!--                    <Text fx:id="startSolvingText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-15" textAlignment="CENTER" wrappingWidth="${98.736328125 * scale}">-->
+<!--                    </Text>-->
+<!--                </VBox>-->
+<!--            </graphic>-->
+<!--        </Button>-->
         <Button fx:id="finishWorkButton" layoutX="${30.0 * scale}" layoutY="${485.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}"
                 prefWidth="${87.0 * scale}">
             <graphic>
-                <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
+                <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
                     <ImageView fitHeight="${35.0 * scale}" fitWidth="${35.0 * scale}" pickOnBounds="true" preserveRatio="true">
                         <Image url="@close.png"/>
                     </ImageView>
+                    <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />
                     <Text fx:id="finishWorkText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER"
                                    wrappingWidth="${99.736328125 * scale}" styleClass="sanserif-bold-15">
                     </Text>
                 </VBox>
             </graphic>
         </Button>
+        <Text fx:id="instructionText" layoutX="${50.0 * scale}" layoutY="${290.0 * scale}" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="${460.0 * scale}" styleClass="sanserif-16"/>
     </Pane>
 </Pane>

@@ -96,8 +96,7 @@ internal object MainController {
     fun createContent(project: Project): JComponent {
         logger.info("${Plugin.PLUGIN_ID} MainController create content, current thread is ${Thread.currentThread().name}")
         val screenSize = Toolkit.getDefaultToolkit().screenSize
-//        val scale = screenSize.height / SCREEN_HEIGHT
-        val scale = 1.0
+        val scale = screenSize.height / SCREEN_HEIGHT
         val panel = JPanel()
         panel.background = java.awt.Color.WHITE
         contents.add(Content(panel, project, scale, panes))
