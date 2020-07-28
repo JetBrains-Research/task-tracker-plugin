@@ -20,7 +20,7 @@ when the plugin starts.
 It is also possible for user to set their age and programming experience. Currently, it's only available on russian language. 
 
 
-![](readme-img/codetracker.gif)
+<img src="https://github.com/JetBrains-Research/codetracker/blob/master/readme-img/codetracker.gif" width="250">
 
 ## Installation
 
