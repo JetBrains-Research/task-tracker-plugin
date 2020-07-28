@@ -54,10 +54,7 @@
                   prefHeight="${80.0 * scale}" prefWidth="${260.0 * scale}" styleClass="text-field" wrapText="true"/>
         <TextArea fx:id="thirdExampleOutput" editable="false" focusTraversable="false" layoutX="280.0" layoutY="538.0"
                   prefHeight="${80.0 * scale}" prefWidth="${260.0 * scale}" styleClass="text-field" wrapText="true"/>
-        <Rectangle fx:id="LanguageRectangle" fill="TRANSPARENT" height="${25.0 * scale}" layoutX="508.0" layoutY="8.0"
-                   strokeType="INSIDE" styleClass="rectangle" width="${42.0 * scale}"/>
-        <ComboBox fx:id="languageComboBox" layoutX="512.0" layoutY="5.0" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="${25.0 * scale}" prefWidth="${51.0 * scale}" styleClass="language" visibleRowCount="5"/>
+        <ComboBox fx:id="languageComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${40.0 * scale}" layoutX="${510.0 * scale}" layoutY="${8.0 * scale}" styleClass="language" visibleRowCount="5" />
         <Button fx:id="sendSolutionButton" layoutX="439.0" layoutY="647.0" mnemonicParsing="false" prefHeight="${93.0 * scale}"
                 prefWidth="${93.0 * scale}">
             <graphic>

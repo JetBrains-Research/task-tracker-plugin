@@ -34,8 +34,7 @@
         </Label>
         <Text fx:id="messageText" layoutX="98.0" layoutY="261.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="${364.0 * scale}" styleClass="sanserif-20">
         </Text>
-        <Rectangle fx:id="LanguageRectangle" fill="TRANSPARENT" height="${25.0 * scale}" layoutX="508.0" layoutY="8.0" strokeType="INSIDE" styleClass="rectangle" width="${42.0 * scale}" />
-        <ComboBox fx:id="languageComboBox" layoutX="512.0" layoutY="5.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${51.0 * scale}" styleClass="language" visibleRowCount="5" />
+        <ComboBox fx:id="languageComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${40.0 * scale}" layoutX="${510.0 * scale}" layoutY="${8.0 * scale}" styleClass="language" visibleRowCount="5" />
         <Button fx:id="backToProfileButton" layoutX="60.0" layoutY="340.0" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${126.0 * scale}">
             <graphic>
                 <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">

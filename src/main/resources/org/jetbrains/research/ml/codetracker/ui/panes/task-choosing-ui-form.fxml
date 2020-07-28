@@ -33,10 +33,7 @@
                 </ImageView>
             </graphic>
         </Button>
-        <Rectangle fx:id="LanguageRectangle" fill="TRANSPARENT" height="25.0" layoutX="${508.0 * scale}" layoutY="${8.0 * scale}"
-                   strokeType="INSIDE" styleClass="rectangle" width="${42.0 * scale}"/>
-        <ComboBox fx:id="languageComboBox" layoutX="${512.0 * scale}" layoutY="${5.0 * scale}" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="25.0" prefWidth="${51.0 * scale}" styleClass="language" visibleRowCount="5"/>
+        <ComboBox fx:id="languageComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${40.0 * scale}" layoutX="${510.0 * scale}" layoutY="${8.0 * scale}" styleClass="language" visibleRowCount="5" />
         <Button fx:id="startSolvingButton" layoutX="${440.0 * scale}" layoutY="${485.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}"
                 prefWidth="${93.0 * scale}">
             <graphic>

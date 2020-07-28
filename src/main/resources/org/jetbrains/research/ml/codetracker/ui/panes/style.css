@@ -14,12 +14,20 @@
 .radio-button .radio{
     -fx-background-insets: 0;
     -fx-background-color: transparent, white, transparent, white;
-    -fx-background-radius: 100, 100, 100, 100;
+    -fx-background-radius: 100em;
     -fx-box-border: none;
-    -fx-focus-color: -fx-control-inner-background;
+    -fx-focus-color: black;
     -fx-faint-focus-color: -fx-control-inner-background;
     -fx-text-box-border: -fx-control-inner-background;
-    -fx-border-width: -1;
+    -fx-border-width: 0em;
+    -fx-padding: 0.5em;
+}
+
+.radio-button .dot {
+    -fx-background-radius: 100em;
+    -fx-padding: 0.5em;
+    -fx-mark-highlight-color: black ;
+    -fx-mark-color: black ;
 }
 .text-field {
     -fx-font-size: 17em;
@@ -30,8 +38,8 @@
     -fx-faint-focus-color: transparent;
     -fx-text-box-border: transparent;
     -fx-border-width: 1em;
-    -fx-background-radius: 100;
-    -fx-border-radius: 100;
+    -fx-background-radius: 100em;
+    -fx-border-radius: 100em;
 }
 .text-field .content {
     -fx-background-color: transparent, white, transparent, white;
@@ -42,8 +50,8 @@
 }
 
 .combo-box {
-    -fx-border-radius: 20;
-    -fx-background-radius: 20;
+    -fx-border-radius: 20em;
+    -fx-background-radius: 20em;
     -fx-border-color: #000000;
     -fx-background-color: #ffffff;
     -fx-border-width: 2em;
@@ -55,31 +63,35 @@
     -fx-background: white;
     -fx-background-color: transparent;
     -fx-text-fill: -fx-text-base-color;
-    -fx-background-radius: 20;
-    -fx-border-radius: 20;
+    -fx-background-radius: 20em;
+    -fx-border-radius: 20em;
 }
 
 .combo-box-popup .list-view
 {
     -fx-background-color: white;
     -fx-effect: none;
-    -fx-background-radius: 20;
-    -fx-border-radius: 20;
+    -fx-background-radius: 20em;
+    -fx-border-radius: 20em;
+}
+
+.combo-box .scroll-bar:vertical {
+    -fx-background-color: transparent;
 }
 
 .combo-box-popup .list-view .list-cell
 {
     -fx-background-color: white;
-    -fx-background-radius: 20;
-    -fx-border-radius: 20;
+    -fx-background-radius: 20em;
+    -fx-border-radius: 20em;
 }
 
 .combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover
 {
     -fx-background-color: -fx-selection-bar;
     -fx-text-fill: white;
-    -fx-background-radius: 20;
-    -fx-border-radius: 20;
+    -fx-background-radius: 20em;
+    -fx-border-radius: 20em;
 }
 
 .combo-box-popup .list-view .list-cell:filled:hover
@@ -87,21 +99,21 @@
     -fx-background-color: -fx-selection-bar;
     -fx-text-fill: white;
     -fx-opacity: .5;
-    -fx-background-radius: 20;
-    -fx-border-radius: 20;
+    -fx-background-radius: 20em;
+    -fx-border-radius: 20em;
 }
 
 /* Language Combo box */
 
-
 .combo-box.language {
-    -fx-border-radius: 20;
-    -fx-background-radius: 20;
-    -fx-border-color: transparent;
+    -fx-pref-width: 40em;
+    -fx-border-radius: 20em;
+    -fx-background-radius: 20em;
+    -fx-border-color: black;
     -fx-background-color: transparent;
-    -fx-border-width: 0em;
-    /*-fx-alignment: center-left;*/
-    -fx-padding: 0em 0em 0em -3em;
+    -fx-border-width: 2em;
+    -fx-alignment: center;
+    -fx-padding: -2em -1em 0em 0em;
 }
 
 
@@ -113,35 +125,36 @@
     -fx-text-fill: -fx-text-base-color;
     -fx-background-radius: 0;
     -fx-border-radius: 0;
-    /*-fx-alignment: center;*/
+    -fx-alignment: center;
+    -fx-padding: 0em 0em 0em 0em;
 }
 
 
 .combo-box.language .combo-box-popup .list-view
 {
+    -fx-pref-width: 40em;
     -fx-background-color: transparent;
     -fx-effect: none;
-    -fx-background-radius: 0;
-    -fx-border-radius: 0;
-    /*-fx-alignment: center;*/
-
+    -fx-background-radius: 20em;
+    -fx-border-radius: 20em;
+    -fx-padding: 0em 0em 0em 0em;
+    -fx-alignment: center;
 }
+
 
 .combo-box.language .combo-box-popup .list-view .list-cell
 {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
     -fx-border-radius: 0;
-    /*-fx-alignment: center;*/
 }
 
 .combo-box.language .combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover
 {
     -fx-background-color: transparent;
     -fx-text-fill: -fx-text-base-color;
-    -fx-background-radius: 0;
-    -fx-border-radius: 0;
-    /*-fx-alignment: center;*/
+    -fx-background-radius: 20em;
+    -fx-border-radius: 20em;
 }
 
 .combo-box.language .combo-box-popup .list-view .list-cell:filled:hover
@@ -149,9 +162,14 @@
     -fx-background-color: transparent;
     -fx-text-fill: -fx-text-base-color;
     -fx-opacity: .5;
-    -fx-background-radius: 0;
-    -fx-border-radius: 0;
-    /*-fx-alignment: center;*/
+    -fx-background-radius: 20em;
+    -fx-border-radius: 20em;
+}
+
+.border-pane {
+    -fx-border-radius: 20;
+    -fx-border-color: black;
+    -fx-border-width: 2em;
 }
 
 .rectangle {
@@ -212,5 +230,9 @@
 .v-box {
     -fx-spacing: 10em;
     -fx-alignment: top-center;
+}
+
+.line {
+    -fx-stroke-width: 2em;
 }
 

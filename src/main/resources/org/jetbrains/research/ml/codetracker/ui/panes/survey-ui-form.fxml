@@ -18,64 +18,64 @@
 
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.BorderPane?>
 <Pane fx:id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <Pane id="codetrackerPane" prefHeight="${80.0 * scale}" prefWidth="${560.0 * scale}" stylesheets="@style.css">
-        <Label layoutX="193.0" layoutY="11.0" styleClass="codetracker-sign" text="CodeTracker">
+        <Label layoutX="${193.0 * scale}" layoutY="${11.0 * scale}" styleClass="codetracker-sign" text="CodeTracker">
         </Label>
     </Pane>
-    <Pane fx:id="profilePane" layoutY="80.0" prefHeight="${760.0 * scale}" prefWidth="${560.0 * scale}" stylesheets="@style.css">
+    <Pane fx:id="profilePane" layoutY="${80.0 * scale}" prefHeight="${760.0 * scale}" prefWidth="${560.0 * scale}" stylesheets="@style.css">
         <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="${552.0 * scale}" layoutY="${62.0 * scale}" opacity="0.35" points="-552.0, -64.0, -552.0, 110.0, 8.0, -22.0, 8.0, -64.0" stroke="WHITE" strokeType="INSIDE" />
-        <Rectangle fx:id="yellowRectangle" arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="${191.0 * scale}" layoutY="415.0" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="${560.0 * scale}" />
+        <Rectangle fx:id="yellowRectangle" arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="${191.0 * scale}" layoutY="${415.0 * scale}" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="${560.0 * scale}" />
         <Polygon fx:id="bluePolygon" fill="#7abaf5" layoutX="${45.0 * scale}" layoutY="${238.0 * scale}" opacity="0.25" points="-45.0, 128.0, 515.0, 198.0, 515.0, -102.0, -45.0, -102.0" stroke="WHITE" strokeType="INSIDE" />
-        <HBox layoutX="30.0" layoutY="49.0" styleClass="h-box">
+        <HBox layoutX="${30.0 * scale}" layoutY="${49.0 * scale}" styleClass="h-box">
             <Label fx:id="ageLabel" styleClass="sanserif-bold-20">
             </Label>
-            <AnchorPane>
+            <Pane>
                 <TextField fx:id="ageTextField" prefHeight="${26.0 * scale}" prefWidth="${70.0 * scale}" />
-                <Line fx:id="ageLine" endX="${-17.0 * scale}" layoutX="85.0" layoutY="25.0" startX="${-87.0 * scale}" />
-            </AnchorPane>
+                <Line fx:id="ageLine" endX="${-17.0 * scale}" layoutX="${85.0 * scale}" layoutY="${25.0 * scale}" startX="${-87.0 * scale}" styleClass="line"/>
+            </Pane>
         </HBox>
-        <Label fx:id="genderLabel" layoutX="30.0" layoutY="110.0" styleClass="sanserif-bold-20">
+        <Label fx:id="genderLabel" layoutX="${30.0 * scale}" layoutY="${110.0 * scale}" styleClass="sanserif-bold-20">
         </Label>
-        <RadioButton fx:id="gender1" layoutX="80.0" layoutY="150.0" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16">
+        <RadioButton fx:id="gender1" layoutX="${80.0 * scale}" layoutY="${150.0 * scale}" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16">
             <toggleGroup>
                 <ToggleGroup fx:id="genderGroup" />
             </toggleGroup>
         </RadioButton>
-        <RadioButton fx:id="gender2" layoutX="80.0" layoutY="190.0" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16" toggleGroup="$genderGroup">
+        <RadioButton fx:id="gender2" layoutX="${80.0 * scale}" layoutY="${190.0 * scale}" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16" toggleGroup="$genderGroup">
         </RadioButton>
-        <RadioButton fx:id="gender3" layoutX="80.0" layoutY="230.0" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16" toggleGroup="$genderGroup">
+        <RadioButton fx:id="gender3" layoutX="${80.0 * scale}" layoutY="${230.0 * scale}" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16" toggleGroup="$genderGroup">
         </RadioButton>
-        <RadioButton fx:id="gender4" layoutX="340.0" layoutY="150.0" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16" toggleGroup="$genderGroup">
+        <RadioButton fx:id="gender4" layoutX="${340.0 * scale}" layoutY="${150.0 * scale}" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16" toggleGroup="$genderGroup">
         </RadioButton>
-        <RadioButton fx:id="gender5" layoutX="340.0" layoutY="190.0" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16" toggleGroup="$genderGroup">
+        <RadioButton fx:id="gender5" layoutX="${340.0 * scale}" layoutY="${190.0 * scale}" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16" toggleGroup="$genderGroup">
         </RadioButton>
-        <RadioButton fx:id="gender6" layoutX="340.0" layoutY="230.0" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16" toggleGroup="$genderGroup">
+        <RadioButton fx:id="gender6" layoutX="${340.0 * scale}" layoutY="${230.0 * scale}" mnemonicParsing="false" prefHeight="${26.0 * scale}" prefWidth="${221.0 * scale}" styleClass="sanserif-16" toggleGroup="$genderGroup">
         </RadioButton>
-        <Label fx:id="experienceLabel" layoutX="25.0" layoutY="290.0" styleClass="sanserif-bold-20">
+        <Label fx:id="experienceLabel" layoutX="${25.0 * scale}" layoutY="${290.0 * scale}" styleClass="sanserif-bold-20">
         </Label>
-        <HBox layoutX="25.0" layoutY="330.0" styleClass="h-box">
+        <HBox layoutX="${25.0 * scale}" layoutY="${330.0 * scale}" styleClass="h-box">
             <Label fx:id="peYearsLabel" styleClass="sanserif-16">
             </Label>
-            <AnchorPane prefHeight="${25.0 * scale}" prefWidth="${70.0 * scale}">
+            <Pane prefHeight="${25.0 * scale}" prefWidth="${70.0 * scale}">
                 <TextField fx:id="peYearsTextField" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${70.0 * scale}" />
-                <Line fx:id="peYearsLine" endX="${-17.0 * scale}" layoutX="87.0" layoutY="22.0" startX="${-87.0 * scale}" />
-            </AnchorPane>
+                <Line fx:id="peYearsLine" endX="${-17.0 * scale}" layoutX="${87.0 * scale}" layoutY="${22.0 * scale}" startX="${-87.0 * scale}" styleClass="line"/>
+            </Pane>
         </HBox>
-        <HBox fx:id="peMonthsHBox" layoutX="301.0" layoutY="330.0" styleClass="h-box">
+        <HBox fx:id="peMonthsHBox" layoutX="${301.0 * scale}" layoutY="${330.0 * scale}" styleClass="h-box">
             <Label fx:id="peMonthsLabel" styleClass="sanserif-16">
             </Label>
-            <AnchorPane prefHeight="${25.0 * scale}" prefWidth="${70.0 * scale}">
+            <Pane prefHeight="${25.0 * scale}" prefWidth="${70.0 * scale}">
                 <TextField fx:id="peMonthsTextField" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${70.0 * scale}" />
-                <Line fx:id="peMonthsLine" endX="${-17.0 * scale}" layoutX="87.0" layoutY="22.0" startX="${-87.0 * scale}" />
-            </AnchorPane>
+                <Line fx:id="peMonthsLine" endX="${-17.0 * scale}" layoutX="${87.0 * scale}" layoutY="${22.0 * scale}" startX="${-87.0 * scale}" styleClass="line"/>
+            </Pane>
         </HBox>
-        <Label fx:id="countryLabel" layoutX="25.0" layoutY="390.0" styleClass="sanserif-bold-20">
+        <Label fx:id="countryLabel" layoutX="${25.0 * scale}" layoutY="${390.0 * scale}" styleClass="sanserif-bold-20">
         </Label>
-        <ComboBox fx:id="countryComboBox" layoutX="80.0" layoutY="440.0" prefHeight="${20.0 * scale}" prefWidth="${396.0 * scale}" />
-        <Rectangle fx:id="LanguageRectangle" fill="TRANSPARENT" height="25.0" layoutX="508.0" layoutY="8.0" strokeType="INSIDE" styleClass="rectangle" width="42.0" />
-        <ComboBox fx:id="languageComboBox" layoutX="512.0" layoutY="5.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${51.0 * scale}" styleClass="language" visibleRowCount="5" />
-        <Button fx:id="startWorkingButton" layoutX="451.0" layoutY="501.0" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${93.0 * scale}">
+        <ComboBox fx:id="countryComboBox" layoutX="${80.0 * scale}" layoutY="${440.0 * scale}" prefHeight="${20.0 * scale}" prefWidth="${396.0 * scale}" />
+        <ComboBox fx:id="languageComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${40.0 * scale}" layoutX="${510.0 * scale}" layoutY="${8.0 * scale}" styleClass="language" visibleRowCount="5" />
+        <Button fx:id="startWorkingButton" layoutX="${451.0 * scale}" layoutY="${501.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${93.0 * scale}">
             <graphic>
                 <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
                     <ImageView fitHeight="${35.0 * scale}" fitWidth="${75.0 * scale}" pickOnBounds="true" preserveRatio="true">

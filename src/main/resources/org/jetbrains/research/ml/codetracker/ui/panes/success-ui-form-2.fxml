@@ -22,8 +22,7 @@
         <Polygon fx:id="yellowPolygon" fill="#fff782" layoutX="${558.0 * scale}" layoutY="${470.0 * scale}" opacity="0.35" points="-558.0, -355.0, -558.0, -301.0, 2.0, -112.0, 2.0, -355.0" stroke="WHITE" strokeType="INSIDE" />
         <Text fx:id="successText" layoutX="${129.0 * scale}" layoutY="${204.0 * scale}" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-20" text="loading..." textAlignment="CENTER" wrappingWidth="${318.5234375 * scale}">
         </Text>
-        <Rectangle fx:id="LanguageRectangle" fill="TRANSPARENT" height="25.0" layoutX="${508.0 * scale}" layoutY="${8.0 * scale}" strokeType="INSIDE" styleClass="rectangle" width="42.0" />
-        <ComboBox fx:id="languageComboBox" layoutX="${512.0 * scale}" layoutY="${5.0 * scale}" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${51.0 * scale}" styleClass="language" visibleRowCount="5" />
+        <ComboBox fx:id="languageComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${40.0 * scale}" layoutX="${510.0 * scale}" layoutY="${8.0 * scale}" styleClass="language" visibleRowCount="5" />
         <Button fx:id="backToTasksButton" layoutX="${412.0 * scale}" layoutY="${380.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${126.0 * scale}">
             <graphic>
                 <VBox prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">

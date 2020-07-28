@@ -6,12 +6,18 @@ import com.intellij.util.messages.Topic
 import javafx.collections.FXCollections
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
+import javafx.geometry.Insets
+import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
+import javafx.scene.control.ListCell
+import javafx.scene.control.ListView
+import javafx.util.Callback
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import java.net.URL
 import java.util.*
 import java.util.function.Consumer
+
 
 /**
  * For panes with language combo box
@@ -24,14 +30,21 @@ interface LanguageNotifier : Consumer<Int> {
 
 open class LanguagePaneUiData : PaneUiData() {
     companion object {
-        val language = ListedUiField(PluginServer.availableLanguages, 0,
-            LanguageNotifier.LANGUAGE_TOPIC, isRequired = false)
+        val language = ListedUiField(
+            PluginServer.availableLanguages, 0,
+            LanguageNotifier.LANGUAGE_TOPIC, isRequired = false
+        )
     }
 
     override fun getData(): List<UiField<*>> = arrayListOf(language)
 }
 
-open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController(project, scale, fxPanel, id),
+open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : PaneController(
+    project,
+    scale,
+    fxPanel,
+    id
+),
     Updatable {
     @FXML
     private lateinit var languageComboBox: ComboBox<String>
