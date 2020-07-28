@@ -40,26 +40,26 @@
                 styleClass="sanserif-bold-20"/>
          <RadioButton fx:id="peLessThanHalf" layoutX="${78.0 * height}" layoutY="${227.0 * height}"
                       mnemonicParsing="false" prefHeight="${26.0 * height}" prefWidth="${221.0 * height}"
-                      text="меньше 0.5 года" styleClass="sanserif-15">
+                      text="меньше 0.5 года" styleClass="sanserif-16">
             <toggleGroup>
                <ToggleGroup fx:id="programExperienceGroup"/>
             </toggleGroup>
          </RadioButton>
          <RadioButton fx:id="peFromHalfToOne" layoutX="${78.0 * height}" layoutY="${267.0 * height}"
                       mnemonicParsing="false" text="от 0.5 до 1 года" toggleGroup="$programExperienceGroup"
-                      styleClass="sanserif-15"/>
+                      styleClass="sanserif-16"/>
          <RadioButton fx:id="peFromOneToTwo" layoutX="${78.0 * height}" layoutY="${307.0 * height}"
                       mnemonicParsing="false" text="от 1 года до 2 лет" toggleGroup="$programExperienceGroup"
-                      styleClass="sanserif-15"/>
+                      styleClass="sanserif-16"/>
          <RadioButton fx:id="peFromTwoToFour" layoutX="${338.0 * height}" layoutY="${227.0 * height}"
                       mnemonicParsing="false" text="от 2 до 4 лет" toggleGroup="$programExperienceGroup"
-                      styleClass="sanserif-15"/>
+                      styleClass="sanserif-16"/>
          <RadioButton fx:id="peFromFourToSix" layoutX="${338.0 * height}" layoutY="${267.0 * height}"
                       mnemonicParsing="false" text="от 4 до 6 лет" toggleGroup="$programExperienceGroup"
-                      styleClass="sanserif-15"/>
+                      styleClass="sanserif-16"/>
          <RadioButton fx:id="peMoreThanSix" layoutX="${338.0 * height}" layoutY="${307.0 * height}"
                       mnemonicParsing="false" text="больше 6 лет" toggleGroup="$programExperienceGroup"
-                      styleClass="sanserif-15"/>
+                      styleClass="sanserif-16"/>
          <Button fx:id="startInfoFormButton" layoutX="${461.0 * height}" layoutY="${373.0 * height}"
                  mnemonicParsing="false" prefHeight="${43.0 * height}" prefWidth="${64.0 * height}"
                  textFill="WHITE">
@@ -140,15 +140,15 @@
             <Text strokeType="OUTSIDE" strokeWidth="${0.0 * height}" text="&#10;&#10;"
                   styleClass="sanserif-bold-20"/>
             <Text fx:id="taskDescriptionText" strokeType="OUTSIDE" strokeWidth="${0.0 * height}"
-                  wrappingWidth="${493.3779296875 * height}" styleClass="sanserif-15"/>
+                  wrappingWidth="${493.3779296875 * height}" styleClass="sanserif-16"/>
             <Text strokeType="OUTSIDE" strokeWidth="${0.0 * height}" text="&#10;&#10;входные данные:&#10;"
                   styleClass="sanserif-bold-20"/>
             <Text fx:id="taskInputText" strokeType="OUTSIDE" strokeWidth="${0.0 * height}"
-                  styleClass="sanserif-15"/>
+                  styleClass="sanserif-16"/>
             <Text strokeType="OUTSIDE" strokeWidth="${0.0 * height}" text="&#10;&#10;выходные данные:&#10;"
                   wrappingWidth="${207.900390625 * height}" styleClass="sanserif-bold-20"/>
             <Text fx:id="taskOutputText" strokeType="OUTSIDE" strokeWidth="${0.0 * height}"
-                  styleClass="sanserif-15"/>
+                  styleClass="sanserif-16"/>
          </TextFlow>
          <Label layoutX="${39.0 * height}" layoutY="${319.0 * height}" text="входные данные"
                 styleClass="sanserif-bold-20"/>
