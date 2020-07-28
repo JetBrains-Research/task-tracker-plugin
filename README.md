@@ -3,31 +3,41 @@
 # Codetracker
 
 **Codetracker** is an IntelliJ-based IDE plugin for tracking code changes while solving programming problems.
+The plugin is built by the [ML4SE lab @ JetBrains Research](https://research.jetbrains.org/groups/ml_methods) 
+to facilitate collection of data for research projects.
 
 ### Code changes tracking
 
-This plugin only writes changes in open documents, which was created automatically for the tasks by the plugin, in a .csv files and sends them after all to the [codetracker server](https://github.com/nbirillo/coding-assistant-server). **It happens only if you press the submit button.**
-All data is sent **anonymously**, the only information is file names and the source code. This data can be helpful for 
-analyzing students programming patterns or collecting diverse solutions of given problems. For example, 
-see [automated hint generation system](https://github.com/JetBrains-Research/codetracker-org.jetbrains.research.ml.codetracker.data), 
+Codetracker tracks changes made in code during problem-solving.
+We use this data to analyze programming patterns of students and collect diverse sets of solutions for programming problems. 
+For example, we are building an [automated hint generation system](https://github.com/JetBrains-Research/codetracker-data) 
 based on this data.
 
 ### Problems solving
 
-Plugin's ui is designed for choosing different problems to solve and seeing correct examples of 
-problem's behaviour. All data about problems is received from the [codetracker server](https://github.com/nbirillo/coding-assistant-server) 
-when the plugin starts. 
-It is also possible for user to set their age and programming experience. Currently, it's available on two languages: English and Russian.
+On startup, Codetracker asks the user to specify their age and programming experience.
+The UI of Codetracker enables the user to choose a problem to solve and see correct examples of desired behaviour. 
+All data about problems is received from the [codetracker server](https://github.com/nbirillo/coding-assistant-server) 
+when the plugin starts.  
 
+Currently Codetracker is available in English and Russian.
 
 <img src="https://github.com/JetBrains-Research/codetracker/blob/master/readme-img/codetracker.gif" width="250">
 
+## Privacy
+
+**By installing Codetracker, you agree to send us changes in code that you make during problem-solving.**
+This plugin only tracks changes in open documents, which are created automatically for the tasks by the plugin. 
+The data is sent to our privately hosted instance of [codetracker server](https://github.com/nbirillo/coding-assistant-server).
+**Codetracker only sends the data when you press the `submit` button.**
+All data is sent **anonymously**, and only includes filenames, source code, and changes.
+
 ## Installation
 
-**By installing this plugin, you agree to send your source code changes to our server.**
+Just clone the repo by `git clone https://github.com/JetBrains-Research/codetracker.git` and run `./gradlew build shadowJar` to build a .zip distribution of the plugin. 
+The .zip is located in `build/distributions/codetracker-1.0-SNAPSHOT.zip`. Then __install the plugin from disk__ into an IntelliJ-based IDE of your choice.
+(see [this guide](https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk) for example). 
 
-Just clone the repo by `git clone https://github.com/JetBrains-Research/codetracker.git` and run `./gradlew build shadowJar` to build a .zip-file. 
-You will find it at the path `build/distributions/codetracker-1.0-SNAPSHOT.zip`. Then add it to the IntelliJ-based IDE you want to use by installing from disk 
-(see [this guide](https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk) for example). Also, we created the details [guide](https://github.com/JetBrains-Research/codetracker/wiki) about 
-installing and uninstalling the **codetracker**. This guide is available on two languages: English and Russian.
+Also, we created a detailed [guide](https://github.com/JetBrains-Research/codetracker/wiki) about 
+installing and uninstalling **codetracker**. The guide is available in English and Russian.
 
