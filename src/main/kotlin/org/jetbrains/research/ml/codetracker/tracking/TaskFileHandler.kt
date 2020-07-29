@@ -87,8 +87,18 @@ object TaskFileHandler {
 
     private fun getOrCreateFile(project: Project, task: Task, language: Language = Language.PYTHON): VirtualFile? {
         val file = File("${project.basePath}/$PLUGIN_FOLDER/${task.key}${language.extension.ext}")
-        FileUtil.createIfDoesntExist(file)
+        if (!file.exists()) {
+            FileUtil.createIfDoesntExist(file)
+            file.writeText(getTaskComment(task, language))
+        }
         return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
+    }
+
+    private fun getTaskComment(task: Task, language: Language = Language.PYTHON): String {
+        return when(language) {
+            Language.PYTHON -> "# Write code for the ${task.key} task here\n"
+            else -> TODO("Add other languages")
+        }
     }
 
     /**
