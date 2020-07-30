@@ -76,35 +76,40 @@ object SurveyUiData : LanguagePaneUiData() {
     private val countries: List<Country> = PluginServer.countries
     private val genders: List<Gender> = PluginServer.genders
 
-    val age = UiField(StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.AGE, -1), AgeNotifier.AGE_TOPIC)
+    val age = UiField(-1, AgeNotifier.AGE_TOPIC, StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.AGE, -1))
     val gender = ListedUiField(
         genders,
-        StoredInfoHandler.readIndexStoredItem(
+        -1,
+        GenderNotifier.GENDER_TOPIC,
+        initValue = StoredInfoHandler.readIndexStoredItem(
             UiLoggedDataHeader.GENDER,
             genders,
             { g, k -> g.key == k },
             -1
-        ), GenderNotifier.GENDER_TOPIC
+        )
     )
-    val peYears = UiField(
-        StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.PROGRAM_EXPERIENCE_YEARS, -1),
-        PeYearsNotifier.PE_YEARS_TOPIC
+    val peYears = UiField(-1,
+        PeYearsNotifier.PE_YEARS_TOPIC,
+        StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.PROGRAM_EXPERIENCE_YEARS, -1)
+
     )
-    val peMonths = UiField(
-        StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.PROGRAM_EXPERIENCE_MONTHS, -1),
+    val peMonths = UiField(-1,
         PeMonthsNotifier.PE_MONTHS_TOPIC,
+        StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.PROGRAM_EXPERIENCE_MONTHS, -1),
         false
     )
     val country = ListedUiField(
         countries,
+        -1,
+        CountryNotifier.COUNTRY_TOPIC,
+        compareBy { c -> c.translation.getOrDefault(language.currentValue, "") },
+        CountryComparatorNotifier.COUNTRY_COMPARATOR_TOPIC,
         StoredInfoHandler.readIndexStoredItem(
             UiLoggedDataHeader.COUNTRY,
             countries,
             { c, k -> c.key == k },
             -1
-        ), CountryNotifier.COUNTRY_TOPIC,
-        compareBy { c -> c.translation.getOrDefault(language.currentValue, "") },
-        CountryComparatorNotifier.COUNTRY_COMPARATOR_TOPIC
+        )
     )
 
     override fun getData() = listOf(
@@ -221,7 +226,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     private fun initAge() {
         ageTextField.addIntegerFormatter(regexFilter("[1-9][0-9]{0,1}"))
         ageTextField.textProperty().addListener { _, _, new ->
-            paneUiData.age.uiValue = new.toIntOrNull() ?: paneUiData.age.defaultUiValue
+            paneUiData.age.uiValue = new.toIntOrNull() ?: paneUiData.age.defaultValue
         }
         subscribe(AgeNotifier.AGE_TOPIC, object : AgeNotifier {
             override fun accept(newAge: Int) {
@@ -252,7 +257,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     private fun initPeYears() {
         peYearsTextField.addIntegerFormatter(regexFilter("0|[1-9][0-9]{0,1}"))
         peYearsTextField.textProperty().addListener { _, _, new ->
-            paneUiData.peYears.uiValue = new.toIntOrNull() ?: paneUiData.peYears.defaultUiValue
+            paneUiData.peYears.uiValue = new.toIntOrNull() ?: paneUiData.peYears.defaultValue
         }
         subscribe(PeYearsNotifier.PE_YEARS_TOPIC, object : PeYearsNotifier {
             override fun accept(newPeYears: Int) {
@@ -262,7 +267,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
                 paneUiData.peMonths.isRequired = isPeMonthsRequired
                 peMonthsHBox.isVisible = isPeMonthsRequired
                 if (!isPeMonthsRequired) {
-                    paneUiData.peMonths.uiValue = paneUiData.peMonths.defaultUiValue
+                    paneUiData.peMonths.uiValue = paneUiData.peMonths.defaultValue
                 }
                 startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
             }
@@ -273,7 +278,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
         peMonthsHBox.isVisible = paneUiData.peMonths.isRequired
         peMonthsTextField.addIntegerFormatter(regexFilter("[0-9]|1[01]"))
         peMonthsTextField.textProperty().addListener { _, old, new ->
-            paneUiData.peMonths.uiValue = new.toIntOrNull() ?: paneUiData.peMonths.defaultUiValue
+            paneUiData.peMonths.uiValue = new.toIntOrNull() ?: paneUiData.peMonths.defaultValue
         }
         subscribe(PeMonthsNotifier.PE_MONTHS_TOPIC, object : PeMonthsNotifier {
             override fun accept(newPeMonths: Int) {
