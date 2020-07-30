@@ -75,6 +75,6 @@ object DocumentLoggedData : LoggedData<Document, String?>() {
         LoggedDataGetter("fileHashCode") { FileDocumentManager.getInstance().getFile(it)?.hashCode().toString() },
         LoggedDataGetter("documentHashCode") { it.hashCode().toString() },
         LoggedDataGetter("fragment") { it.text },
-        LoggedDataGetter("activityTrackerKey") { TrackerQueryExecutor.activityTrackerKey }
+        LoggedDataGetter("studentId") { TrackerQueryExecutor.studentId }
     )
 }

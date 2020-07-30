@@ -1,18 +1,19 @@
 package org.jetbrains.research.ml.codetracker.server
 
-import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.application.PathManager
-import org.jetbrains.research.ml.codetracker.models.Extension
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
+import org.jetbrains.research.ml.codetracker.Plugin
+import org.jetbrains.research.ml.codetracker.models.Extension
 import org.jetbrains.research.ml.codetracker.tracking.StoredInfoWrapper
 import java.io.File
-import java.lang.IllegalStateException
+import java.io.PrintWriter
 import java.net.URL
+
 
 object TrackerQueryExecutor : QueryExecutor() {
 
@@ -20,17 +21,17 @@ object TrackerQueryExecutor : QueryExecutor() {
     private const val CODE_TRACKER_FILE_FIELD = "codetracker"
     private const val ACTIVITY_TRACKER_FILE_FIELD = "activitytracker"
     private val activityTrackerPath = "${PathManager.getPluginsPath()}/activity-tracker/" + ACTIVITY_TRACKER_FILE
+    private const val DEFAULT_ACTIVITY_TRACKER_ID = "-1"
 
     var studentId: String? = null
 
     init {
-        initStudentId()
-//        StoredInfoWrapper.info.activityTrackerKey?.let {
-//            activityTrackerKey = it
-//        } ?: run {
-//            initActivityTrackerInfo()
-//            StoredInfoWrapper.updateStoredInfo(activityTrackerKey = activityTrackerKey)
-//        }
+        StoredInfoWrapper.info.studentId?.let {
+            studentId = it
+        } ?: run {
+            initStudentId()
+            StoredInfoWrapper.updateStoredInfo(studentId = studentId)
+        }
     }
 
     private fun initStudentId() {
@@ -41,53 +42,91 @@ object TrackerQueryExecutor : QueryExecutor() {
         studentId = executeQuery(request)?.let { it.body?.string() }
     }
 
-    private fun getRequestBodyForStudentQuery(
+    private fun getRequestForStudentQuery(
+        urlSuffix: String,
         codeTrackerKey: String,
-        activityTrackerKey: String
-    ): MultipartBody.Builder {
-        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-        requestBody.addFormDataPart("diId", codeTrackerKey)
-        requestBody.addFormDataPart("atiId", activityTrackerKey)
-        return requestBody
+        activityTrackerKey: String,
+        method: String = "PUT"
+    ): Request {
+        val json = "{\"diId\":$codeTrackerKey,\"atiId\":\"$activityTrackerKey\"}"
+        val body = json.toRequestBody("application/json".toMediaTypeOrNull())
+        return Request.Builder().url(baseUrl + urlSuffix).method(method, body).build()
     }
 
-    private fun getRequestBodyForDataQuery(file: File, fileFieldName: String): MultipartBody.Builder {
+    private fun getRequestForSendingDataQuery(
+        urlSuffix: String,
+        file: File,
+        fileFieldName: String,
+        method: String = "POST"
+    ): Request {
         if (file.exists()) {
             logger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
             val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
             requestBody.addFormDataPart(fileFieldName, file.name, file.asRequestBody("text/csv".toMediaType()))
-            return requestBody
+            return Request.Builder().url(baseUrl + urlSuffix).method(method, requestBody.build()).build()
         } else {
             throw IllegalStateException("File ${file.name} for $fileFieldName doesn't exist")
         }
     }
 
     private fun executeTrackerQuery(
-        requestBody: MultipartBody.Builder,
-        baseUrlSuffix: String,
-        method: String = "POST"
+        request: Request
     ): String? {
-        val currentUrl = baseUrl + baseUrlSuffix
-        val response = executeQuery(Request.Builder().url(currentUrl).method(method, requestBody.build()).build())
+        val response = executeQuery(request)
         if (response.isSuccessful()) {
             return response?.let { it.body?.string() }
         }
         throw IllegalStateException("Unsuccessful server response")
     }
 
-    fun sendCodeTrackerData(file: File) {
-        val codeTrackerKey = executeTrackerQuery(getRequestBodyForDataQuery(file, CODE_TRACKER_FILE_FIELD), "data-item")
-        codeTrackerKey?.let {
-            val activityTrackerKey = executeTrackerQuery(
-                getRequestBodyForDataQuery(File(activityTrackerPath), ACTIVITY_TRACKER_FILE_FIELD),
-                "activity-tracker-item"
-            )
-            activityTrackerKey?.let {
-                executeTrackerQuery(
-                    getRequestBodyForStudentQuery(codeTrackerKey, activityTrackerKey),
-                    "student/$studentId",
-                    "PUT"
+    private fun sendCodeTrackerData(file: File): String? {
+        return executeTrackerQuery(getRequestForSendingDataQuery("data-item", file, CODE_TRACKER_FILE_FIELD))
+    }
+
+    private fun sendActivityTrackerData(): String? {
+        return try {
+            executeTrackerQuery(
+                getRequestForSendingDataQuery(
+                    "activity-tracker-item",
+                    File(activityTrackerPath),
+                    ACTIVITY_TRACKER_FILE_FIELD
                 )
+            )
+        } catch (e: IllegalStateException) {
+            // We catch it because we want to update the student anyway
+            DEFAULT_ACTIVITY_TRACKER_ID
+        }
+    }
+
+    private fun updateStudentData(codeTrackerKey: String, activityTrackerKey: String) {
+        executeTrackerQuery(
+            getRequestForStudentQuery(
+                "student/$studentId",
+                codeTrackerKey, activityTrackerKey
+            )
+        )
+    }
+
+    private fun clearActivityTrackerFile() {
+        val file = File(activityTrackerPath)
+        val writer = PrintWriter(file)
+        writer.print("")
+        writer.close()
+    }
+
+
+    fun sendData(codeTrackerFile: File) {
+        val codeTrackerKey = sendCodeTrackerData(codeTrackerFile)
+        codeTrackerKey?.let {
+            val activityTrackerKey = sendActivityTrackerData()
+            activityTrackerKey?.let {
+                updateStudentData(codeTrackerKey, activityTrackerKey)
+            }
+            if (activityTrackerKey == DEFAULT_ACTIVITY_TRACKER_ID) {
+                // Throw an error to show the error UI Pane
+                throw IllegalStateException("Unsuccessful server response")
+            } else {
+                clearActivityTrackerFile()
             }
         }
     }

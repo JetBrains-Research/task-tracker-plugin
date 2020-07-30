@@ -81,7 +81,7 @@ object DocumentLogger {
     }
 
     private fun sendFile(file: File) {
-        TrackerQueryExecutor.sendCodeTrackerData(file)
+        TrackerQueryExecutor.sendData(file)
     }
 
     fun sendTaskFile(task: Task, project: Project) {
