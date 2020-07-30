@@ -65,7 +65,7 @@ dependencies {
    Uncomment for testing with Intellij IDEA
 */
 intellij {
-    version = "2019.2.2"
+    version = "2020.2"
 }
 
 

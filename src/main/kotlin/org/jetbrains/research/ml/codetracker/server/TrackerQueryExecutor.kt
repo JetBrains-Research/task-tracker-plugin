@@ -2,7 +2,6 @@ package org.jetbrains.research.ml.codetracker.server
 
 import org.jetbrains.research.ml.codetracker.*
 import com.intellij.openapi.application.PathManager
-import io.reactivex.internal.operators.maybe.MaybeDoAfterSuccess
 import org.jetbrains.research.ml.codetracker.models.Extension
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
