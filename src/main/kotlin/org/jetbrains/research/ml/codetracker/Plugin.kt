@@ -1,5 +1,6 @@
 package org.jetbrains.research.ml.codetracker
 
+import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 
 enum class TestMode {
@@ -10,6 +11,8 @@ enum class TestMode {
 object Plugin {
     const val PLUGIN_ID = "codetracker"
     val testMode = TestMode.ON
+    val codeTrackerFolderPath = "${PathManager.getPluginsPath()}/${PLUGIN_ID}"
+
     private val logger: Logger = Logger.getInstance(javaClass)
 
     init {

@@ -21,14 +21,23 @@ abstract class LoggedData<T, S> {
     }
 }
 
+enum class UiLoggedDataHeader(val header: String) {
+    AGE("age"),
+    GENDER("gender"),
+    PROGRAM_EXPERIENCE_YEARS("programExperienceYears"),
+    PROGRAM_EXPERIENCE_MONTHS("programExperienceMonths"),
+    COUNTRY("country"),
+    CHOSEN_TASK("chosenTask")
+}
+
 object UiLoggedData : LoggedData<Unit, String>() {
     override val loggedDataGetters: List<LoggedDataGetter<Unit, String>> = arrayListOf(
-        LoggedDataGetter("age") { SurveyUiData.age.uiValue.toString() },
-        LoggedDataGetter("gender") { SurveyUiData.gender.toString() },
-        LoggedDataGetter("programExperienceYears") { SurveyUiData.peYears.uiValue.toString() },
-        LoggedDataGetter("programExperienceMonths") { SurveyUiData.peMonths.uiValue.toString() },
-        LoggedDataGetter("country") { SurveyUiData.country.toString() },
-        LoggedDataGetter("chosenTask") { TaskChoosingUiData.chosenTask.toString() }
+        LoggedDataGetter(UiLoggedDataHeader.AGE.header) { SurveyUiData.age.uiValue.toString() },
+        LoggedDataGetter(UiLoggedDataHeader.GENDER.header) { SurveyUiData.gender.toString() },
+        LoggedDataGetter(UiLoggedDataHeader.PROGRAM_EXPERIENCE_YEARS.header) { SurveyUiData.peYears.uiValue.toString() },
+        LoggedDataGetter(UiLoggedDataHeader.PROGRAM_EXPERIENCE_MONTHS.header) { SurveyUiData.peMonths.uiValue.toString() },
+        LoggedDataGetter(UiLoggedDataHeader.COUNTRY.header) {SurveyUiData.country.toString() },
+        LoggedDataGetter(UiLoggedDataHeader.CHOSEN_TASK.header) { TaskChoosingUiData.chosenTask.toString() }
     )
 }
 

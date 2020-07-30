@@ -2,6 +2,10 @@ package org.jetbrains.research.ml.codetracker.models
 
 import kotlinx.serialization.Serializable
 
+interface Keyed {
+    val key: String
+}
+
 @Serializable
 data class PaneLanguage(override val key: String) : Keyed
 

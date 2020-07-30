@@ -11,24 +11,26 @@ import kotlin.properties.Delegates
 
 /**
  * Represents pane data with [uiValue], that triggers notifier when it changes.
- * When it's required, user has to change it to be differ from [defaultUiValue], for example fill out age field in ProfilePane
+ * When it's required, user has to change it to be differ from [defaultValue], for example fill out age field in ProfilePane
  */
-open class UiField <T> (val defaultUiValue: T, private val notifierTopic: Topic<out Consumer<T>>, var isRequired: Boolean = true) {
+open class UiField <T> (val defaultValue: T, private val notifierTopic: Topic<out Consumer<T>>,
+                        initValue: T = defaultValue,
+                        var isRequired: Boolean = true) {
     /**
      * We need additional field for checking, is [uiValue] default, because it may be in process of changing so we cannot
-     * just compare [uiValue] with [defaultUiValue]
+     * just compare [uiValue] with [defaultValue]
      */
-    var isUiValueDefault: Boolean = true
+    var isUiValueDefault: Boolean = initValue == defaultValue
         protected set
 
-    open var uiValue: T by Delegates.observable(defaultUiValue) { _, old, new ->
+    open var uiValue: T by Delegates.observable(initValue) { _, old, new ->
         if (old != new) {
             changeUiValue(new)
         }
     }
 
     protected fun changeUiValue(new: T) {
-        isUiValueDefault = new == defaultUiValue
+        isUiValueDefault = new == defaultValue
         val publisher = ApplicationManager.getApplication().messageBus.syncPublisher(notifierTopic)
         publisher.accept(new)
     }
@@ -50,9 +52,10 @@ open class ListedUiField<T : Keyed>(
     valueNotifierTopic: Topic<out Consumer<Int>>,
     defaultComparator: Comparator<T>? = null,
     private val comparatorNotifierTopic: Topic<out Consumer<Comparator<T>>>? = null,
-    isRequired: Boolean = true) : UiField<Int>(defaultValue, valueNotifierTopic, isRequired) {
+    initValue: Int = defaultValue,
+    isRequired: Boolean = true) : UiField<Int>(defaultValue, valueNotifierTopic, initValue, isRequired) {
 
-    override var uiValue: Int by Delegates.observable(defaultUiValue) { _, old, new ->
+    override var uiValue: Int by Delegates.observable(initValue) { _, old, new ->
         if (old != new) {
             changeUiValue(new)
         }
@@ -93,7 +96,7 @@ open class ListedUiField<T : Keyed>(
         }
 
     override fun toString(): String {
-        return currentValue?.key ?: defaultUiValue.toString()
+        return currentValue?.key ?: defaultValue.toString()
     }
 }
 
