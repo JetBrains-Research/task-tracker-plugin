@@ -219,6 +219,12 @@ For some reason it doesn't work with em :( */
     -fx-font-size: 16em;
 }
 
+.sanserif-bold-16 {
+    -fx-font-family: SansSerif;
+    -fx-font-weight: bold;
+    -fx-font-size: 16em;
+}
+
 .sanserif-17 {
     -fx-font-family: SansSerif;
     -fx-font-size: 15em;

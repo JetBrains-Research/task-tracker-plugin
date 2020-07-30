@@ -12,20 +12,22 @@ import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.SuccessPaneText
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
-import java.lang.String.format
 import java.net.URL
 import java.util.*
 import kotlin.reflect.KClass
 
 object SuccessControllerManager : ServerDependentPane<SuccessController>() {
     override val paneControllerClass: KClass<SuccessController> = SuccessController::class
-    override val fxmlFilename: String = "success-ui-form-2.fxml"
+    override val fxmlFilename: String = "success-ui-form.fxml"
 }
 
 class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
     @FXML lateinit var backToTasksButton: Button
     @FXML lateinit var backToTasksText: Text
-    @FXML lateinit var successText: Text
+    @FXML lateinit var firstNonBoldText: Text
+    @FXML lateinit var secondNonBoldText: Text
+    lateinit var nonBoldTexts: List<Text>
+    @FXML lateinit var firstBoldText: Text
 
     @FXML private lateinit var mainPane: Pane
 
@@ -34,8 +36,6 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     @FXML private lateinit var yellowPolygon: Polygon
 
     private val translations = PluginServer.paneText?.successPane
-    private val defaultSuccessPaneText = SuccessPaneText("back to tasks",
-        "The data for the %s task has been submitted successfully.")
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
         logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
@@ -48,27 +48,27 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     }
 
     private fun initSuccessText() {
+        nonBoldTexts = arrayListOf(firstNonBoldText, secondNonBoldText)
         subscribe(ChosenTaskNotifier.CHOSEN_TASK_TOPIC, object : ChosenTaskNotifier {
             override fun accept(newTaskIndex: Int) {
-                val language = LanguagePaneUiData.language.currentValue
-                val text = translations?.get(language)?.successMessage ?: defaultSuccessPaneText.successMessage
-                successText.text = getFormattedText(text)
+                setSuccessText()
             }
         })
 
     }
 
-    private fun getFormattedText(text: String, default: String = ""): String {
+    private fun setSuccessText(default: String = "") {
+        val language = LanguagePaneUiData.language.currentValue
         val currentTask = TaskChoosingUiData.chosenTask.currentValue
-        currentTask?.let {
-            val language = LanguagePaneUiData.language.currentValue
-            return format(text, currentTask.infoTranslation[language]?.name ?: default)
-        }
-        return format(text, default)
+        val translatedTask = currentTask?.infoTranslation?.get(language)?.name ?: default
+        val successText =  translations?.get(language)?.successMessage ?: ""
+        successText.split("%s").zip(nonBoldTexts).forEach { (s, t) -> t.text = s }
+        firstBoldText.text = translatedTask
     }
 
+
     private fun initButtons() {
-        backToTasksText.text = translations?.get(LanguagePaneUiData.language.currentValue)?.backToTasks ?: defaultSuccessPaneText.backToTasks
+        backToTasksText.text = translations?.get(LanguagePaneUiData.language.currentValue)?.backToTasks
         backToTasksButton.onMouseClicked { changeVisiblePane(TaskChoosingControllerManager) }
     }
 
@@ -78,7 +78,7 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
                 val newLanguage = LanguagePaneUiData.language.dataList[newLanguageIndex]
                 val successPaneText = translations?.get(newLanguage)
                 successPaneText?.let {
-                    successText.text = getFormattedText(it.successMessage)
+                    setSuccessText()
                     backToTasksText.text = it.backToTasks
                 }
             }

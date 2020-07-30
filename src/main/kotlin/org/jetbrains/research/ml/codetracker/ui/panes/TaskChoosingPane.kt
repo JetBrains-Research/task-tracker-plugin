@@ -62,7 +62,22 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     @FXML
     private lateinit var finishWorkText: Text
     @FXML
-    private lateinit var instructionText: Text
+    private lateinit var firstNonBoldText: Text
+    @FXML
+    private lateinit var secondNonBoldText: Text
+    @FXML
+    private lateinit var thirdNonBoldText: Text
+    @FXML
+    private lateinit var fourthNonBoldText: Text
+    private lateinit var nonBoldTexts: List<Text>
+
+    @FXML
+    private lateinit var firstBoldText: Text
+    @FXML
+    private lateinit var secondBoldText: Text
+    @FXML
+    private lateinit var thirdBoldText: Text
+    private lateinit var boldTexts: List<Text>
 
     @FXML private lateinit var mainPane: Pane
 
@@ -100,9 +115,20 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     }
 
     private fun initInstruction() {
+        boldTexts = arrayListOf(firstBoldText, secondBoldText, thirdBoldText)
+        nonBoldTexts = arrayListOf(firstNonBoldText, secondNonBoldText, thirdNonBoldText, fourthNonBoldText)
+        setInstruction()
+    }
+
+    private fun setInstruction(default: String = "") {
         val language = LanguagePaneUiData.language.currentValue
-        val text = translations?.get(language)?.description ?: ""
-        instructionText.text = getFormattedText(text)
+        val startSolving = translations?.get(language)?.startSolving ?: default
+        val submit = PluginServer.paneText?.taskSolvingPane?.get(language)?.submit ?: default
+        val instructions = translations?.get(language)?.description ?: ""
+        val boldInstructions = arrayListOf(startSolving, submit, submit)
+        val nonBoldInstructions = instructions.split("%s")
+        boldInstructions.zip(boldTexts).forEach { (s, t) -> t.text = s }
+        nonBoldInstructions.zip(nonBoldTexts).forEach { (s, t) -> t.text = s }
     }
 
     private fun getFormattedText(text: String, default: String = ""): String {
@@ -136,7 +162,7 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
                     startSolvingText.text = it.startSolving
                     finishWorkText.text = it.finishSession
                     val text = translations?.get(newLanguage)?.description ?: ""
-                    instructionText.text = getFormattedText(text)
+                    setInstruction()
                     changeComboBoxItems(
                         choseTaskComboBox,
                         choseTaskObservableList,
