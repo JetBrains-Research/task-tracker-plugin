@@ -2,17 +2,21 @@ package org.jetbrains.research.ml.codetracker.models
 
 import kotlinx.serialization.Serializable
 
+interface Keyed {
+    val key: String
+}
+
 @Serializable
-data class PaneLanguage(val key: String)
+data class PaneLanguage(override val key: String) : Keyed
 
 @Serializable
 data class Gender(
-    val key: String,
+    override val key: String,
     val translation: Map<PaneLanguage, String>
-)
+) : Keyed
 
 @Serializable
 data class Country(
-    val key: String,
+    override val key: String,
     val translation: Map<PaneLanguage, String>
-)
+) : Keyed

@@ -1,9 +1,10 @@
 package org.jetbrains.research.ml.codetracker.tracking
 
-import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import org.jetbrains.research.ml.codetracker.Plugin.codeTrackerFolderPath
+import org.jetbrains.research.ml.codetracker.models.Keyed
 import org.jetbrains.research.ml.codetracker.models.StoredInfo
 import java.io.File
 import java.io.PrintWriter
@@ -13,7 +14,7 @@ object StoredInfoHandler{
 
     val logger: Logger = Logger.getInstance(javaClass)
 
-    fun readIntStoredField(field: UiLoggedDataHeader, defaultValue: Int): Int {
+    fun getIntStoredField(field: UiLoggedDataHeader, defaultValue: Int): Int {
         return run{
             val storedField = StoredInfoWrapper.info.loggedUIData[field.header]?.toIntOrNull()
             logger.info("Stored field $storedField for the ${field.header} value has been received successfully")
@@ -24,12 +25,11 @@ object StoredInfoHandler{
         }
     }
 
-    fun <T> readIndexStoredItem(field: UiLoggedDataHeader, collection: List<T>,
-                                comparingFunction: (T, String) -> Boolean, defaultValue: Int): Int {
-        StoredInfoWrapper.info.loggedUIData[field.header]?.let { storedItem ->
-            val storedItemIndex = collection.indexOfFirst { comparingFunction(it, storedItem) }
-            logger.info("Stored index $storedItemIndex for the ${field.header} value has been received successfully")
-            return storedItemIndex
+    fun <T : Keyed> getIndexByStoredKey(field: UiLoggedDataHeader, list: List<T>, defaultValue: Int): Int {
+        StoredInfoWrapper.info.loggedUIData[field.header]?.let { storedKey ->
+            val storedKeyIndex = list.indexOfFirst { it.key == storedKey }
+            logger.info("Stored index $storedKeyIndex for the ${field.header} value has been received successfully")
+            return storedKeyIndex
         }
         logger.info("Default value $defaultValue for the ${field.header} value has been received successfully")
         return defaultValue
@@ -42,7 +42,7 @@ object StoredInfoHandler{
 object StoredInfoWrapper {
 
     private const val storedInfoFileName = "storedInfo.txt"
-    private val codeTrackerPath = "${PathManager.getPluginsPath()}/codetracker/" + storedInfoFileName
+    private val storedInfoFilePath = "${codeTrackerFolderPath}/$storedInfoFileName"
     private val json by lazy {
         Json(JsonConfiguration.Stable)
     }
@@ -51,7 +51,7 @@ object StoredInfoWrapper {
     var info: StoredInfo = readStoredInfo()
 
     private fun readStoredInfo(): StoredInfo {
-        val file = File(codeTrackerPath)
+        val file = File(storedInfoFilePath)
         if (!file.exists()) {
             return StoredInfo()
         }
@@ -66,7 +66,7 @@ object StoredInfoWrapper {
     }
     
     private fun writeStoredInfo() {
-        val file = File(codeTrackerPath)
+        val file = File(storedInfoFilePath)
         val writer = PrintWriter(file)
         writer.print(json.stringify(serializer, info))
         writer.close()

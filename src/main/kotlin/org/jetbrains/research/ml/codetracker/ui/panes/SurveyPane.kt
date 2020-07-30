@@ -1,5 +1,6 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import javafx.beans.binding.Bindings
@@ -76,26 +77,23 @@ object SurveyUiData : LanguagePaneUiData() {
     private val countries: List<Country> = PluginServer.countries
     private val genders: List<Gender> = PluginServer.genders
 
-    val age = UiField(-1, AgeNotifier.AGE_TOPIC, StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.AGE, -1))
+    val age = UiField(-1, AgeNotifier.AGE_TOPIC, StoredInfoHandler.getIntStoredField(UiLoggedDataHeader.AGE, -1))
     val gender = ListedUiField(
         genders,
         -1,
         GenderNotifier.GENDER_TOPIC,
-        initValue = StoredInfoHandler.readIndexStoredItem(
-            UiLoggedDataHeader.GENDER,
-            genders,
-            { g, k -> g.key == k },
-            -1
-        )
+        initValue = StoredInfoHandler.getIndexByStoredKey(UiLoggedDataHeader.GENDER, genders, -1)
     )
-    val peYears = UiField(-1,
+    val peYears = UiField(
+        -1,
         PeYearsNotifier.PE_YEARS_TOPIC,
-        StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.PROGRAM_EXPERIENCE_YEARS, -1)
+        StoredInfoHandler.getIntStoredField(UiLoggedDataHeader.PROGRAM_EXPERIENCE_YEARS, -1)
 
     )
-    val peMonths = UiField(-1,
+    val peMonths = UiField(
+        -1,
         PeMonthsNotifier.PE_MONTHS_TOPIC,
-        StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.PROGRAM_EXPERIENCE_MONTHS, -1),
+        StoredInfoHandler.getIntStoredField(UiLoggedDataHeader.PROGRAM_EXPERIENCE_MONTHS, -1),
         false
     )
     val country = ListedUiField(
@@ -104,12 +102,7 @@ object SurveyUiData : LanguagePaneUiData() {
         CountryNotifier.COUNTRY_TOPIC,
         compareBy { c -> c.translation.getOrDefault(language.currentValue, "") },
         CountryComparatorNotifier.COUNTRY_COMPARATOR_TOPIC,
-        StoredInfoHandler.readIndexStoredItem(
-            UiLoggedDataHeader.COUNTRY,
-            countries,
-            { c, k -> c.key == k },
-            -1
-        )
+        StoredInfoHandler.getIndexByStoredKey(UiLoggedDataHeader.COUNTRY, countries, -1)
     )
 
     override fun getData() = listOf(
@@ -328,8 +321,10 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
 
     private fun initStartWorkingButton() {
         startWorkingButton.onMouseClicked {
-            val surveyInfo: Map<String, String> = UiLoggedData.headers.zip(UiLoggedData.getData(Unit)).toMap()
-            StoredInfoWrapper.updateStoredInfo(surveyInfo)
+            ApplicationManager.getApplication().invokeLater {
+                val surveyInfo: Map<String, String> = UiLoggedData.headers.zip(UiLoggedData.getData(Unit)).toMap()
+                StoredInfoWrapper.updateStoredInfo(surveyInfo)
+            }
             changeVisiblePane(TaskChoosingControllerManager)
         }
     }

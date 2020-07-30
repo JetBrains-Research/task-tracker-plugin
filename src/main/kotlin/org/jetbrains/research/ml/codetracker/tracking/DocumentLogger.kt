@@ -1,7 +1,6 @@
 package org.jetbrains.research.ml.codetracker.tracking
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -13,6 +12,7 @@ import com.intellij.util.messages.Topic
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.jetbrains.research.ml.codetracker.Plugin
+import org.jetbrains.research.ml.codetracker.Plugin.codeTrackerFolderPath
 import org.jetbrains.research.ml.codetracker.models.Task
 import com.intellij.openapi.progress.Task as IntellijTask
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
@@ -44,7 +44,6 @@ object DocumentLogger {
     private val logger: Logger = Logger.getInstance(javaClass)
     private val myDocumentsToPrinters: HashMap<Document, Printer> = HashMap()
 
-    private val folderPath = "${PathManager.getPluginsPath()}/codetracker/"
     private const val MAX_FILE_SIZE = 50 * 1024 * 1024
     private const val MAX_DIF_SIZE = 300
 
@@ -73,10 +72,10 @@ object DocumentLogger {
 
 
     private fun createLogFile(document: Document): File {
-        File(folderPath).mkdirs()
+        File(codeTrackerFolderPath).mkdirs()
         val file = FileDocumentManager.getInstance().getFile(document)
         logger.info("${Plugin.PLUGIN_ID}: create log file for file ${file?.name}")
-        val logFile = File("$folderPath${file?.nameWithoutExtension}_${file.hashCode()}_${document.hashCode()}.csv")
+        val logFile = File("$codeTrackerFolderPath${file?.nameWithoutExtension}_${file.hashCode()}_${document.hashCode()}.csv")
         FileUtil.createIfDoesntExist(logFile)
         return logFile
     }
