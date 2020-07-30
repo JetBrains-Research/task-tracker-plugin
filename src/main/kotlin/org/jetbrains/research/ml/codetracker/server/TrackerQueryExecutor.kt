@@ -10,6 +10,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import org.jetbrains.research.ml.codetracker.tracking.StoredInfoWrapper
 import java.io.File
 import java.lang.IllegalStateException
 import java.net.URL
@@ -24,7 +25,12 @@ object TrackerQueryExecutor : QueryExecutor() {
     var activityTrackerKey: String? = null
 
     init {
-        initActivityTrackerInfo()
+        StoredInfoWrapper.info.activityTrackerKey?.let {
+            activityTrackerKey = it
+        } ?: run {
+            initActivityTrackerInfo()
+            StoredInfoWrapper.updateStoredInfo(activityTrackerKey = activityTrackerKey)
+        }
     }
 
     private fun initActivityTrackerInfo() {

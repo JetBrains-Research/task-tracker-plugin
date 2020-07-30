@@ -15,8 +15,8 @@ data class TaskInfo(
 
 @Serializable
 data class Task(
-    val key: String,
+    override val key: String,
     val id: Int = -1,
     val infoTranslation: Map<PaneLanguage, TaskInfo>,
     val examples: List<Example> = emptyList()
-)
+) : Keyed
