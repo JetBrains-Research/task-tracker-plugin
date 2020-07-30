@@ -17,6 +17,10 @@ import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Country
 import org.jetbrains.research.ml.codetracker.models.Gender
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.tracking.StoredInfoHandler
+import org.jetbrains.research.ml.codetracker.tracking.StoredInfoWrapper
+import org.jetbrains.research.ml.codetracker.tracking.UiLoggedData
+import org.jetbrains.research.ml.codetracker.tracking.UiLoggedDataHeader
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
@@ -72,13 +76,36 @@ object SurveyUiData : LanguagePaneUiData() {
     private val countries: List<Country> = PluginServer.countries
     private val genders: List<Gender> = PluginServer.genders
 
-    val age = UiField(-1, AgeNotifier.AGE_TOPIC)
-    val gender = ListedUiField(genders, -1, GenderNotifier.GENDER_TOPIC)
-    val peYears = UiField(-1, PeYearsNotifier.PE_YEARS_TOPIC)
-    val peMonths = UiField( -1, PeMonthsNotifier.PE_MONTHS_TOPIC, false)
-    val country = ListedUiField(countries, -1, CountryNotifier.COUNTRY_TOPIC,
-        compareBy { c -> c.translation.getOrDefault(language.currentValue,"") },
-        CountryComparatorNotifier.COUNTRY_COMPARATOR_TOPIC)
+    val age = UiField(StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.AGE, -1), AgeNotifier.AGE_TOPIC)
+    val gender = ListedUiField(
+        genders,
+        StoredInfoHandler.readIndexStoredItem(
+            UiLoggedDataHeader.GENDER,
+            genders,
+            { g, k -> g.key == k },
+            -1
+        ), GenderNotifier.GENDER_TOPIC
+    )
+    val peYears = UiField(
+        StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.PROGRAM_EXPERIENCE_YEARS, -1),
+        PeYearsNotifier.PE_YEARS_TOPIC
+    )
+    val peMonths = UiField(
+        StoredInfoHandler.readIntStoredField(UiLoggedDataHeader.PROGRAM_EXPERIENCE_MONTHS, -1),
+        PeMonthsNotifier.PE_MONTHS_TOPIC,
+        false
+    )
+    val country = ListedUiField(
+        countries,
+        StoredInfoHandler.readIndexStoredItem(
+            UiLoggedDataHeader.COUNTRY,
+            countries,
+            { c, k -> c.key == k },
+            -1
+        ), CountryNotifier.COUNTRY_TOPIC,
+        compareBy { c -> c.translation.getOrDefault(language.currentValue, "") },
+        CountryComparatorNotifier.COUNTRY_COMPARATOR_TOPIC
+    )
 
     override fun getData() = listOf(
         age,
@@ -90,43 +117,85 @@ object SurveyUiData : LanguagePaneUiData() {
     )
 }
 
-class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) : LanguagePaneController(project, scale, fxPanel, id) {
+class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: Int) :
+    LanguagePaneController(project, scale, fxPanel, id) {
     // Age
-    @FXML private lateinit var ageLabel: Label
-    @FXML private lateinit var ageTextField: TextField
+    @FXML
+    private lateinit var ageLabel: Label
+
+    @FXML
+    private lateinit var ageTextField: TextField
 
     // Gender
-    @FXML private lateinit var genderLabel: Label
-    @FXML private lateinit var genderGroup: ToggleGroup
-    @FXML private lateinit var gender1: RadioButton
-    @FXML private lateinit var gender2: RadioButton
-    @FXML private lateinit var gender3: RadioButton
-    @FXML private lateinit var gender4: RadioButton
-    @FXML private lateinit var gender5: RadioButton
-    @FXML private lateinit var gender6: RadioButton
-    @FXML private lateinit var genderRadioButtons: List<RadioButton>
+    @FXML
+    private lateinit var genderLabel: Label
+
+    @FXML
+    private lateinit var genderGroup: ToggleGroup
+
+    @FXML
+    private lateinit var gender1: RadioButton
+
+    @FXML
+    private lateinit var gender2: RadioButton
+
+    @FXML
+    private lateinit var gender3: RadioButton
+
+    @FXML
+    private lateinit var gender4: RadioButton
+
+    @FXML
+    private lateinit var gender5: RadioButton
+
+    @FXML
+    private lateinit var gender6: RadioButton
+
+    @FXML
+    private lateinit var genderRadioButtons: List<RadioButton>
 
     // Program Experience
-    @FXML private lateinit var experienceLabel: Label
-    @FXML private lateinit var peYearsLabel: Label
-    @FXML private lateinit var peYearsTextField: TextField
-    @FXML private lateinit var peMonthsHBox: HBox
-    @FXML private lateinit var peMonthsLabel: Label
-    @FXML private lateinit var peMonthsTextField: TextField
+    @FXML
+    private lateinit var experienceLabel: Label
+
+    @FXML
+    private lateinit var peYearsLabel: Label
+
+    @FXML
+    private lateinit var peYearsTextField: TextField
+
+    @FXML
+    private lateinit var peMonthsHBox: HBox
+
+    @FXML
+    private lateinit var peMonthsLabel: Label
+
+    @FXML
+    private lateinit var peMonthsTextField: TextField
 
     // Country
-    @FXML private lateinit var countryLabel: Label
-    @FXML private lateinit var countryComboBox: ComboBox<Country>
+    @FXML
+    private lateinit var countryLabel: Label
+
+    @FXML
+    private lateinit var countryComboBox: ComboBox<Country>
     private lateinit var countryObservableList: ObservableList<Country>
 
     // StartWorking
-    @FXML private lateinit var startWorkingButton: Button
-    @FXML private lateinit var startWorkingText: Text
+    @FXML
+    private lateinit var startWorkingButton: Button
 
-    @FXML private lateinit var mainPane: Pane
+    @FXML
+    private lateinit var startWorkingText: Text
 
-    @FXML private lateinit var orangePolygon: Polygon
-    @FXML private lateinit var bluePolygon: Polygon
+    @FXML
+    private lateinit var mainPane: Pane
+
+    @FXML
+    private lateinit var orangePolygon: Polygon
+
+    @FXML
+    private lateinit var bluePolygon: Polygon
 
     override val paneUiData = SurveyUiData
     private val translations = PluginServer.paneText?.surveyPane
@@ -150,7 +219,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     }
 
     private fun initAge() {
-        val converter = ageTextField.addIntegerFormatter(regexFilter("[1-9][0-9]{0,1}"))
+        ageTextField.addIntegerFormatter(regexFilter("[1-9][0-9]{0,1}"))
         ageTextField.textProperty().addListener { _, _, new ->
             paneUiData.age.uiValue = new.toIntOrNull() ?: paneUiData.age.defaultUiValue
         }
@@ -165,7 +234,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     private fun initGender() {
         genderRadioButtons = listOf(gender1, gender2, gender3, gender4, gender5, gender6)
         val gendersSize = paneUiData.gender.dataList.size
-        genderRadioButtons.forEachIndexed { i, rb ->  rb.isVisible = i < gendersSize }
+        genderRadioButtons.forEachIndexed { i, rb -> rb.isVisible = i < gendersSize }
 
         genderGroup.selectedToggleProperty().addListener { _, _, new ->
             paneUiData.gender.uiValue = genderRadioButtons.indexOf(new)
@@ -188,7 +257,8 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
         subscribe(PeYearsNotifier.PE_YEARS_TOPIC, object : PeYearsNotifier {
             override fun accept(newPeYears: Int) {
                 peYearsTextField.text = newPeYears.toString()
-                val isPeMonthsRequired = !paneUiData.peYears.isUiValueDefault && newPeYears < PE_YEARS_NUMBER_TO_SHOW_MONTHS
+                val isPeMonthsRequired =
+                    !paneUiData.peYears.isUiValueDefault && newPeYears < PE_YEARS_NUMBER_TO_SHOW_MONTHS
                 paneUiData.peMonths.isRequired = isPeMonthsRequired
                 peMonthsHBox.isVisible = isPeMonthsRequired
                 if (!isPeMonthsRequired) {
@@ -249,11 +319,14 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
                 countryComboBox.items = countryObservableList.sorted(newComparator)
             }
         })
-
     }
 
     private fun initStartWorkingButton() {
-        startWorkingButton.onMouseClicked { changeVisiblePane(TaskChoosingControllerManager) }
+        startWorkingButton.onMouseClicked {
+            val surveyInfo: Map<String, String> = UiLoggedData.headers.zip(UiLoggedData.getData(Unit)).toMap()
+            StoredInfoWrapper.updateStoredInfo(surveyInfo)
+            changeVisiblePane(TaskChoosingControllerManager)
+        }
     }
 
     private fun makeTranslatable() {
@@ -269,9 +342,12 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
                     peMonthsLabel.text = it.months
                     countryLabel.text = it.country
                     startWorkingText.text = it.startSession
-                    paneUiData.country.dataListComparator = compareBy {  c -> c.translation.getOrDefault(newLanguage, "") }
+                    paneUiData.country.dataListComparator =
+                        compareBy { c -> c.translation.getOrDefault(newLanguage, "") }
                 }
-                genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g -> rb.text = g.translation[newLanguage] ?: "" }
+                genderRadioButtons.zip(paneUiData.gender.dataList) { rb, g ->
+                    rb.text = g.translation[newLanguage] ?: ""
+                }
             }
         })
     }
