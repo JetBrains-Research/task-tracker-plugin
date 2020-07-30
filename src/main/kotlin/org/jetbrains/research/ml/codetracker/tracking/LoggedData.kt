@@ -20,11 +20,20 @@ abstract class LoggedData<T, S> {
     }
 }
 
+enum class UiLoggedDataHeader(val header: String) {
+    AGE("age"),
+    GENDER("gender"),
+    PROGRAM_EXPERIENCE_YEARS("programExperienceYears"),
+    PROGRAM_EXPERIENCE_MONTHS("programExperienceMonths"),
+    COUNTRY("country"),
+    CHOSEN_TASK("chosenTask")
+}
+
 object UiLoggedData : LoggedData<Unit, String>() {
 
     override val loggedDataGetters: List<LoggedDataGetter<Unit, String>> = arrayListOf(
-        LoggedDataGetter("age") { SurveyUiData.age.uiValue.toString() },
-        LoggedDataGetter("gender") {
+        LoggedDataGetter(UiLoggedDataHeader.AGE.header) { SurveyUiData.age.uiValue.toString() },
+        LoggedDataGetter(UiLoggedDataHeader.GENDER.header) {
             // Todo: make it better: delete duplicates of code
             val currentValue = SurveyUiData.gender.uiValue
             if (!isDefaultValue(currentValue)) {
@@ -33,9 +42,9 @@ object UiLoggedData : LoggedData<Unit, String>() {
                 currentValue.toString()
             }
         },
-        LoggedDataGetter("programExperienceYears") { SurveyUiData.peYears.uiValue.toString() },
-        LoggedDataGetter("programExperienceMonths") { SurveyUiData.peMonths.uiValue.toString() },
-        LoggedDataGetter("country") {
+        LoggedDataGetter(UiLoggedDataHeader.PROGRAM_EXPERIENCE_YEARS.header) { SurveyUiData.peYears.uiValue.toString() },
+        LoggedDataGetter(UiLoggedDataHeader.PROGRAM_EXPERIENCE_MONTHS.header) { SurveyUiData.peMonths.uiValue.toString() },
+        LoggedDataGetter(UiLoggedDataHeader.COUNTRY.header) {
             val currentValue = SurveyUiData.country.uiValue
             if (!isDefaultValue(currentValue)) {
                 SurveyUiData.country.dataList[currentValue].key
@@ -43,7 +52,7 @@ object UiLoggedData : LoggedData<Unit, String>() {
                 currentValue.toString()
             }
         },
-        LoggedDataGetter("chosenTask") {
+        LoggedDataGetter(UiLoggedDataHeader.CHOSEN_TASK.header) {
             val currentValue = TaskChoosingUiData.chosenTask.uiValue
             if (!isDefaultValue(currentValue)) {
                 TaskChoosingUiData.chosenTask.dataList[currentValue].key
