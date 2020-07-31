@@ -29,7 +29,8 @@ abstract class QueryExecutor {
             .build()
     }
 
-    protected val baseUrl: String = Registry.get("codetracker.org.jetbrains.research.ml.codetracker.server.url").asString()
+    // Base url for the codetracker server
+    protected val baseUrl: String = "http://localhost:3000/api/"
 
     protected fun executeQuery(request: Request): Response? {
         var curCountAttempts = 0
