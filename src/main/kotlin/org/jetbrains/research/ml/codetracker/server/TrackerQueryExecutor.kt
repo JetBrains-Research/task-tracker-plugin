@@ -29,20 +29,20 @@ object TrackerQueryExecutor : QueryExecutor() {
         StoredInfoWrapper.info.userId?.let {
             userId = it
         } ?: run {
-            initStudentId()
+            initUserId()
             StoredInfoWrapper.updateStoredInfo(userId = userId)
         }
     }
 
-    private fun initStudentId() {
-        val currentUrl = URL("${baseUrl}student")
-        logger.info("${Plugin.PLUGIN_ID}: ...generating student id")
+    private fun initUserId() {
+        val currentUrl = URL("${baseUrl}user")
+        logger.info("${Plugin.PLUGIN_ID}: ...generating user id")
         val requestBody = ByteArray(0).toRequestBody(null, 0, 0)
         val request = Request.Builder().url(currentUrl).post(requestBody).build()
         userId = executeQuery(request)?.let { it.body?.string() }
     }
 
-    private fun getRequestForStudentQuery(
+    private fun getRequestForUserQuery(
         urlSuffix: String,
         codeTrackerKey: String,
         activityTrackerKey: String
@@ -91,14 +91,14 @@ object TrackerQueryExecutor : QueryExecutor() {
                 )
             )
         } catch (e: IllegalStateException) {
-            // We catch it because we want to update the student anyway
+            // We catch it because we want to update the user anyway
             DEFAULT_ACTIVITY_TRACKER_ID
         }
     }
 
-    private fun updateStudentData(codeTrackerKey: String, activityTrackerKey: String) {
+    private fun updateUserData(codeTrackerKey: String, activityTrackerKey: String) {
         executeTrackerQuery(
-            getRequestForStudentQuery(
+            getRequestForUserQuery(
                 "user/$userId",
                 codeTrackerKey, activityTrackerKey
             )
@@ -118,7 +118,7 @@ object TrackerQueryExecutor : QueryExecutor() {
         codeTrackerKey?.let {
             val activityTrackerKey = sendActivityTrackerData()
             activityTrackerKey?.let {
-                updateStudentData(codeTrackerKey, activityTrackerKey)
+                updateUserData(codeTrackerKey, activityTrackerKey)
             }
             if (activityTrackerKey == DEFAULT_ACTIVITY_TRACKER_ID) {
                 // Throw an error to show the error UI Pane
