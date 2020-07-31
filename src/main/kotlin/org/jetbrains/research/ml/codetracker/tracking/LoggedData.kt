@@ -2,6 +2,7 @@ package org.jetbrains.research.ml.codetracker.tracking
 
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import org.jetbrains.research.ml.codetracker.ui.panes.SurveyUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
@@ -48,7 +49,7 @@ object DocumentLoggedData : LoggedData<Document, String?>() {
         LoggedDataGetter("fileHashCode") { FileDocumentManager.getInstance().getFile(it)?.hashCode().toString() },
         LoggedDataGetter("documentHashCode") { it.hashCode().toString() },
         LoggedDataGetter("fragment") { it.text },
-        LoggedDataGetter("userId") { TrackerQueryExecutor.userId }
+        LoggedDataGetter("userId") { TrackerQueryExecutor.userId },
         LoggedDataGetter("testMode") { Plugin.testMode.toString() }
     )
 }
