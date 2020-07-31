@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "io.github.elena-lyulina.codetracker"
-version = "1.0-SNAPSHOT"
+version = "1.1"
 
 repositories {
     maven (url = "https://www.jetbrains.com/intellij-repository/releases")
@@ -119,7 +119,7 @@ gluonClient {
 }
 tasks.withType<ShadowJar> {
     project.logger.warn("Don't forget to:\n" +
-            "- set your remote server as \"codetracker.org.jetbrains.research.ml.codetracker.server.url\" regisrty key\n" +
+            "- set your remote server as baseUrl in QueryExecutor class\n" +
             "- turn OFF org.jetbrains.research.ml.codetracker.Plugin.testMode")
 }
 
