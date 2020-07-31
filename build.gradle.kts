@@ -66,7 +66,7 @@ dependencies {
    Uncomment for testing with Intellij IDEA
 */
 intellij {
-    version = "2019.2.2"
+    version = "2020.2"
 }
 
 
@@ -117,7 +117,10 @@ gluonClient {
     reflectionList = arrayListOf("javafx.fxml.FXMLLoader", "com.gluon.hello.views.HelloPresenter",
         "javafx.scene.control.Button", "javafx.scene.control.Label")
 }
-tasks.withType<ShadowJar>() {
+tasks.withType<ShadowJar> {
+    project.logger.warn("Don't forget to:\n" +
+            "- set your remote server as \"codetracker.org.jetbrains.research.ml.codetracker.server.url\" regisrty key\n" +
+            "- turn OFF org.jetbrains.research.ml.codetracker.Plugin.testMode")
 }
 
 tasks.withType<Wrapper> {

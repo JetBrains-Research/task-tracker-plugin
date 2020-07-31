@@ -2,6 +2,7 @@ package org.jetbrains.research.ml.codetracker.tracking
 
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import org.jetbrains.research.ml.codetracker.ui.panes.SurveyUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
@@ -30,41 +31,14 @@ enum class UiLoggedDataHeader(val header: String) {
 }
 
 object UiLoggedData : LoggedData<Unit, String>() {
-
     override val loggedDataGetters: List<LoggedDataGetter<Unit, String>> = arrayListOf(
         LoggedDataGetter(UiLoggedDataHeader.AGE.header) { SurveyUiData.age.uiValue.toString() },
-        LoggedDataGetter(UiLoggedDataHeader.GENDER.header) {
-            // Todo: make it better: delete duplicates of code
-            val currentValue = SurveyUiData.gender.uiValue
-            if (!isDefaultValue(currentValue)) {
-                SurveyUiData.gender.dataList[currentValue].key
-            } else {
-                currentValue.toString()
-            }
-        },
+        LoggedDataGetter(UiLoggedDataHeader.GENDER.header) { SurveyUiData.gender.toString() },
         LoggedDataGetter(UiLoggedDataHeader.PROGRAM_EXPERIENCE_YEARS.header) { SurveyUiData.peYears.uiValue.toString() },
         LoggedDataGetter(UiLoggedDataHeader.PROGRAM_EXPERIENCE_MONTHS.header) { SurveyUiData.peMonths.uiValue.toString() },
-        LoggedDataGetter(UiLoggedDataHeader.COUNTRY.header) {
-            val currentValue = SurveyUiData.country.uiValue
-            if (!isDefaultValue(currentValue)) {
-                SurveyUiData.country.dataList[currentValue].key
-            } else {
-                currentValue.toString()
-            }
-        },
-        LoggedDataGetter(UiLoggedDataHeader.CHOSEN_TASK.header) {
-            val currentValue = TaskChoosingUiData.chosenTask.uiValue
-            if (!isDefaultValue(currentValue)) {
-                TaskChoosingUiData.chosenTask.dataList[currentValue].key
-            } else {
-                currentValue.toString()
-            }
-        }
+        LoggedDataGetter(UiLoggedDataHeader.COUNTRY.header) {SurveyUiData.country.toString() },
+        LoggedDataGetter(UiLoggedDataHeader.CHOSEN_TASK.header) { TaskChoosingUiData.chosenTask.toString() }
     )
-
-    private fun isDefaultValue(value: Int, defaultValue: Int = -1): Boolean {
-        return value == defaultValue
-    }
 }
 
 object DocumentLoggedData : LoggedData<Document, String?>() {
@@ -75,6 +49,7 @@ object DocumentLoggedData : LoggedData<Document, String?>() {
         LoggedDataGetter("fileHashCode") { FileDocumentManager.getInstance().getFile(it)?.hashCode().toString() },
         LoggedDataGetter("documentHashCode") { it.hashCode().toString() },
         LoggedDataGetter("fragment") { it.text },
-        LoggedDataGetter("userId") { TrackerQueryExecutor.userId }
+        LoggedDataGetter("userId") { TrackerQueryExecutor.userId },
+        LoggedDataGetter("testMode") { Plugin.testMode.toString() }
     )
 }

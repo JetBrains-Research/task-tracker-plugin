@@ -2,6 +2,9 @@ package org.jetbrains.research.ml.codetracker.ui.panes.util
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.util.messages.Topic
+import org.jetbrains.research.ml.codetracker.models.Keyed
+import org.jetbrains.research.ml.codetracker.tracking.UiLoggedData
+import org.jetbrains.research.ml.codetracker.ui.panes.SurveyUiData
 import java.util.function.Consumer
 import kotlin.properties.Delegates
 
@@ -43,7 +46,7 @@ open class UiField <T> (val defaultValue: T, private val notifierTopic: Topic<ou
  * so it can be thought of as an item index with type [Int]. If needed, an additional [comparatorNotifierTopic] can be passed,
  * so when [dataListComparator] is changed, it notifies all subscribers.
  */
-open class ListedUiField<T>(
+open class ListedUiField<T : Keyed>(
     private val data: List<T>,
     defaultValue: Int,
     valueNotifierTopic: Topic<out Consumer<Int>>,
@@ -93,7 +96,7 @@ open class ListedUiField<T>(
         }
 
     override fun toString(): String {
-        return currentValue?.toString() ?: "undefined"
+        return currentValue?.key ?: defaultValue.toString()
     }
 }
 
