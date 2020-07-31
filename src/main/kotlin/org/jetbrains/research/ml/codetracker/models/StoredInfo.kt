@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StoredInfo(
     var loggedUIData: Map<String, String> = mapOf(),
-    var activityTrackerKey: String? = null
+    var userId: String? = null
 )

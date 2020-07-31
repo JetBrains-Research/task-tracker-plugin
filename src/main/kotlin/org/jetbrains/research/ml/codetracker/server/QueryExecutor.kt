@@ -47,6 +47,7 @@ abstract class QueryExecutor {
                     logger.info("${Plugin.PLUGIN_ID}: The query ${request.method} ${request.url} was successfully received")
                     return response
                 }
+                response.close()
             } catch (e: Exception) {
                 logger.info("${Plugin.PLUGIN_ID}: ${error}: internet connection exception")
             }
