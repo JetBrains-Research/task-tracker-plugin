@@ -99,7 +99,9 @@ internal object MainController {
         val scale = screenSize.height / SCREEN_HEIGHT
         val panel = JPanel()
         panel.background = java.awt.Color.WHITE
-        contents.add(Content(panel, project, scale, panes))
+        ApplicationManager.getApplication().invokeLater {
+            contents.add(Content(panel, project, scale, panes))
+        }
         PluginServer.checkItInitialized(project)
         return JBScrollPane(panel)
     }
