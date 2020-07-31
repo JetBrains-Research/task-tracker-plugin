@@ -59,9 +59,9 @@ object StoredInfoWrapper {
     }
 
     fun updateStoredInfo(surveyInfo: Map<String, String>? = null,
-                         studentId: String? = null) {
+                         userId: String? = null) {
         surveyInfo?.let{ info.loggedUIData = it }
-        studentId?.let{ info.studentId = it }
+        userId?.let{ info.userId = it }
         writeStoredInfo()
     }
     

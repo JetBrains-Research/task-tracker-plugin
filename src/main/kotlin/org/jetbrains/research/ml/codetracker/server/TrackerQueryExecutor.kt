@@ -20,50 +20,48 @@ object TrackerQueryExecutor : QueryExecutor() {
     private val ACTIVITY_TRACKER_FILE = "ide-events${Extension.CSV.ext}"
     private const val CODE_TRACKER_FILE_FIELD = "codetracker"
     private const val ACTIVITY_TRACKER_FILE_FIELD = "activitytracker"
-    private val activityTrackerPath = "${PathManager.getPluginsPath()}/activity-tracker/" + ACTIVITY_TRACKER_FILE
+    private val activityTrackerPath = "${PathManager.getPluginsPath()}/activity-tracker/$ACTIVITY_TRACKER_FILE"
     private const val DEFAULT_ACTIVITY_TRACKER_ID = "-1"
 
-    var studentId: String? = null
+    var userId: String? = null
 
     init {
-        StoredInfoWrapper.info.studentId?.let {
-            studentId = it
+        StoredInfoWrapper.info.userId?.let {
+            userId = it
         } ?: run {
             initStudentId()
-            StoredInfoWrapper.updateStoredInfo(studentId = studentId)
+            StoredInfoWrapper.updateStoredInfo(userId = userId)
         }
     }
 
     private fun initStudentId() {
-        val currentUrl = URL(baseUrl + "student")
+        val currentUrl = URL("${baseUrl}student")
         logger.info("${Plugin.PLUGIN_ID}: ...generating student id")
         val requestBody = ByteArray(0).toRequestBody(null, 0, 0)
         val request = Request.Builder().url(currentUrl).post(requestBody).build()
-        studentId = executeQuery(request)?.let { it.body?.string() }
+        userId = executeQuery(request)?.let { it.body?.string() }
     }
 
     private fun getRequestForStudentQuery(
         urlSuffix: String,
         codeTrackerKey: String,
-        activityTrackerKey: String,
-        method: String = "PUT"
+        activityTrackerKey: String
     ): Request {
         val json = "{\"diId\":$codeTrackerKey,\"atiId\":\"$activityTrackerKey\"}"
         val body = json.toRequestBody("application/json".toMediaTypeOrNull())
-        return Request.Builder().url(baseUrl + urlSuffix).method(method, body).build()
+        return Request.Builder().url(baseUrl + urlSuffix).method("PUT", body).build()
     }
 
     private fun getRequestForSendingDataQuery(
         urlSuffix: String,
         file: File,
-        fileFieldName: String,
-        method: String = "POST"
+        fileFieldName: String
     ): Request {
         if (file.exists()) {
             logger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
             val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
             requestBody.addFormDataPart(fileFieldName, file.name, file.asRequestBody("text/csv".toMediaType()))
-            return Request.Builder().url(baseUrl + urlSuffix).method(method, requestBody.build()).build()
+            return Request.Builder().url(baseUrl + urlSuffix).method("POST", requestBody.build()).build()
         } else {
             throw IllegalStateException("File ${file.name} for $fileFieldName doesn't exist")
         }
@@ -101,7 +99,7 @@ object TrackerQueryExecutor : QueryExecutor() {
     private fun updateStudentData(codeTrackerKey: String, activityTrackerKey: String) {
         executeTrackerQuery(
             getRequestForStudentQuery(
-                "student/$studentId",
+                "user/$userId",
                 codeTrackerKey, activityTrackerKey
             )
         )
