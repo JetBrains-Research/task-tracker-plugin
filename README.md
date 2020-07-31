@@ -41,3 +41,7 @@ The .zip is located in `build/distributions/codetracker-1.0-SNAPSHOT.zip`. Then 
 Also, we created a detailed [guide](https://github.com/JetBrains-Research/codetracker/wiki) about 
 installing and uninstalling **codetracker**. The guide is available in English and Russian.
 
+## Releases
+
+The list of releases is [here](https://github.com/JetBrains-Research/codetracker/releases).
+
