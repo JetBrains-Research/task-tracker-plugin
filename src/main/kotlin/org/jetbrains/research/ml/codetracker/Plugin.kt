@@ -16,6 +16,6 @@ object Plugin {
     private val logger: Logger = Logger.getInstance(javaClass)
 
     init {
-        logger.info("$PLUGIN_ID: init plugin")
+        logger.info("$PLUGIN_ID: init plugin, test mode is $testMode")
     }
 }
