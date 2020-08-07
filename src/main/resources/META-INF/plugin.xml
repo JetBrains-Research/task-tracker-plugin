@@ -9,6 +9,7 @@
 
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.javafx</depends>
     <depends>Activity Tracker</depends>
 
     <extensions defaultExtensionNs="com.intellij">
