@@ -48,12 +48,7 @@ dependencies {
     // https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j (used for unzipping required plugins)
     implementation("net.lingala.zip4j", "zip4j", "2.6.1")
 
-
-//    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.zip", "*.jar"))))
     testCompile("junit", "junit", "4.12")
-
-    implementation(files("libs/activity-tracker-plugin.zip"))
-
 }
 
 /*

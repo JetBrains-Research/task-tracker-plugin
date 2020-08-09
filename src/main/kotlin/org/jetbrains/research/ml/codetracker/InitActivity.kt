@@ -11,7 +11,6 @@ class InitActivity : StartupActivity {
 
     init {
         logger.info("${Plugin.PLUGIN_ID}: startup activity")
-
     }
 
     override fun runActivity(project: Project) {
