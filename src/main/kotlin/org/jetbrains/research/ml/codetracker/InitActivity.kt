@@ -11,9 +11,11 @@ class InitActivity : StartupActivity {
 
     init {
         logger.info("${Plugin.PLUGIN_ID}: startup activity")
+
     }
 
     override fun runActivity(project: Project) {
+        Plugin.installRequiredPlugins(project)
         logger.info("${Plugin.PLUGIN_ID}: run activity")
         TaskFileHandler.addProject(project)
     }

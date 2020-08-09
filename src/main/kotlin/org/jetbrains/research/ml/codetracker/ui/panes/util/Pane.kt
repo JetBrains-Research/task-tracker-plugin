@@ -64,9 +64,9 @@ abstract class PaneControllerManager<T : PaneController>  {
             val controller = paneControllerClass.constructors.first().call(project, scale, fxPanel, lastId++)
             logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} create controller, current thread is ${Thread.currentThread().name}")
             paneControllers.add(controller)
-            Disposer.register(project, Disposable {
-                this.removeController(controller)
-            })
+//            Disposer.register(project, Disposable {
+//                this.removeController(controller)
+//            })
             val loader = FXMLLoader()
             loader.namespace["scale"] = scale
             loader.location = javaClass.getResource(fxmlFilename)

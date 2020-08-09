@@ -26,6 +26,7 @@ repositories {
     mavenCentral()
     jcenter()
     google()
+
 }
 
 
@@ -44,9 +45,15 @@ dependencies {
     compile("com.google.auto.service:auto-service:1.0-rc7")
     implementation("org.eclipse.mylyn.github", "org.eclipse.egit.github.core", "2.1.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:0.9.1")
+    // https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j (used for unzipping required plugins)
+    implementation("net.lingala.zip4j", "zip4j", "2.6.1")
 
 
+//    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.zip", "*.jar"))))
     testCompile("junit", "junit", "4.12")
+
+    implementation(files("libs/activity-tracker-plugin.zip"))
+
 }
 
 /*
@@ -83,7 +90,7 @@ intellij {
 intellij {
     val ideVersion = System.getenv().getOrDefault(
         "CODE_TRACKER_IDEA_VERSION",
-        "192.5728.98"
+        "201.6668.113"
     )
     println("Using ide version: $ideVersion")
     version = ideVersion
@@ -91,8 +98,6 @@ intellij {
     downloadSources = true
     sameSinceUntilBuild = false
     updateSinceUntilBuild = false
-    // Todo: use the latest version
-    setPlugins("Activity Tracker:0.1.9 beta")
 }
 
 javafx {

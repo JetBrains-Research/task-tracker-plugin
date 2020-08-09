@@ -186,8 +186,10 @@ object TaskFileHandler {
     fun getTaskByVirtualFile(virtualFile: VirtualFile?): Task? {
 //        Due to the lazy evaluation of sequences in kotlin it not so terribly complex as you may think.
 //        Even if it is, we have only 3 tasks and only a couple of projects open at the same time, so it's not so bad.
-        return ProjectLocator.getInstance().getProjectsForFile(virtualFile).asSequence().map { project ->
-            projectToTaskToFiles[project]?.entries?.firstOrNull { it.value == virtualFile }?.key
-        }.firstOrNull()
+        return virtualFile?.let {
+            ProjectLocator.getInstance().getProjectsForFile(virtualFile).asSequence().map { project ->
+                projectToTaskToFiles[project]?.entries?.firstOrNull { it.value == virtualFile }?.key
+            }.firstOrNull()
+        }
     }
 }
