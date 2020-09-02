@@ -17,6 +17,7 @@ enum class ActivityTrackerColumn {
 object ActivityTrackerFileHandler {
 
     private const val ACTIVITY_TRACKER_FILE_NAME = "ide-events"
+    private const val DEFAULT_PATH_SYMBOL = "*"
     private val logger: Logger = Logger.getInstance(javaClass)
 
     // TODO: get the current language instead of the argument??
@@ -42,28 +43,31 @@ object ActivityTrackerFileHandler {
             ActivityTrackerColumn.USERNAME.name, ActivityTrackerColumn.PROJECT_NAME.name,
             ActivityTrackerColumn.PSI_PATH.name
         )
-        // Keep only tasks files
-        val removedUserFilesDf = removeUserFiles(anonymousDf, language)
-        // Replace the absolute file path into the relative one
-        return clearFilesPaths(removedUserFilesDf)
+        return clearFilesPaths(anonymousDf, language)
     }
 
-    private fun clearFilesPaths(df: DataFrame): DataFrame {
-        // Replace the absolute file path into something like this: PLUGIN_ID/task_file
-        return df.addColumn(ActivityTrackerColumn.CURRENT_FILE.name) { filepath ->
-            filepath[ActivityTrackerColumn.CURRENT_FILE.name].map<String> {
-                // Delete all symbols before PLUGIN_ID in the path
-                it.substring(it.indexOf("/$PLUGIN_ID") + 1)
-            }
+    // Return default symbol, if the file
+    private fun replaceAbsoluteFilePath(path: String, pluginFilesRegex: Regex): String {
+        // Try to find plugin's tasks files
+        val found = pluginFilesRegex.find(path)
+        return if (found != null) {
+            // Get name from path
+            path.split("/").last()
+        } else {
+            DEFAULT_PATH_SYMBOL
         }
     }
 
-    private fun removeUserFiles(df: DataFrame, language: Language): DataFrame {
-        // Get tasks for the regular expression in the following format: (task_1.key|task_2.key)
+    private fun clearFilesPaths(df: DataFrame, language: Language): DataFrame {
         val tasks = PluginServer.tasks.joinToString(separator = "|") { it.key }
-        val matchCondition = ".*/$PLUGIN_ID/($tasks)${language.extension.ext}".toRegex(
+        val tasksMatchCondition = ".*/$PLUGIN_ID/($tasks)${language.extension.ext}".toRegex(
             RegexOption.IGNORE_CASE
         )
-        return df.filterByRow { (it[ActivityTrackerColumn.CURRENT_FILE.name] as String).matches(matchCondition) }
+        // Replace the absolute file path into something like this: PLUGIN_ID/task_file
+        return df.addColumn(ActivityTrackerColumn.CURRENT_FILE.name) { filePath ->
+            filePath[ActivityTrackerColumn.CURRENT_FILE.name].map<String> {
+                replaceAbsoluteFilePath(it, tasksMatchCondition)
+            }
+        }
     }
 }
