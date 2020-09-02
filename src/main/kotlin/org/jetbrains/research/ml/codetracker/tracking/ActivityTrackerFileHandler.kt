@@ -46,7 +46,7 @@ object ActivityTrackerFileHandler {
         return clearFilesPaths(anonymousDf, language)
     }
 
-    // Return default symbol, if the file
+    // Return the default symbol, if the file is not from the plugin files and only filename from the path otherwise
     private fun replaceAbsoluteFilePath(path: String, pluginFilesRegex: Regex): String {
         // Try to find plugin's tasks files
         val found = pluginFilesRegex.find(path)
@@ -63,7 +63,6 @@ object ActivityTrackerFileHandler {
         val tasksMatchCondition = ".*/$PLUGIN_ID/($tasks)${language.extension.ext}".toRegex(
             RegexOption.IGNORE_CASE
         )
-        // Replace the absolute file path into something like this: PLUGIN_ID/task_file
         return df.addColumn(ActivityTrackerColumn.CURRENT_FILE.name) { filePath ->
             filePath[ActivityTrackerColumn.CURRENT_FILE.name].map<String> {
                 replaceAbsoluteFilePath(it, tasksMatchCondition)

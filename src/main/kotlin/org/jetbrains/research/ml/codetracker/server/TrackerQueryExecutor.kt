@@ -127,7 +127,6 @@ object TrackerQueryExecutor : QueryExecutor() {
                 // Throw an error to show the error UI Pane
                 throw IllegalStateException("Unsuccessful server response")
             } else {
-                // Todo: should we delete tmp file with the filtered data?
                 clearActivityTrackerFile()
             }
         }
