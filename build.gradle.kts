@@ -44,7 +44,7 @@ dependencies {
     compile("com.google.auto.service:auto-service:1.0-rc7")
     implementation("org.eclipse.mylyn.github", "org.eclipse.egit.github.core", "2.1.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:0.9.1")
-
+    implementation("com.github.holgerbrandl:krangl:v0.13")
 
     testCompile("junit", "junit", "4.12")
 }

@@ -9,6 +9,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Extension
+import org.jetbrains.research.ml.codetracker.tracking.ActivityTrackerFileHandler
 import org.jetbrains.research.ml.codetracker.tracking.StoredInfoWrapper
 import java.io.File
 import java.io.PrintWriter
@@ -83,6 +84,7 @@ object TrackerQueryExecutor : QueryExecutor() {
 
     private fun sendActivityTrackerData(): String? {
         return try {
+            ActivityTrackerFileHandler.filterActivityTrackerData(activityTrackerPath)
             executeTrackerQuery(
                 getRequestForSendingDataQuery(
                     "activity-tracker-item",
