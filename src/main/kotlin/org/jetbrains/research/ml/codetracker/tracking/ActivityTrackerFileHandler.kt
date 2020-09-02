@@ -16,17 +16,21 @@ enum class ActivityTrackerColumn {
 
 object ActivityTrackerFileHandler {
 
+    private const val ACTIVITY_TRACKER_FILE_NAME = "ide-events"
     private val logger: Logger = Logger.getInstance(javaClass)
 
     // TODO: get the current language instead of the argument??
-    fun filterActivityTrackerData(filePath: String, language: Language = Language.PYTHON) {
-        try {
+    fun filterActivityTrackerData(filePath: String, language: Language = Language.PYTHON): String? {
+        return try {
             val df = DataFrame.readCSV(filePath,
                 format=CSVFormat.DEFAULT.withHeader(ActivityTrackerColumn::class.java))
             val filteredDf = filterDataFrame(df, language)
-            filteredDf.writeCSV(File(filePath), format=CSVFormat.DEFAULT.withIgnoreHeaderCase(true))
+            val resultPath = filePath.replace(ACTIVITY_TRACKER_FILE_NAME, "${ACTIVITY_TRACKER_FILE_NAME}_filtered")
+            filteredDf.writeCSV(File(resultPath), format=CSVFormat.DEFAULT.withIgnoreHeaderCase(true))
+            resultPath
         } catch (e: FileNotFoundException) {
             logger.info("${PLUGIN_ID}: The activity tracker file $filePath does not exist")
+            null
         }
     }
 

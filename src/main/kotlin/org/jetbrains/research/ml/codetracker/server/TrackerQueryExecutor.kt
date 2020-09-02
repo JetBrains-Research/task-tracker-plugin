@@ -84,14 +84,15 @@ object TrackerQueryExecutor : QueryExecutor() {
 
     private fun sendActivityTrackerData(): String? {
         return try {
-            ActivityTrackerFileHandler.filterActivityTrackerData(activityTrackerPath)
-            executeTrackerQuery(
-                getRequestForSendingDataQuery(
-                    "activity-tracker-item",
-                    File(activityTrackerPath),
-                    ACTIVITY_TRACKER_FILE_FIELD
+            ActivityTrackerFileHandler.filterActivityTrackerData(activityTrackerPath)?.let {
+                executeTrackerQuery(
+                    getRequestForSendingDataQuery(
+                        "activity-tracker-item",
+                        File(it),
+                        ACTIVITY_TRACKER_FILE_FIELD
+                    )
                 )
-            )
+            }
         } catch (e: IllegalStateException) {
             // We catch it because we want to update the user anyway
             DEFAULT_ACTIVITY_TRACKER_ID
@@ -126,6 +127,7 @@ object TrackerQueryExecutor : QueryExecutor() {
                 // Throw an error to show the error UI Pane
                 throw IllegalStateException("Unsuccessful server response")
             } else {
+                // Todo: should we delete tmp file with the filtered data?
                 clearActivityTrackerFile()
             }
         }
