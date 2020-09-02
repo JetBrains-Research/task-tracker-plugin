@@ -23,7 +23,7 @@ object ActivityTrackerFileHandler {
     }
 
     private fun filterDataFrame(df: DataFrame, language: Language): DataFrame {
-        // Remove columns, which can contain the private information
+        // Remove columns, which can contain private information
         val anonymousDf = df.remove(ActivityTrackerColumn.USERNAME.name, ActivityTrackerColumn.PROJECT_NAME.name,
                                     ActivityTrackerColumn.PSI_PATH.name)
         // Keep only tasks files
