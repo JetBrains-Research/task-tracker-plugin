@@ -1,11 +1,13 @@
 package org.jetbrains.research.ml.codetracker.tracking
 
+import com.intellij.openapi.diagnostic.Logger
 import krangl.*
 import org.apache.commons.csv.CSVFormat
 import org.jetbrains.research.ml.codetracker.Plugin.PLUGIN_ID
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import java.io.File
+import java.io.FileNotFoundException
 
 enum class ActivityTrackerColumn {
     TIMESTAMP, USERNAME, EVENT_TYPE, EVENT_DATA, PROJECT_NAME, FOCUSED_COMPONENT,
@@ -14,12 +16,18 @@ enum class ActivityTrackerColumn {
 
 object ActivityTrackerFileHandler {
 
+    private val logger: Logger = Logger.getInstance(javaClass)
+
     // TODO: get the current language instead of the argument??
     fun filterActivityTrackerData(filePath: String, language: Language = Language.PYTHON) {
-        val df = DataFrame.readCSV(filePath,
-            format=CSVFormat.DEFAULT.withHeader(ActivityTrackerColumn::class.java))
-        val filteredDf = filterDataFrame(df, language)
-        filteredDf.writeCSV(File(filePath), format=CSVFormat.DEFAULT.withIgnoreHeaderCase(true))
+        try {
+            val df = DataFrame.readCSV(filePath,
+                format=CSVFormat.DEFAULT.withHeader(ActivityTrackerColumn::class.java))
+            val filteredDf = filterDataFrame(df, language)
+            filteredDf.writeCSV(File(filePath), format=CSVFormat.DEFAULT.withIgnoreHeaderCase(true))
+        } catch (e: FileNotFoundException) {
+            logger.info("${PLUGIN_ID}: The activity tracker file $filePath does not exist")
+        }
     }
 
     private fun filterDataFrame(df: DataFrame, language: Language): DataFrame {
