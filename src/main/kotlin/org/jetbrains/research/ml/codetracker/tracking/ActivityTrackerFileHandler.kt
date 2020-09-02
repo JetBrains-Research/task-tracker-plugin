@@ -22,11 +22,13 @@ object ActivityTrackerFileHandler {
     // TODO: get the current language instead of the argument??
     fun filterActivityTrackerData(filePath: String, language: Language = Language.PYTHON): String? {
         return try {
-            val df = DataFrame.readCSV(filePath,
-                format=CSVFormat.DEFAULT.withHeader(ActivityTrackerColumn::class.java))
+            val df = DataFrame.readCSV(
+                filePath,
+                format = CSVFormat.DEFAULT.withHeader(ActivityTrackerColumn::class.java)
+            )
             val filteredDf = filterDataFrame(df, language)
             val resultPath = filePath.replace(ACTIVITY_TRACKER_FILE_NAME, "${ACTIVITY_TRACKER_FILE_NAME}_filtered")
-            filteredDf.writeCSV(File(resultPath), format=CSVFormat.DEFAULT.withIgnoreHeaderCase(true))
+            filteredDf.writeCSV(File(resultPath), format = CSVFormat.DEFAULT.withIgnoreHeaderCase(true))
             resultPath
         } catch (e: FileNotFoundException) {
             logger.info("${PLUGIN_ID}: The activity tracker file $filePath does not exist")
@@ -36,10 +38,24 @@ object ActivityTrackerFileHandler {
 
     private fun filterDataFrame(df: DataFrame, language: Language): DataFrame {
         // Remove columns, which can contain private information
-        val anonymousDf = df.remove(ActivityTrackerColumn.USERNAME.name, ActivityTrackerColumn.PROJECT_NAME.name,
-                                    ActivityTrackerColumn.PSI_PATH.name)
+        val anonymousDf = df.remove(
+            ActivityTrackerColumn.USERNAME.name, ActivityTrackerColumn.PROJECT_NAME.name,
+            ActivityTrackerColumn.PSI_PATH.name
+        )
         // Keep only tasks files
-        return removeUserFiles(anonymousDf, language)
+        val removedUserFilesDf = removeUserFiles(anonymousDf, language)
+        // Replace the absolute file path into the relative one
+        return clearFilesPaths(removedUserFilesDf)
+    }
+
+    private fun clearFilesPaths(df: DataFrame): DataFrame {
+        // Replace the absolute file path into something like this: PLUGIN_ID/task_file
+        return df.addColumn(ActivityTrackerColumn.CURRENT_FILE.name) { filepath ->
+            filepath[ActivityTrackerColumn.CURRENT_FILE.name].map<String> {
+                // Delete all symbols before PLUGIN_ID in the path
+                it.substring(it.indexOf("/$PLUGIN_ID") + 1)
+            }
+        }
     }
 
     private fun removeUserFiles(df: DataFrame, language: Language): DataFrame {
@@ -48,6 +64,6 @@ object ActivityTrackerFileHandler {
         val matchCondition = ".*/$PLUGIN_ID/($tasks)${language.extension.ext}".toRegex(
             RegexOption.IGNORE_CASE
         )
-        return df.filterByRow { (it[ActivityTrackerColumn.CURRENT_FILE.name] as String).matches(matchCondition)}
+        return df.filterByRow { (it[ActivityTrackerColumn.CURRENT_FILE.name] as String).matches(matchCondition) }
     }
 }
