@@ -51,7 +51,6 @@ object DocumentLoggedData : LoggedData<Document, String?>() {
         LoggedDataGetter("fragment") { it.text },
         LoggedDataGetter("userId") { TrackerQueryExecutor.userId },
         LoggedDataGetter("testMode") { Plugin.testMode.toString() },
-        // TODO: change it corresponding to the chosen current language in a pane??
         LoggedDataGetter("language") { Plugin.currentLanguage.name.toLowerCase() }
     )
 }

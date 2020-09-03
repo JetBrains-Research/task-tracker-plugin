@@ -8,7 +8,6 @@ object LanguageContentHandler {
     private const val PLUGIN_FOLDER = "codetracker"
 
     fun getLanguageFolderRelativePath(language: Language): String {
-        // TODO: should we create the different folders structure corresponding the currentLanguage??
         return "src/main/${language.name.toLowerCase()}/${PLUGIN_FOLDER}"
     }
 
