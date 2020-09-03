@@ -6,19 +6,25 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.module.Module
+import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectLocator
+import com.intellij.openapi.roots.ContentEntry
+import com.intellij.openapi.roots.ModifiableRootModel
+import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.ReadOnlyAttributeUtil
+import org.jetbrains.jps.model.serialization.PathMacroUtil
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
-import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskSolvingControllerManager
@@ -28,8 +34,6 @@ import java.io.IOException
 
 
 object TaskFileHandler {
-    private const val PLUGIN_FOLDER = "codetracker"
-
     private val logger: Logger = Logger.getInstance(javaClass)
     private val documentToTask: HashMap<Document, Task> = HashMap()
     private val projectToTaskToFiles: HashMap<Project, HashMap<Task, VirtualFile>> = HashMap()
@@ -43,6 +47,7 @@ object TaskFileHandler {
         if (PluginServer.serverConnectionResult != ServerConnectionResult.SUCCESS) {
             subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
                 override fun accept(connection: ServerConnectionResult) {
+                    // Todo: call it if the current language is chosen
                     if (connection == ServerConnectionResult.SUCCESS) {
                         projectsToInit.forEach { initProject(it) }
                         projectsToInit.clear()
@@ -56,9 +61,10 @@ object TaskFileHandler {
      * Call if you sure that ServerConnectionResult was successful and therefore all tasks are received
      */
     private fun initProject(project: Project) {
+        removeAllListeners()
         projectToTaskToFiles[project] = hashMapOf()
         PluginServer.tasks.forEach { task ->
-            val virtualFile = getOrCreateFile(project, task)
+            val virtualFile = getOrCreateFile(project, task, Plugin.currentLanguage)
             virtualFile?.let {
                 addTaskFile(it, task, project)
                 ApplicationManager.getApplication().invokeAndWait {
@@ -84,18 +90,59 @@ object TaskFileHandler {
         }
     }
 
+    private fun addSourceFolder(relativePath: String, module: Module) {
+        val directory = File(PathMacroUtil.getModuleDir(module.moduleFilePath), relativePath)
+        if (!directory.exists()) {
+            directory.mkdirs()
+        }
+        val virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(directory)
+        virtualFile?.let {
+            val rootModel = ModuleRootManager.getInstance(module).modifiableModel
+            getContentEntry(virtualFile, rootModel)?.addSourceFolder(it.url, false)
+            rootModel.commit()
+        }
 
-    private fun getOrCreateFile(project: Project, task: Task): VirtualFile? {
+    }
+
+    private fun getContentEntry(url: VirtualFile?, rootModel: ModifiableRootModel): ContentEntry? {
+        rootModel.contentEntries.forEach { e ->
+            url?.let {
+                if (isEqualOrAncestor(e.url, url.url)) return e
+            }
+        }
+        return null
+    }
+
+    private fun getOrCreateFile(project: Project, task: Task, language: Language): VirtualFile? {
+        val relativeFilePath = LanguageContentHandler.getLanguageFolderRelativePath(language)
+        ApplicationManager.getApplication().runWriteAction {
+            addSourceFolder(relativeFilePath, ModuleManager.getInstance(project).modules.last())
+        }
         val file =
-            File("${project.basePath}/" +
-                    "${LanguageContentHandler.getLanguageFolderRelativePath(Plugin.currentLanguage)}/" +
-                    LanguageContentHandler.getTaskFileName(task, Plugin.currentLanguage)
+            File(
+                "${project.basePath}/$relativeFilePath/" +
+                        LanguageContentHandler.getTaskFileName(task, language)
             )
         if (!file.exists()) {
-            FileUtil.createIfDoesntExist(file)
-            file.writeText(LanguageContentHandler.getInitFileContent(task, Plugin.currentLanguage))
+            ApplicationManager.getApplication().runWriteAction {
+                FileUtil.createIfDoesntExist(file)
+                file.writeText(LanguageContentHandler.getInitFileContent(task, language))
+            }
         }
         return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
+    }
+
+    private fun removeAllListeners() {
+        projectToTaskToFiles.forEach { (_, taskToFiles) ->
+            taskToFiles.forEach { (_, file) ->
+                run {
+                    ApplicationManager.getApplication().invokeAndWait {
+                        val document = FileDocumentManager.getInstance().getDocument(file)
+                        document?.removeDocumentListener(listener)
+                    }
+                }
+            }
+        }
     }
 
     /**

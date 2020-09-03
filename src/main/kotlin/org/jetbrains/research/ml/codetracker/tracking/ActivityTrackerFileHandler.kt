@@ -20,7 +20,7 @@ object ActivityTrackerFileHandler {
     private const val ACTIVITY_TRACKER_FILE_NAME = "ide-events"
     private const val DEFAULT_PATH_SYMBOL = "*"
     private val logger: Logger = Logger.getInstance(javaClass)
-    
+
     fun filterActivityTrackerData(filePath: String): String? {
         return try {
             val df = DataFrame.readCSV(
@@ -60,7 +60,8 @@ object ActivityTrackerFileHandler {
 
     private fun clearFilesPaths(df: DataFrame, language: Language): DataFrame {
         val tasks = PluginServer.tasks.joinToString(separator = "|") { it.key }
-        val tasksMatchCondition = ".*/$PLUGIN_ID/($tasks)${language.extension.ext}".toRegex(
+        val languages = Language.values().joinToString(separator = "|") { it.name.toLowerCase() }
+        val tasksMatchCondition = ".*/$PLUGIN_ID/($languages)/($tasks)${language.extension.ext}".toRegex(
             RegexOption.IGNORE_CASE
         )
         return df.addColumn(ActivityTrackerColumn.CURRENT_FILE.name) { filePath ->

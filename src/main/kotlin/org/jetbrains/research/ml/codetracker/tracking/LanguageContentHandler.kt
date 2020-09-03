@@ -8,20 +8,21 @@ object LanguageContentHandler {
     private const val PLUGIN_FOLDER = "codetracker"
 
     fun getLanguageFolderRelativePath(language: Language): String {
-        return "src/main/${language.name.toLowerCase()}/${PLUGIN_FOLDER}"
+        return "${PLUGIN_FOLDER}/${language.name.toLowerCase()}"
     }
 
     private fun getTaskComment(task: Task, language: Language): String {
         val commonCommentPart = "Write code for the ${task.key} task in this file\n\n"
         return when(language) {
             Language.PYTHON -> "# $commonCommentPart"
+            Language.CPP -> "// ${commonCommentPart}To run this file add it to MAKE or CMAKE file in your project\n\n"
             // Default case, because in most languages is used // in comments
             else -> "// $commonCommentPart"
         }
     }
 
     private fun getPackage(language: Language): String {
-        val currentPackage = "package main.${language.name.toLowerCase()}.${PLUGIN_FOLDER}"
+        val currentPackage = "package ${PLUGIN_FOLDER}.${language.name.toLowerCase()}"
         return when(language) {
             Language.JAVA -> "$currentPackage;\n\n"
             Language.KOTLIN -> "$currentPackage\n\n"
@@ -44,12 +45,12 @@ object LanguageContentHandler {
     fun getInitFileContent(task: Task, language: Language): String {
         val comment = getTaskComment(task, language)
         return when(language) {
-            Language.JAVA -> "$comment${getPackage(language)}public class ${getClassNameByTask(task)} {\n" +
+            Language.JAVA -> comment + "public class ${getClassNameByTask(task)} {\n" +
                     "    public static void main(String[] args) {\n" +
                     "        // Write your code here\n" +
                     "    }" +
                     "\n}"
-            Language.KOTLIN -> comment + getPackage(language) +
+            Language.KOTLIN -> comment +
                     "fun main() {\n" +
                     "    // Write tour code here\n" +
                     "}"

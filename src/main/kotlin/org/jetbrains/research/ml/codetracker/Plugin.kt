@@ -14,7 +14,7 @@ object Plugin {
     val testMode = TestMode.ON
     val codeTrackerFolderPath = "${PathManager.getPluginsPath()}/${PLUGIN_ID}"
     // TODO: How will we change it?
-    val currentLanguage = Language.PYTHON
+    val currentLanguage = Language.CPP
 
     private val logger: Logger = Logger.getInstance(javaClass)
 
