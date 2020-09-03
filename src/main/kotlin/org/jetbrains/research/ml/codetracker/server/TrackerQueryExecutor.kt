@@ -9,6 +9,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Extension
+import org.jetbrains.research.ml.codetracker.tracking.ActivityTrackerFileHandler
 import org.jetbrains.research.ml.codetracker.tracking.StoredInfoWrapper
 import java.io.File
 import java.io.PrintWriter
@@ -83,13 +84,15 @@ object TrackerQueryExecutor : QueryExecutor() {
 
     private fun sendActivityTrackerData(): String? {
         return try {
-            executeTrackerQuery(
-                getRequestForSendingDataQuery(
-                    "activity-tracker-item",
-                    File(activityTrackerPath),
-                    ACTIVITY_TRACKER_FILE_FIELD
+            ActivityTrackerFileHandler.filterActivityTrackerData(activityTrackerPath)?.let {
+                executeTrackerQuery(
+                    getRequestForSendingDataQuery(
+                        "activity-tracker-item",
+                        File(it),
+                        ACTIVITY_TRACKER_FILE_FIELD
+                    )
                 )
-            )
+            }
         } catch (e: IllegalStateException) {
             // We catch it because we want to update the user anyway
             DEFAULT_ACTIVITY_TRACKER_ID
