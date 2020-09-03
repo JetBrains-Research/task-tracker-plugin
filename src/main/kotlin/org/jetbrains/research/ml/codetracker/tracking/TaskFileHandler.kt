@@ -57,7 +57,7 @@ object TaskFileHandler {
      */
     private fun initProject(project: Project) {
         projectToTaskToFiles[project] = hashMapOf()
-        PluginServer.tasks.forEach {task ->
+        PluginServer.tasks.forEach { task ->
             val virtualFile = getOrCreateFile(project, task)
             virtualFile?.let {
                 addTaskFile(it, task, project)
@@ -85,20 +85,17 @@ object TaskFileHandler {
     }
 
 
-    private fun getOrCreateFile(project: Project, task: Task, language: Language = Language.PYTHON): VirtualFile? {
-        val file = File("${project.basePath}/$PLUGIN_FOLDER/${task.key}${language.extension.ext}")
+    private fun getOrCreateFile(project: Project, task: Task): VirtualFile? {
+        val file =
+            File("${project.basePath}/" +
+                    "${LanguageContentHandler.getLanguageFolderRelativePath(Plugin.currentLanguage)}/" +
+                    LanguageContentHandler.getTaskFileName(task, Plugin.currentLanguage)
+            )
         if (!file.exists()) {
             FileUtil.createIfDoesntExist(file)
-            file.writeText(getTaskComment(task, language))
+            file.writeText(LanguageContentHandler.getInitFileContent(task, Plugin.currentLanguage))
         }
         return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
-    }
-
-    private fun getTaskComment(task: Task, language: Language = Language.PYTHON): String {
-        return when(language) {
-            Language.PYTHON -> "# Write code for the ${task.key} task here\n"
-            else -> TODO("Add other languages")
-        }
     }
 
     /**
@@ -131,7 +128,7 @@ object TaskFileHandler {
     }
 
     fun openTaskFiles(task: Task, language: Language = Language.PYTHON) {
-        projectToTaskToFiles.forEach { (project, taskFiles) ->  openFile(project, taskFiles[task]) }
+        projectToTaskToFiles.forEach { (project, taskFiles) -> openFile(project, taskFiles[task]) }
     }
 
     /*
@@ -147,11 +144,12 @@ object TaskFileHandler {
     fun getDocument(project: Project, task: Task): Document {
         val virtualFile = projectToTaskToFiles[project]?.get(task)
             ?: throw IllegalStateException("A file for the task ${task.key} in the project ${project.name} does not exist")
-        return FileDocumentManager.getInstance().getDocument(virtualFile)?: throw IllegalStateException("A document for the file ${virtualFile.name} in the project ${project.name} does not exist")
+        return FileDocumentManager.getInstance().getDocument(virtualFile)
+            ?: throw IllegalStateException("A document for the file ${virtualFile.name} in the project ${project.name} does not exist")
     }
 
     fun closeTaskFiles(task: Task, language: Language = Language.PYTHON) {
-        projectToTaskToFiles.forEach { (project, taskFiles) ->  closeFile(project, taskFiles[task]) }
+        projectToTaskToFiles.forEach { (project, taskFiles) -> closeFile(project, taskFiles[task]) }
     }
 
     /**

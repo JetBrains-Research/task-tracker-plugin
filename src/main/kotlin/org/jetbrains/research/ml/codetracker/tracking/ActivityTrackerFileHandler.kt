@@ -3,6 +3,7 @@ package org.jetbrains.research.ml.codetracker.tracking
 import com.intellij.openapi.diagnostic.Logger
 import krangl.*
 import org.apache.commons.csv.CSVFormat
+import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.Plugin.PLUGIN_ID
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.server.PluginServer
@@ -19,15 +20,14 @@ object ActivityTrackerFileHandler {
     private const val ACTIVITY_TRACKER_FILE_NAME = "ide-events"
     private const val DEFAULT_PATH_SYMBOL = "*"
     private val logger: Logger = Logger.getInstance(javaClass)
-
-    // TODO: get the current language instead of the argument??
-    fun filterActivityTrackerData(filePath: String, language: Language = Language.PYTHON): String? {
+    
+    fun filterActivityTrackerData(filePath: String): String? {
         return try {
             val df = DataFrame.readCSV(
                 filePath,
                 format = CSVFormat.DEFAULT.withHeader(ActivityTrackerColumn::class.java)
             )
-            val filteredDf = filterDataFrame(df, language)
+            val filteredDf = filterDataFrame(df, Plugin.currentLanguage)
             val resultPath = filePath.replace(ACTIVITY_TRACKER_FILE_NAME, "${ACTIVITY_TRACKER_FILE_NAME}_filtered")
             filteredDf.writeCSV(File(resultPath), format = CSVFormat.DEFAULT.withIgnoreHeaderCase(true))
             resultPath
