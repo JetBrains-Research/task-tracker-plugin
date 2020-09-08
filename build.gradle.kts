@@ -25,7 +25,6 @@ repositories {
     mavenCentral()
     jcenter()
     google()
-
 }
 
 
