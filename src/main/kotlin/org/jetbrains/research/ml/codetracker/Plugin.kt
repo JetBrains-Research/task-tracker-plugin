@@ -1,16 +1,18 @@
 package org.jetbrains.research.ml.codetracker
 
-import com.intellij.ide.plugins.PluginManager
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.ide.plugins.PluginManagerMain
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.ex.ApplicationEx
+import com.intellij.openapi.application.ex.ApplicationInfoEx
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.util.Version
 import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.io.InputStream
@@ -27,7 +29,7 @@ enum class TestMode {
 /**
  * Represents a plugin required by Codetracker
  */
-data class RequiredPlugin(val name: String, val zipFile: String, val id: String) {
+data class RequiredPlugin(val name: String, val id: String, val zipFile: String, val folder: String) {
     companion object {
         private val logger: Logger = Logger.getInstance(this::class.java)
     }
@@ -61,7 +63,7 @@ data class RequiredPlugin(val name: String, val zipFile: String, val id: String)
      */
     fun install() : Boolean {
         return if (!isInstalled()) {
-            val input: InputStream = javaClass.getResourceAsStream("$resourceFolder/$zipFile")
+            val input: InputStream = javaClass.getResourceAsStream("$resourceFolder/$folder/$zipFile")
             val targetPath = "${PathManager.getPluginsPath()}/${zipFile}"
             Files.copy(input, Paths.get(targetPath), StandardCopyOption.REPLACE_EXISTING)
             val zipFile = ZipFile(targetPath)
@@ -77,16 +79,15 @@ data class RequiredPlugin(val name: String, val zipFile: String, val id: String)
 }
 
 object Plugin {
-    const val PLUGIN_NAME = "codetracker"
+    private val logger: Logger = Logger.getInstance(javaClass)
+
     val testMode = TestMode.ON
+
+    const val PLUGIN_NAME = "codetracker"
     val codeTrackerFolderPath = "${PathManager.getPluginsPath()}/${PLUGIN_NAME}"
 
-    private val requiredPlugins = arrayListOf(
-        RequiredPlugin("activity-tracker-plugin", "activity-tracker-plugin.zip", "Activity Tracker"),
-        RequiredPlugin("JavaFX plugin", "JavaFX_plugin.zip", "com.intellij.javafx")
-    )
-
-    private val logger: Logger = Logger.getInstance(javaClass)
+    private val ideVersion: Version? = getVersion()
+    private val requiredPlugins = getRequiredPlugins()
 
     init {
         logger.info("$PLUGIN_NAME: init plugin, test mode is $testMode")
@@ -97,7 +98,8 @@ object Plugin {
     }
 
     fun installRequiredPlugins(project: Project, requiredPlugins: List<RequiredPlugin> = this.requiredPlugins) {
-        if (requiredPlugins.map { it.install() }.any{ it }) {
+        logger.info("$PLUGIN_NAME: starting installing plugins $requiredPlugins")
+        if (requiredPlugins.map { it.install() }.any { it }) {
             restartIde(project)
         }
     }
@@ -123,4 +125,26 @@ object Plugin {
             ModalityState.NON_MODAL
         )
     }
+
+
+    private fun getRequiredPlugins() : List<RequiredPlugin> {
+        val requiredPlugins = arrayListOf<RequiredPlugin>()
+        ideVersion?.let {
+//          If IDE version is more than 2020.2, we need to use JavaFX runtime since we use JavaFX for UI
+            val folder = if (ideVersion >= Version(2020, 2, 0)) {
+                requiredPlugins.add(RequiredPlugin("JavaFX plugin", "com.intellij.javafx","JavaFX_plugin.zip", "2020.2+"))
+                "2020.2+"
+            } else {
+                "2020.2-"
+            }
+            requiredPlugins.add(RequiredPlugin("activity-tracker-plugin", "Activity Tracker", "activity-tracker-plugin.zip", folder))
+        }
+        return requiredPlugins
+    }
+
+    private fun getVersion() : Version? {
+        val strVersion = (ApplicationInfo.getInstance() as ApplicationInfoEx).fullVersion
+        return Version.parseVersion(strVersion)
+    }
 }
+

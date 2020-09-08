@@ -75,7 +75,7 @@ object DocumentLogger {
         File(codeTrackerFolderPath).mkdirs()
         val file = FileDocumentManager.getInstance().getFile(document)
         logger.info("${Plugin.PLUGIN_NAME}: create log file for file ${file?.name}")
-        val logFile = File("$codeTrackerFolderPath${file?.nameWithoutExtension}_${file.hashCode()}_${document.hashCode()}.csv")
+        val logFile = File("$codeTrackerFolderPath/${file?.nameWithoutExtension}_${file.hashCode()}_${document.hashCode()}.csv")
         FileUtil.createIfDoesntExist(logFile)
         return logFile
     }
