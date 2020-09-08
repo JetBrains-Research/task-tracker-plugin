@@ -1,10 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 
 plugins {
-    id("org.jetbrains.intellij") version "0.4.10"
+    id("org.jetbrains.intellij") version "0.4.22"
     java
     kotlin("jvm") version "1.3.72"
     kotlin("plugin.serialization") version "1.3.72"
@@ -44,6 +43,8 @@ dependencies {
     compile("com.google.auto.service:auto-service:1.0-rc7")
     implementation("org.eclipse.mylyn.github", "org.eclipse.egit.github.core", "2.1.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:0.9.1")
+    // https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j (used for unzipping required plugins)
+    implementation("net.lingala.zip4j", "zip4j", "2.6.1")
     implementation("com.github.holgerbrandl:krangl:v0.13")
 
     testCompile("junit", "junit", "4.12")
@@ -83,7 +84,7 @@ intellij {
 intellij {
     val ideVersion = System.getenv().getOrDefault(
         "CODE_TRACKER_IDEA_VERSION",
-        "192.5728.98"
+        "201.6668.113"
     )
     println("Using ide version: $ideVersion")
     version = ideVersion
@@ -91,8 +92,6 @@ intellij {
     downloadSources = true
     sameSinceUntilBuild = false
     updateSinceUntilBuild = false
-    // Todo: use the latest version
-    setPlugins("Activity Tracker:0.1.9 beta")
 }
 
 javafx {

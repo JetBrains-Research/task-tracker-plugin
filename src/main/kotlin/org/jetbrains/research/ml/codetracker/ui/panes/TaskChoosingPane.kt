@@ -17,7 +17,6 @@ import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.tracking.TaskDocumentListener
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
@@ -88,7 +87,7 @@ class TaskChoosingController(project: Project, scale: Double, fxPanel: JFXPanel,
     private val translations = PluginServer.paneText?.taskChoosingPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
-        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+        logger.info("${Plugin.PLUGIN_NAME}:${this::class.simpleName} init controller")
         mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
         scalePolygons(arrayListOf(orangePolygon, bluePolygon))
         initChoseTaskComboBox()
