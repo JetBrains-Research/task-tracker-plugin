@@ -4,7 +4,7 @@ import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.models.Task
 
-object LanguageContentHandler {
+object TaskFileInitContentProvider {
     private const val PLUGIN_FOLDER = "codetracker"
 
     fun getLanguageFolderRelativePath(language: Language): String {

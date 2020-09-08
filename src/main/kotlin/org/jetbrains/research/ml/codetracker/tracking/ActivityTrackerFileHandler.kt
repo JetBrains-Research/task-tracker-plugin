@@ -5,6 +5,7 @@ import krangl.*
 import org.apache.commons.csv.CSVFormat
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.Plugin.PLUGIN_ID
+import org.jetbrains.research.ml.codetracker.Plugin.PLUGIN_NAME
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import java.io.File
@@ -32,7 +33,7 @@ object ActivityTrackerFileHandler {
             filteredDf.writeCSV(File(resultPath), format = CSVFormat.DEFAULT.withIgnoreHeaderCase(true))
             resultPath
         } catch (e: FileNotFoundException) {
-            logger.info("${PLUGIN_ID}: The activity tracker file $filePath does not exist")
+            logger.info("${PLUGIN_NAME}: The activity tracker file $filePath does not exist")
             null
         }
     }

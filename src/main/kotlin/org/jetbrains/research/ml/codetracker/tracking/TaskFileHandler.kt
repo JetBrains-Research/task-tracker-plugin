@@ -8,17 +8,23 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectLocator
+import com.intellij.openapi.roots.ContentEntry
+import com.intellij.openapi.roots.ModifiableRootModel
+import com.intellij.openapi.roots.ModuleRootManager
+import com.intellij.openapi.module.Module
+import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.ReadOnlyAttributeUtil
+import org.jetbrains.jps.model.serialization.PathMacroUtil
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
-import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskSolvingControllerManager
@@ -109,19 +115,16 @@ object TaskFileHandler {
     }
 
     private fun getOrCreateFile(project: Project, task: Task, language: Language): VirtualFile? {
-        val relativeFilePath = LanguageContentHandler.getLanguageFolderRelativePath(language)
+        val relativeFilePath = TaskFileInitContentProvider.getLanguageFolderRelativePath(language)
         ApplicationManager.getApplication().runWriteAction {
             addSourceFolder(relativeFilePath, ModuleManager.getInstance(project).modules.last())
         }
         val file =
-            File(
-                "${project.basePath}/$relativeFilePath/" +
-                        LanguageContentHandler.getTaskFileName(task, language)
-            )
+            File("${project.basePath}/$relativeFilePath/${TaskFileInitContentProvider.getTaskFileName(task, language)}")
         if (!file.exists()) {
             ApplicationManager.getApplication().runWriteAction {
                 FileUtil.createIfDoesntExist(file)
-                file.writeText(LanguageContentHandler.getInitFileContent(task, language))
+                file.writeText(TaskFileInitContentProvider.getInitFileContent(task, language))
             }
         }
         return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)

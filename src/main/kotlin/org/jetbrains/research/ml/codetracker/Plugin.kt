@@ -88,6 +88,7 @@ object Plugin {
     private val logger: Logger = Logger.getInstance(javaClass)
     val testMode = TestMode.ON
 
+    const val PLUGIN_ID = "codetracker"
     const val PLUGIN_NAME = "codetracker"
     val codeTrackerFolderPath = "${PathManager.getPluginsPath()}/${PLUGIN_NAME}"
 
@@ -103,7 +104,7 @@ object Plugin {
         logger.info("$PLUGIN_NAME: init plugin, test mode is $testMode")
     }
 
-    fun checkRequiredPlugins(requiredPlugins: List<RequiredPlugin> = this.requiredPlugins) : Boolean {
+    fun checkRequiredPlugins(requiredPlugins: List<RequiredPlugin> = this.requiredPlugins): Boolean {
         return requiredPlugins.all { it.isInstalled() && it.isEnabled() }
     }
 
@@ -147,3 +148,24 @@ object Plugin {
             }
         } ?: arrayListOf()
     }
+
+    private fun getActivityTrackerPlugin(folder: String) : RequiredPlugin {
+        return RequiredPlugin(
+            "activity-tracker-plugin",
+            "Activity Tracker",
+            ResourceFile("activity-tracker-plugin.zip", folder))
+    }
+
+    private fun getJavaFxPlugin(folder: String): RequiredPlugin {
+        return RequiredPlugin(
+            "JavaFX plugin",
+            "com.intellij.javafx",
+            ResourceFile("JavaFX_plugin.zip", folder)
+        )
+    }
+
+    private fun getVersion() : Version? {
+        val strVersion = (ApplicationInfo.getInstance() as ApplicationInfoEx).fullVersion
+        return Version.parseVersion(strVersion)
+    }
+}
