@@ -34,8 +34,6 @@ import java.io.IOException
 
 
 object TaskFileHandler {
-    private const val PLUGIN_FOLDER = Plugin.PLUGIN_NAME
-
     private val logger: Logger = Logger.getInstance(javaClass)
     private val documentToTask: HashMap<Document, Task> = HashMap()
     private val projectToTaskToFiles: HashMap<Project, HashMap<Task, VirtualFile>> = HashMap()

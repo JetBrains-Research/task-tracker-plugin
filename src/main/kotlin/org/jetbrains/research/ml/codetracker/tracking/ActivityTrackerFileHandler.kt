@@ -4,10 +4,10 @@ import com.intellij.openapi.diagnostic.Logger
 import krangl.*
 import org.apache.commons.csv.CSVFormat
 import org.jetbrains.research.ml.codetracker.Plugin
-import org.jetbrains.research.ml.codetracker.Plugin.PLUGIN_ID
 import org.jetbrains.research.ml.codetracker.Plugin.PLUGIN_NAME
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.server.PluginServer
+import org.jetbrains.research.ml.codetracker.tracking.TaskFileInitContentProvider.PLUGIN_FOLDER
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -62,7 +62,7 @@ object ActivityTrackerFileHandler {
     private fun clearFilesPaths(df: DataFrame, language: Language): DataFrame {
         val tasks = PluginServer.tasks.joinToString(separator = "|") { it.key }
         val languages = Language.values().joinToString(separator = "|") { it.name.toLowerCase() }
-        val tasksMatchCondition = ".*/$PLUGIN_ID/($languages)/($tasks)${language.extension.ext}".toRegex(
+        val tasksMatchCondition = ".*/$PLUGIN_FOLDER/($languages)/($tasks)${language.extension.ext}".toRegex(
             RegexOption.IGNORE_CASE
         )
         return df.addColumn(ActivityTrackerColumn.CURRENT_FILE.name) { filePath ->

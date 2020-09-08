@@ -88,7 +88,6 @@ object Plugin {
     private val logger: Logger = Logger.getInstance(javaClass)
     val testMode = TestMode.ON
 
-    const val PLUGIN_ID = "codetracker"
     const val PLUGIN_NAME = "codetracker"
     val codeTrackerFolderPath = "${PathManager.getPluginsPath()}/${PLUGIN_NAME}"
 
