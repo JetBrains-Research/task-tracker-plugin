@@ -45,6 +45,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:0.9.1")
     // https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j (used for unzipping required plugins)
     implementation("net.lingala.zip4j", "zip4j", "2.6.1")
+    implementation("com.github.holgerbrandl:krangl:v0.13")
 
     testCompile("junit", "junit", "4.12")
 }
