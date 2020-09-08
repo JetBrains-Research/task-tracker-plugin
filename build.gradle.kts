@@ -1,10 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 
 plugins {
-    id("org.jetbrains.intellij") version "0.4.10"
+    id("org.jetbrains.intellij") version "0.4.22"
     java
     kotlin("jvm") version "1.3.72"
     kotlin("plugin.serialization") version "1.3.72"

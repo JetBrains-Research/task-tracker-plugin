@@ -18,7 +18,6 @@ import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
-import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskSolvingControllerManager
@@ -28,7 +27,7 @@ import java.io.IOException
 
 
 object TaskFileHandler {
-    private const val PLUGIN_FOLDER = "codetracker"
+    private const val PLUGIN_FOLDER = Plugin.PLUGIN_NAME
 
     private val logger: Logger = Logger.getInstance(javaClass)
     private val documentToTask: HashMap<Document, Task> = HashMap()
@@ -122,7 +121,7 @@ object TaskFileHandler {
         } else {
             // If the old document is not equal to the old document, we should raise an error
             if (virtualFile != oldVirtualFile) {
-                val message = "${Plugin.PLUGIN_ID}: an attempt to assign another virtualFile to the task $task in " +
+                val message = "${Plugin.PLUGIN_NAME}: an attempt to assign another virtualFile to the task $task in " +
                         "the project ${project}."
                 logger.error(message)
                 throw IllegalArgumentException(message)

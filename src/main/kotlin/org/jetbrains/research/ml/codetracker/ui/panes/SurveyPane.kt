@@ -203,7 +203,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     }
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
-        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+        logger.info("${Plugin.PLUGIN_NAME}:${this::class.simpleName} init controller")
         mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
         scalePolygons(arrayListOf(orangePolygon, bluePolygon))
         initAge()

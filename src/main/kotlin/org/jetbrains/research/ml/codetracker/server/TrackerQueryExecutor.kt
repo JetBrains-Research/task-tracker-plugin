@@ -36,7 +36,7 @@ object TrackerQueryExecutor : QueryExecutor() {
 
     private fun initUserId() {
         val currentUrl = URL("${baseUrl}user")
-        logger.info("${Plugin.PLUGIN_ID}: ...generating user id")
+        logger.info("${Plugin.PLUGIN_NAME}: ...generating user id")
         val requestBody = ByteArray(0).toRequestBody(null, 0, 0)
         val request = Request.Builder().url(currentUrl).post(requestBody).build()
         userId = executeQuery(request)?.let { it.body?.string() }
@@ -58,7 +58,7 @@ object TrackerQueryExecutor : QueryExecutor() {
         fileFieldName: String
     ): Request {
         if (file.exists()) {
-            logger.info("${Plugin.PLUGIN_ID}: ...sending file ${file.name}")
+            logger.info("${Plugin.PLUGIN_NAME}: ...sending file ${file.name}")
             val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
             requestBody.addFormDataPart(fileFieldName, file.name, file.asRequestBody("text/csv".toMediaType()))
             return Request.Builder().url(baseUrl + urlSuffix).method("POST", requestBody.build()).build()

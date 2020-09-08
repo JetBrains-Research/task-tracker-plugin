@@ -55,7 +55,7 @@ object PluginServer {
      */
     fun reconnect(project: Project) {
         if (serverConnectionResult != ServerConnectionResult.LOADING) {
-            logger.info("${Plugin.PLUGIN_ID} PluginServer reconnect, current thread is ${Thread.currentThread().name}")
+            logger.info("${Plugin.PLUGIN_NAME} PluginServer reconnect, current thread is ${Thread.currentThread().name}")
             ProgressManager.getInstance().run(object : Backgroundable(project, "Getting data from server") {
                 override fun run(indicator: ProgressIndicator) {
                     safeFind { findData() }
@@ -68,7 +68,7 @@ object PluginServer {
      * Tries to call 'find' and sends the result of it to all subscribers
      */
     private fun safeFind(find: () -> Unit) {
-        logger.info("${Plugin.PLUGIN_ID} PluginServer safeFind, current thread is ${Thread.currentThread().name}")
+        logger.info("${Plugin.PLUGIN_NAME} PluginServer safeFind, current thread is ${Thread.currentThread().name}")
         val publisher = ApplicationManager.getApplication().messageBus.syncPublisher(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC)
         serverConnectionResult = ServerConnectionResult.LOADING
         publisher.accept(serverConnectionResult)

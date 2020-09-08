@@ -50,11 +50,11 @@ object DocumentLogger {
     fun log(document: Document) {
         var printer = myDocumentsToPrinters.getOrPut(document, { initPrinter(document) })
         if (isFull(printer.file.length())) {
-            logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} is full")
+            logger.info("${Plugin.PLUGIN_NAME}: File ${printer.file.name} is full")
 //            Todo: don't send it without user permission
             sendFile(printer.file)
             printer = initPrinter(document)
-            logger.info("${Plugin.PLUGIN_ID}: File ${printer.file.name} was cleared")
+            logger.info("${Plugin.PLUGIN_NAME}: File ${printer.file.name} was cleared")
         }
         printer.csvPrinter.printRecord(DocumentLoggedData.getData(document) + UiLoggedData.getData(Unit))
     }
@@ -62,7 +62,7 @@ object DocumentLogger {
     private fun isFull(fileSize: Long): Boolean = fileSize > MAX_FILE_SIZE - MAX_DIF_SIZE
 
     private fun initPrinter(document: Document): Printer {
-        logger.info("${Plugin.PLUGIN_ID}: init printer")
+        logger.info("${Plugin.PLUGIN_NAME}: init printer")
         val file = createLogFile(document)
         val fileWriter = OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8)
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
@@ -74,7 +74,7 @@ object DocumentLogger {
     private fun createLogFile(document: Document): File {
         File(codeTrackerFolderPath).mkdirs()
         val file = FileDocumentManager.getInstance().getFile(document)
-        logger.info("${Plugin.PLUGIN_ID}: create log file for file ${file?.name}")
+        logger.info("${Plugin.PLUGIN_NAME}: create log file for file ${file?.name}")
         val logFile = File("$codeTrackerFolderPath${file?.nameWithoutExtension}_${file.hashCode()}_${document.hashCode()}.csv")
         FileUtil.createIfDoesntExist(logFile)
         return logFile

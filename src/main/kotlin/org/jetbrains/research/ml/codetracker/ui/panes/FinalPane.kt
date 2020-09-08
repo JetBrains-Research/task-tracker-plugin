@@ -6,7 +6,6 @@ import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.Label
-import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
 import javafx.scene.shape.Polygon
 import javafx.scene.text.Text
@@ -39,7 +38,7 @@ class FinalController(project: Project, scale: Double, fxPanel: JFXPanel, id: In
     private val translations = PluginServer.paneText?.finalPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
-        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+        logger.info("${Plugin.PLUGIN_NAME}:${this::class.simpleName} init controller")
         mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
         scalePolygons(arrayListOf(orangePolygon, yellowPolygon))
         initButtons()

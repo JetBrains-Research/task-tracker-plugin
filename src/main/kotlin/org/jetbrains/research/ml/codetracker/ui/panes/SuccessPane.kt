@@ -9,7 +9,6 @@ import javafx.scene.layout.Pane
 import javafx.scene.shape.Polygon
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
-import org.jetbrains.research.ml.codetracker.models.SuccessPaneText
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
@@ -38,7 +37,7 @@ class SuccessController(project: Project, scale: Double, fxPanel: JFXPanel, id: 
     private val translations = PluginServer.paneText?.successPane
 
     override fun initialize(url: URL?, resource: ResourceBundle?) {
-        logger.info("${Plugin.PLUGIN_ID}:${this::class.simpleName} init controller")
+        logger.info("${Plugin.PLUGIN_NAME}:${this::class.simpleName} init controller")
         mainPane.styleProperty().bind(Bindings.concat("-fx-font-size: ${scale}px;"))
         scalePolygons(arrayListOf(orangePolygon, bluePolygon, yellowPolygon))
         initSuccessText()

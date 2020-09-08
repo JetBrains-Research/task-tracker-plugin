@@ -6,12 +6,7 @@ import com.intellij.util.messages.Topic
 import javafx.collections.FXCollections
 import javafx.embed.swing.JFXPanel
 import javafx.fxml.FXML
-import javafx.geometry.Insets
-import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
-import javafx.scene.control.ListCell
-import javafx.scene.control.ListView
-import javafx.util.Callback
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import java.net.URL
@@ -56,7 +51,7 @@ open class LanguagePaneController(project: Project, scale: Double, fxPanel: JFXP
     }
 
     override fun update() {
-        logger.info("${Plugin.PLUGIN_ID} update controller ${this::javaClass.name}, current thread is ${Thread.currentThread().name}")
+        logger.info("${Plugin.PLUGIN_NAME} update controller ${this::javaClass.name}, current thread is ${Thread.currentThread().name}")
         paneUiData.updateUiData()
     }
 
