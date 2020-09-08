@@ -18,7 +18,6 @@ import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
-import org.jetbrains.research.ml.codetracker.server.TrackerQueryExecutor
 import org.jetbrains.research.ml.codetracker.ui.MainController
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskSolvingControllerManager
@@ -28,7 +27,7 @@ import java.io.IOException
 
 
 object TaskFileHandler {
-    private const val PLUGIN_FOLDER = "codetracker"
+    private const val PLUGIN_FOLDER = Plugin.PLUGIN_NAME
 
     private val logger: Logger = Logger.getInstance(javaClass)
     private val documentToTask: HashMap<Document, Task> = HashMap()
@@ -122,7 +121,7 @@ object TaskFileHandler {
         } else {
             // If the old document is not equal to the old document, we should raise an error
             if (virtualFile != oldVirtualFile) {
-                val message = "${Plugin.PLUGIN_ID}: an attempt to assign another virtualFile to the task $task in " +
+                val message = "${Plugin.PLUGIN_NAME}: an attempt to assign another virtualFile to the task $task in " +
                         "the project ${project}."
                 logger.error(message)
                 throw IllegalArgumentException(message)
@@ -186,8 +185,10 @@ object TaskFileHandler {
     fun getTaskByVirtualFile(virtualFile: VirtualFile?): Task? {
 //        Due to the lazy evaluation of sequences in kotlin it not so terribly complex as you may think.
 //        Even if it is, we have only 3 tasks and only a couple of projects open at the same time, so it's not so bad.
-        return ProjectLocator.getInstance().getProjectsForFile(virtualFile).asSequence().map { project ->
-            projectToTaskToFiles[project]?.entries?.firstOrNull { it.value == virtualFile }?.key
-        }.firstOrNull()
+        return virtualFile?.let {
+            ProjectLocator.getInstance().getProjectsForFile(virtualFile).asSequence().map { project ->
+                projectToTaskToFiles[project]?.entries?.firstOrNull { it.value == virtualFile }?.key
+            }.firstOrNull()
+        }
     }
 }

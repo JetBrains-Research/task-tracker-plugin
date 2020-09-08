@@ -1,15 +1,22 @@
 <idea-plugin>
     <id>io.github.elena-lyulina.codetracker.codetracker</id>
-    <name>codetracker</name>
+    <name>Codetracker</name>
     <vendor>JetBrains Research</vendor>
 
     <description><![CDATA[
-    This is a plugin for tracking all code changes and storing them in .csv file.
+    Codetracker is a plugin build to research people’s behaviour while solving various programming tasks.
+    The plugin tracks all code changes while solving tasks in addition to user actions, performed in IDE.
+    It stores them in .csv files and sends anonymously to the privately hosted server when you submit the solutions.
+    The plugin sends only those code changes that happen in automatically created files for task solving. Any other files are not considered.
+    This data is planned to be used to create an open dataset with additional variables anonymization.
+    Please, see
+     <a href="https://github.com/JetBrains-Research/codetracker">plugin homepage</a> for detailed description and privacy policy.
+
     ]]></description>
 
 
     <depends>com.intellij.modules.platform</depends>
-    <depends>Activity Tracker</depends>
+<!--    <depends>Activity Tracker</depends>-->
 
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="org.jetbrains.research.ml.codetracker.InitActivity"/>

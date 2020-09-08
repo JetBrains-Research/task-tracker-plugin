@@ -3,7 +3,6 @@ package org.jetbrains.research.ml.codetracker.ui
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.ui.components.JBScrollPane
 import javafx.application.Platform
 import org.jetbrains.research.ml.codetracker.Plugin
@@ -44,7 +43,7 @@ internal object MainController {
 
     internal var visiblePane: Pane? = LoadingControllerManager
         set(value) {
-            logger.info("${Plugin.PLUGIN_ID} $value set visible, current thread is ${Thread.currentThread().name}")
+            logger.info("${Plugin.PLUGIN_NAME} $value set visible, current thread is ${Thread.currentThread().name}")
             panes.forEach { it.setVisible(it == value) }
             field = value
         }
@@ -53,9 +52,9 @@ internal object MainController {
         /* Subscribes to notifications about server connection result to update visible panes */
         subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
             override fun accept(connection: ServerConnectionResult) {
-                logger.info("${Plugin.PLUGIN_ID} MainController, server connection topic $connection, current thread is ${Thread.currentThread().name}")
+                logger.info("${Plugin.PLUGIN_NAME} MainController, server connection topic $connection, current thread is ${Thread.currentThread().name}")
                 ApplicationManager.getApplication().invokeLater {
-                    logger.info("${Plugin.PLUGIN_ID} MainController, server connection topic $connection in application block, current thread is ${Thread.currentThread().name}")
+                    logger.info("${Plugin.PLUGIN_NAME} MainController, server connection topic $connection in application block, current thread is ${Thread.currentThread().name}")
                     visiblePane = when (connection) {
                         ServerConnectionResult.UNINITIALIZED -> LoadingControllerManager
                         ServerConnectionResult.LOADING -> LoadingControllerManager
@@ -94,7 +93,7 @@ internal object MainController {
 
     /*   RUN ON EDT (ToolWindowFactory takes care of it) */
     fun createContent(project: Project): JComponent {
-        logger.info("${Plugin.PLUGIN_ID} MainController create content, current thread is ${Thread.currentThread().name}")
+        logger.info("${Plugin.PLUGIN_NAME} MainController create content, current thread is ${Thread.currentThread().name}")
         val screenSize = Toolkit.getDefaultToolkit().screenSize
         val scale = screenSize.height / SCREEN_HEIGHT
         val panel = JPanel()
@@ -112,7 +111,7 @@ internal object MainController {
      */
     data class Content(val panel: JPanel, val project: Project, val scale: Double, var panesToCreateContent: List<Pane>) {
         init {
-            logger.info("${Plugin.PLUGIN_ID} Content init, current thread is ${Thread.currentThread().name}")
+            logger.info("${Plugin.PLUGIN_NAME} Content init, current thread is ${Thread.currentThread().name}")
             updatePanesToCreate()
         }
 
@@ -122,12 +121,12 @@ internal object MainController {
          * adds them to the [panel], and removes created panes from [panesToCreateContent]
          */
         fun updatePanesToCreate() {
-            logger.info("${Plugin.PLUGIN_ID} updatePanesToCreate, current thread is ${Thread.currentThread().name}")
+            logger.info("${Plugin.PLUGIN_NAME} updatePanesToCreate, current thread is ${Thread.currentThread().name}")
             val (canCreateContentPanes, cantCreateContentPanes) = panesToCreateContent.partition { it.canCreateContent }
             if (canCreateContentPanes.isNotEmpty()) {
                 canCreateContentPanes.map { it.createContent(project, scale) }.forEach { panel.add(it) }
                 Platform.runLater {
-                    logger.info("${Plugin.PLUGIN_ID} updatePanesToCreate in platform block, current thread is ${Thread.currentThread().name}")
+                    logger.info("${Plugin.PLUGIN_NAME} updatePanesToCreate in platform block, current thread is ${Thread.currentThread().name}")
                     canCreateContentPanes.map { it.getLastAddedPaneController() }.forEach {
                         if (it is Updatable) {
                             it.update()

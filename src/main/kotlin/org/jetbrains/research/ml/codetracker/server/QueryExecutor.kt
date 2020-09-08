@@ -1,7 +1,6 @@
 package org.jetbrains.research.ml.codetracker.server
 
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.registry.Registry
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -21,7 +20,7 @@ abstract class QueryExecutor {
     protected val logger: Logger = Logger.getInstance(javaClass)
 
     private val client: OkHttpClient by lazy {
-        logger.info("${Plugin.PLUGIN_ID}: init the server. API base url is ${baseUrl}. Max count attempt of server = ${MAX_COUNT_ATTEMPTS}\"")
+        logger.info("${Plugin.PLUGIN_NAME}: init the server. API base url is ${baseUrl}. Max count attempt of server = ${MAX_COUNT_ATTEMPTS}\"")
         OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
@@ -36,23 +35,23 @@ abstract class QueryExecutor {
         var curCountAttempts = 0
 
         fun executeQueryHelper(): Response? {
-            logger.info("${Plugin.PLUGIN_ID}: call execute query helper, attempt $curCountAttempts")
+            logger.info("${Plugin.PLUGIN_NAME}: call execute query helper, attempt $curCountAttempts")
             val error = "The query ${request.method} ${request.url} was failed"
             try {
                 curCountAttempts++
-                logger.info("${Plugin.PLUGIN_ID}: An attempt $curCountAttempts of execute the query ${request.method} ${request.url} has been started")
+                logger.info("${Plugin.PLUGIN_NAME}: An attempt $curCountAttempts of execute the query ${request.method} ${request.url} has been started")
                 val response = client.newCall(request).execute()
-                logger.info("${Plugin.PLUGIN_ID}: HTTP status code is ${response.code}")
+                logger.info("${Plugin.PLUGIN_NAME}: HTTP status code is ${response.code}")
 
                 if (response.isSuccessful) {
-                    logger.info("${Plugin.PLUGIN_ID}: The query ${request.method} ${request.url} was successfully received")
+                    logger.info("${Plugin.PLUGIN_NAME}: The query ${request.method} ${request.url} was successfully received")
                     return response
                 }
                 response.close()
             } catch (e: Exception) {
-                logger.info("${Plugin.PLUGIN_ID}: ${error}: internet connection exception")
+                logger.info("${Plugin.PLUGIN_NAME}: ${error}: internet connection exception")
             }
-            logger.info("${Plugin.PLUGIN_ID}: $error")
+            logger.info("${Plugin.PLUGIN_NAME}: $error")
             return null
         }
 

@@ -1,6 +1,5 @@
 package org.jetbrains.research.ml.codetracker.tracking
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
@@ -12,7 +11,7 @@ class TaskDocumentListener : DocumentListener {
     private val logger: Logger = Logger.getInstance(javaClass)
 
     init {
-        logger.info("${Plugin.PLUGIN_ID}: init documents listener")
+        logger.info("${Plugin.PLUGIN_NAME}: init documents listener")
     }
 
     /**
