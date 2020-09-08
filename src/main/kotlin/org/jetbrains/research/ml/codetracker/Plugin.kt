@@ -27,9 +27,15 @@ enum class TestMode {
 }
 
 /**
+ * Stores the name of a file and its resource folder.
+ * For example, for src/main/resources/folder/file.zip its [fileName] is file.zip and its [folder] is folder
+ */
+data class ResourceFile(val fileName: String, val folder: String)
+
+/**
  * Represents a plugin required by Codetracker
  */
-data class RequiredPlugin(val name: String, val id: String, val zipFile: String, val folder: String) {
+data class RequiredPlugin(val name: String, val id: String, val zipFile: ResourceFile) {
     companion object {
         private val logger: Logger = Logger.getInstance(this::class.java)
     }
@@ -63,8 +69,8 @@ data class RequiredPlugin(val name: String, val id: String, val zipFile: String,
      */
     fun install() : Boolean {
         return if (!isInstalled()) {
-            val input: InputStream = javaClass.getResourceAsStream("$resourceFolder/$folder/$zipFile")
-            val targetPath = "${PathManager.getPluginsPath()}/${zipFile}"
+            val input: InputStream = javaClass.getResourceAsStream("$resourceFolder/${zipFile.folder}/${zipFile.fileName}")
+            val targetPath = "${PathManager.getPluginsPath()}/${zipFile.fileName}"
             Files.copy(input, Paths.get(targetPath), StandardCopyOption.REPLACE_EXISTING)
             val zipFile = ZipFile(targetPath)
             zipFile.extractAll(PathManager.getPluginsPath())
@@ -80,12 +86,13 @@ data class RequiredPlugin(val name: String, val id: String, val zipFile: String,
 
 object Plugin {
     private val logger: Logger = Logger.getInstance(javaClass)
-
     val testMode = TestMode.ON
 
     const val PLUGIN_NAME = "codetracker"
     val codeTrackerFolderPath = "${PathManager.getPluginsPath()}/${PLUGIN_NAME}"
 
+    private const val OLD_PLUGINS_FOLDER = "2020.2-"
+    private const val NEW_PLUGINS_FOLDER = "2020.2+"
     private val ideVersion: Version? = getVersion()
     private val requiredPlugins = getRequiredPlugins()
 
@@ -128,18 +135,29 @@ object Plugin {
 
 
     private fun getRequiredPlugins() : List<RequiredPlugin> {
-        val requiredPlugins = arrayListOf<RequiredPlugin>()
-        ideVersion?.let {
+        return ideVersion?.let {
 //          If IDE version is more than 2020.2, we need to use JavaFX runtime since we use JavaFX for UI
-            val folder = if (ideVersion >= Version(2020, 2, 0)) {
-                requiredPlugins.add(RequiredPlugin("JavaFX plugin", "com.intellij.javafx","JavaFX_plugin.zip", "2020.2+"))
-                "2020.2+"
+            if (ideVersion >= Version(2020, 2, 0)) {
+                arrayListOf(getActivityTrackerPlugin(NEW_PLUGINS_FOLDER), getJavaFxPlugin(NEW_PLUGINS_FOLDER))
             } else {
-                "2020.2-"
+                arrayListOf(getActivityTrackerPlugin(OLD_PLUGINS_FOLDER))
             }
-            requiredPlugins.add(RequiredPlugin("activity-tracker-plugin", "Activity Tracker", "activity-tracker-plugin.zip", folder))
-        }
-        return requiredPlugins
+        } ?: arrayListOf()
+    }
+
+    private fun getActivityTrackerPlugin(folder: String) : RequiredPlugin {
+        return RequiredPlugin(
+            "activity-tracker-plugin",
+            "Activity Tracker",
+            ResourceFile("activity-tracker-plugin.zip", folder))
+    }
+
+    private fun getJavaFxPlugin(folder: String): RequiredPlugin {
+        return RequiredPlugin(
+            "JavaFX plugin",
+            "com.intellij.javafx",
+            ResourceFile("JavaFX_plugin.zip", folder)
+        )
     }
 
     private fun getVersion() : Version? {
