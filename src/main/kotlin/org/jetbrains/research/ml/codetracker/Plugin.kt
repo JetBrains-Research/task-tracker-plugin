@@ -19,7 +19,7 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-
+import org.jetbrains.research.ml.codetracker.models.Language
 
 enum class TestMode {
     ON,
@@ -96,11 +96,14 @@ object Plugin {
     private val ideVersion: Version? = getVersion()
     private val requiredPlugins = getRequiredPlugins()
 
+    // TODO: How will we change it?
+    val currentLanguage = Language.CPP
+
     init {
         logger.info("$PLUGIN_NAME: init plugin, test mode is $testMode")
     }
 
-    fun checkRequiredPlugins(requiredPlugins: List<RequiredPlugin> = this.requiredPlugins) : Boolean {
+    fun checkRequiredPlugins(requiredPlugins: List<RequiredPlugin> = this.requiredPlugins): Boolean {
         return requiredPlugins.all { it.isInstalled() && it.isEnabled() }
     }
 
@@ -165,4 +168,3 @@ object Plugin {
         return Version.parseVersion(strVersion)
     }
 }
-
