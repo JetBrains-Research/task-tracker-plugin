@@ -3,7 +3,7 @@ package org.jetbrains.research.ml.codetracker.tracking
 import com.intellij.openapi.diagnostic.Logger
 import krangl.*
 import org.apache.commons.csv.CSVFormat
-import org.jetbrains.research.ml.codetracker.Plugin.PLUGIN_ID
+import org.jetbrains.research.ml.codetracker.Plugin.PLUGIN_NAME
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.server.PluginServer
 import java.io.File
@@ -32,7 +32,7 @@ object ActivityTrackerFileHandler {
             filteredDf.writeCSV(File(resultPath), format = CSVFormat.DEFAULT.withIgnoreHeaderCase(true))
             resultPath
         } catch (e: FileNotFoundException) {
-            logger.info("${PLUGIN_ID}: The activity tracker file $filePath does not exist")
+            logger.info("${PLUGIN_NAME}: The activity tracker file $filePath does not exist")
             null
         }
     }
@@ -60,7 +60,7 @@ object ActivityTrackerFileHandler {
 
     private fun clearFilesPaths(df: DataFrame, language: Language): DataFrame {
         val tasks = PluginServer.tasks.joinToString(separator = "|") { it.key }
-        val tasksMatchCondition = ".*/$PLUGIN_ID/($tasks)${language.extension.ext}".toRegex(
+        val tasksMatchCondition = ".*/$PLUGIN_NAME/($tasks)${language.extension.ext}".toRegex(
             RegexOption.IGNORE_CASE
         )
         return df.addColumn(ActivityTrackerColumn.CURRENT_FILE.name) { filePath ->
