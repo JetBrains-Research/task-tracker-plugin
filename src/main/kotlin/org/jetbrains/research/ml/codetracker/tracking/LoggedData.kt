@@ -50,6 +50,7 @@ object DocumentLoggedData : LoggedData<Document, String?>() {
         LoggedDataGetter("documentHashCode") { it.hashCode().toString() },
         LoggedDataGetter("fragment") { it.text },
         LoggedDataGetter("userId") { TrackerQueryExecutor.userId },
-        LoggedDataGetter("testMode") { Plugin.testMode.toString() }
+        LoggedDataGetter("testMode") { Plugin.testMode.toString() },
+        LoggedDataGetter("language") { Plugin.currentLanguage.name.toLowerCase() }
     )
 }
