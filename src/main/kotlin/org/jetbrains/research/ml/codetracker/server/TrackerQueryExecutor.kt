@@ -27,9 +27,7 @@ object TrackerQueryExecutor : QueryExecutor() {
     var userId: String? = null
 
     init {
-        StoredInfoWrapper.info.userId?.let {
-            userId = it
-        } ?: run {
+        StoredInfoWrapper.info.userId?.let { userId = it } ?: run {
             initUserId()
             StoredInfoWrapper.updateStoredInfo(userId = userId)
         }
@@ -68,9 +66,7 @@ object TrackerQueryExecutor : QueryExecutor() {
         }
     }
 
-    private fun executeTrackerQuery(
-        request: Request
-    ): String? {
+    private fun executeTrackerQuery(request: Request): String? {
         val response = executeQuery(request)
         if (response.isSuccessful()) {
             return response?.let { it.body?.string() }
@@ -78,8 +74,14 @@ object TrackerQueryExecutor : QueryExecutor() {
         throw IllegalStateException("Unsuccessful server response")
     }
 
-    private fun sendCodeTrackerData(file: File): String? {
-        return executeTrackerQuery(getRequestForSendingDataQuery("data-item", file, CODE_TRACKER_FILE_FIELD))
+    private fun sendCodeTrackerData(files: List<File>): String? {
+        val keys = files.map {
+            val request = getRequestForSendingDataQuery("data-item", it, CODE_TRACKER_FILE_FIELD)
+            val key = executeTrackerQuery(request) ?: return null
+            key
+        }.toSet()
+//      Todo: we should check that all keys received from server are the same, right?
+        return if (keys.size == 1) keys.first() else null
     }
 
     private fun sendActivityTrackerData(): String? {
@@ -116,8 +118,8 @@ object TrackerQueryExecutor : QueryExecutor() {
     }
 
 
-    fun sendData(codeTrackerFile: File) {
-        val codeTrackerKey = sendCodeTrackerData(codeTrackerFile)
+    fun sendData(codeTrackerFiles: List<File>) {
+        val codeTrackerKey = sendCodeTrackerData(codeTrackerFiles)
         codeTrackerKey?.let {
             val activityTrackerKey = sendActivityTrackerData()
             activityTrackerKey?.let {
