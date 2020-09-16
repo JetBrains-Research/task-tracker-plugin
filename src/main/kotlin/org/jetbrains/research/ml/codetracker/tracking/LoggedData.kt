@@ -27,7 +27,8 @@ enum class UiLoggedDataHeader(val header: String) {
     PROGRAM_EXPERIENCE_YEARS("programExperienceYears"),
     PROGRAM_EXPERIENCE_MONTHS("programExperienceMonths"),
     COUNTRY("country"),
-    CHOSEN_TASK("chosenTask")
+    CHOSEN_TASK("chosenTask"),
+    PROGRAMMING_LANGUAGE("programmingLanguage")
 }
 
 object UiLoggedData : LoggedData<Unit, String>() {
@@ -37,7 +38,8 @@ object UiLoggedData : LoggedData<Unit, String>() {
         LoggedDataGetter(UiLoggedDataHeader.PROGRAM_EXPERIENCE_YEARS.header) { SurveyUiData.peYears.uiValue.toString() },
         LoggedDataGetter(UiLoggedDataHeader.PROGRAM_EXPERIENCE_MONTHS.header) { SurveyUiData.peMonths.uiValue.toString() },
         LoggedDataGetter(UiLoggedDataHeader.COUNTRY.header) {SurveyUiData.country.toString() },
-        LoggedDataGetter(UiLoggedDataHeader.CHOSEN_TASK.header) { TaskChoosingUiData.chosenTask.toString() }
+        LoggedDataGetter(UiLoggedDataHeader.CHOSEN_TASK.header) { TaskChoosingUiData.chosenTask.toString() },
+        LoggedDataGetter(UiLoggedDataHeader.PROGRAMMING_LANGUAGE.header) { SurveyUiData.programmingLanguage.toString() }
     )
 }
 
@@ -50,7 +52,6 @@ object DocumentLoggedData : LoggedData<Document, String?>() {
         LoggedDataGetter("documentHashCode") { it.hashCode().toString() },
         LoggedDataGetter("fragment") { it.text },
         LoggedDataGetter("userId") { TrackerQueryExecutor.userId },
-        LoggedDataGetter("testMode") { Plugin.testMode.toString() },
-        LoggedDataGetter("language") { Plugin.currentLanguage.name.toLowerCase() }
+        LoggedDataGetter("testMode") { Plugin.testMode.toString() }
     )
 }

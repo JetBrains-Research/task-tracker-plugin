@@ -1,10 +1,10 @@
 package org.jetbrains.research.ml.codetracker.models
 
-enum class Language(val extension: Extension) {
-    PYTHON(Extension.PY),
-    JAVA(Extension.JAVA),
-    KOTLIN(Extension.KT),
-    CPP(Extension.CPP);
+enum class Language(val extension: Extension, override val key: String) : Keyed {
+    PYTHON(Extension.PY, "python"),
+    JAVA(Extension.JAVA, "java"),
+    KOTLIN(Extension.KT, "kotlin"),
+    CPP(Extension.CPP, "c++");
 }
 
 enum class Extension(val ext: String) {
