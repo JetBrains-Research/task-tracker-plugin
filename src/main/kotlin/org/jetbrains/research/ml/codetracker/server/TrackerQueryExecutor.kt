@@ -54,12 +54,16 @@ object TrackerQueryExecutor : QueryExecutor() {
     private fun getRequestForSendingDataQuery(
         urlSuffix: String,
         file: File,
-        fileFieldName: String
+        fileFieldName: String,
+        activityTrackerKey: String? = null
     ): Request {
         if (file.exists()) {
             logger.info("${Plugin.PLUGIN_NAME}: ...sending file ${file.name}")
             val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
             requestBody.addFormDataPart(fileFieldName, file.name, file.asRequestBody("text/csv".toMediaType()))
+            activityTrackerKey?.let {
+                requestBody.addFormDataPart("activityTrackerKey", it)
+            }
             return Request.Builder().url(baseUrl + urlSuffix).method("POST", requestBody.build()).build()
         } else {
             throw IllegalStateException("File ${file.name} for $fileFieldName doesn't exist")
@@ -74,14 +78,11 @@ object TrackerQueryExecutor : QueryExecutor() {
         throw IllegalStateException("Unsuccessful server response")
     }
 
-    private fun sendCodeTrackerData(files: List<File>): String? {
-        val keys = files.map {
-            val request = getRequestForSendingDataQuery("data-item", it, CODE_TRACKER_FILE_FIELD)
-            val key = executeTrackerQuery(request) ?: return null
-            key
-        }.toSet()
-//      Todo: we should check that all keys received from server are the same, right?
-        return if (keys.size == 1) keys.first() else null
+    private fun sendCodeTrackerData(files: List<File>, activityTrackerKey: String): List<String?> {
+        return files.map {
+            val request = getRequestForSendingDataQuery("data-item", it, CODE_TRACKER_FILE_FIELD, activityTrackerKey)
+            executeTrackerQuery(request)
+        }
     }
 
     private fun sendActivityTrackerData(): String? {
@@ -119,18 +120,14 @@ object TrackerQueryExecutor : QueryExecutor() {
 
 
     fun sendData(codeTrackerFiles: List<File>) {
-        val codeTrackerKey = sendCodeTrackerData(codeTrackerFiles)
-        codeTrackerKey?.let {
-            val activityTrackerKey = sendActivityTrackerData()
-            activityTrackerKey?.let {
-                updateUserData(codeTrackerKey, activityTrackerKey)
+        sendActivityTrackerData()?.let { activityTrackerKey ->
+            sendCodeTrackerData(codeTrackerFiles, activityTrackerKey).forEach {
+                // Todo: should we send all successful responses??
+                it?.let{
+                    updateUserData(it, activityTrackerKey)
+                } ?: error("Unsuccessful server response")
             }
-            if (activityTrackerKey == DEFAULT_ACTIVITY_TRACKER_ID) {
-                // Throw an error to show the error UI Pane
-                throw IllegalStateException("Unsuccessful server response")
-            } else {
-                clearActivityTrackerFile()
-            }
+            clearActivityTrackerFile()
         }
     }
 }

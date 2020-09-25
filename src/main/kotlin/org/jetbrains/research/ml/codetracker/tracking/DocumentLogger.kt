@@ -112,8 +112,3 @@ object DocumentLogger {
         return myDocumentsToPrinters[document]
     }
 }
-
-
-
-
-
