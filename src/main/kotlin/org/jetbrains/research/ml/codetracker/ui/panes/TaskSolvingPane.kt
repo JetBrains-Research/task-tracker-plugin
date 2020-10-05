@@ -13,9 +13,7 @@ import javafx.scene.shape.Polygon
 import javafx.scene.text.Text
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.tracking.DocumentLogger
 import org.jetbrains.research.ml.codetracker.tracking.TaskFileHandler
-
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
@@ -101,7 +99,7 @@ class TaskSolvingController(project: Project, scale: Double, fxPanel: JFXPanel, 
             val currentTask = TaskChoosingUiData.chosenTask.currentValue
             currentTask?.let {
                 ApplicationManager.getApplication().invokeLater {
-                    DocumentLogger.sendTaskFile(it, project)
+                    PluginServer.sendDataForTask(it, project)
                     TaskFileHandler.closeTaskFiles(it)
                 }
             }
