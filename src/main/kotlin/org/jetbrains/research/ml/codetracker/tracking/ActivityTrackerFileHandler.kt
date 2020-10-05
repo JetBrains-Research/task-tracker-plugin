@@ -1,9 +1,11 @@
 package org.jetbrains.research.ml.codetracker.tracking
 
 import com.intellij.openapi.diagnostic.Logger
-import krangl.*
+import krangl.DataFrame
+import krangl.map
+import krangl.readCSV
+import krangl.writeCSV
 import org.apache.commons.csv.CSVFormat
-import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.Plugin.PLUGIN_NAME
 import org.jetbrains.research.ml.codetracker.models.Extension
 import org.jetbrains.research.ml.codetracker.models.Language

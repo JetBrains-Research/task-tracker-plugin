@@ -6,11 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
 import javafx.application.Platform
 import org.jetbrains.research.ml.codetracker.Plugin
-import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
-import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
-import org.jetbrains.research.ml.codetracker.tracking.DataSendingNotifier
-import org.jetbrains.research.ml.codetracker.tracking.DataSendingResult
+import org.jetbrains.research.ml.codetracker.server.*
 import org.jetbrains.research.ml.codetracker.tracking.DocumentLogger
 import org.jetbrains.research.ml.codetracker.ui.panes.*
 import org.jetbrains.research.ml.codetracker.ui.panes.util.PaneController
@@ -80,7 +76,7 @@ internal object MainController {
                             val currentTask = TaskChoosingUiData.chosenTask.currentValue
 //                            Todo: what pane to show if task is null? ErrorController with outdated refresh action?
                             currentTask?.let {task ->
-                                ErrorControllerManager.setRefreshAction { DocumentLogger.sendTaskFile(task, it) }
+                                ErrorControllerManager.setRefreshAction { PluginServer.sendDataForTask(task, it) }
                             }
                             ErrorControllerManager
                         }

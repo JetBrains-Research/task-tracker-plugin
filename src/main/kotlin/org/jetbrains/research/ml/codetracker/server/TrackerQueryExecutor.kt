@@ -27,9 +27,7 @@ object TrackerQueryExecutor : QueryExecutor() {
     var userId: String? = null
 
     init {
-        StoredInfoWrapper.info.userId?.let {
-            userId = it
-        } ?: run {
+        StoredInfoWrapper.info.userId?.let { userId = it } ?: run {
             initUserId()
             StoredInfoWrapper.updateStoredInfo(userId = userId)
         }
@@ -56,21 +54,23 @@ object TrackerQueryExecutor : QueryExecutor() {
     private fun getRequestForSendingDataQuery(
         urlSuffix: String,
         file: File,
-        fileFieldName: String
+        fileFieldName: String,
+        activityTrackerKey: String? = null
     ): Request {
         if (file.exists()) {
             logger.info("${Plugin.PLUGIN_NAME}: ...sending file ${file.name}")
             val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
             requestBody.addFormDataPart(fileFieldName, file.name, file.asRequestBody("text/csv".toMediaType()))
+            activityTrackerKey?.let {
+                requestBody.addFormDataPart("activityTrackerKey", it)
+            }
             return Request.Builder().url(baseUrl + urlSuffix).method("POST", requestBody.build()).build()
         } else {
             throw IllegalStateException("File ${file.name} for $fileFieldName doesn't exist")
         }
     }
 
-    private fun executeTrackerQuery(
-        request: Request
-    ): String? {
+    private fun executeTrackerQuery(request: Request): String? {
         val response = executeQuery(request)
         if (response.isSuccessful()) {
             return response?.let { it.body?.string() }
@@ -78,8 +78,11 @@ object TrackerQueryExecutor : QueryExecutor() {
         throw IllegalStateException("Unsuccessful server response")
     }
 
-    private fun sendCodeTrackerData(file: File): String? {
-        return executeTrackerQuery(getRequestForSendingDataQuery("data-item", file, CODE_TRACKER_FILE_FIELD))
+    private fun sendCodeTrackerData(files: List<File>, activityTrackerKey: String): List<String?> {
+        return files.map {
+            val request = getRequestForSendingDataQuery("data-item", it, CODE_TRACKER_FILE_FIELD, activityTrackerKey)
+            executeTrackerQuery(request)
+        }
     }
 
     private fun sendActivityTrackerData(): String? {
@@ -116,19 +119,15 @@ object TrackerQueryExecutor : QueryExecutor() {
     }
 
 
-    fun sendData(codeTrackerFile: File) {
-        val codeTrackerKey = sendCodeTrackerData(codeTrackerFile)
-        codeTrackerKey?.let {
-            val activityTrackerKey = sendActivityTrackerData()
-            activityTrackerKey?.let {
-                updateUserData(codeTrackerKey, activityTrackerKey)
+    fun sendData(codeTrackerFiles: List<File>) {
+        sendActivityTrackerData()?.let { activityTrackerKey ->
+            sendCodeTrackerData(codeTrackerFiles, activityTrackerKey).forEach {
+                // Todo: should we send all successful responses??
+                it?.let{
+                    updateUserData(it, activityTrackerKey)
+                } ?: error("Unsuccessful server response")
             }
-            if (activityTrackerKey == DEFAULT_ACTIVITY_TRACKER_ID) {
-                // Throw an error to show the error UI Pane
-                throw IllegalStateException("Unsuccessful server response")
-            } else {
-                clearActivityTrackerFile()
-            }
+            clearActivityTrackerFile()
         }
     }
 }
