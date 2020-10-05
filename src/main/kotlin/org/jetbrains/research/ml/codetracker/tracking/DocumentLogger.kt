@@ -54,7 +54,7 @@ class DocumentLogPrinter {
         return if (logPrinters.size == 0) {
             addLogPrinter(document)
         } else {
-            logPrinters[-1]
+            logPrinters.last()
         }
     }
 
@@ -65,7 +65,7 @@ class DocumentLogPrinter {
         val csvPrinter = CSVPrinter(fileWriter, CSVFormat.DEFAULT)
         csvPrinter.printRecord(DocumentLoggedData.headers + UiLoggedData.headers)
         logPrinters.add(LogPrinter(csvPrinter, fileWriter, logFile))
-        return logPrinters[-1]
+        return logPrinters.last()
     }
 
     private fun createLogFile(document: Document) : File {
