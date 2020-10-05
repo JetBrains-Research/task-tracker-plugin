@@ -26,6 +26,7 @@ import org.jetbrains.research.ml.codetracker.server.PluginServer
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
 import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
 import org.jetbrains.research.ml.codetracker.ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.panes.SurveyUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskSolvingControllerManager
 import org.jetbrains.research.ml.codetracker.ui.panes.util.subscribe
@@ -43,34 +44,27 @@ object TaskFileHandler {
         TaskDocumentListener()
     }
 
-    init {
-        if (PluginServer.serverConnectionResult != ServerConnectionResult.SUCCESS) {
-            subscribe(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC, object : ServerConnectionNotifier {
-                override fun accept(connection: ServerConnectionResult) {
-                    // Todo: call it if the current language is chosen
-                    if (connection == ServerConnectionResult.SUCCESS) {
-                        projectsToInit.forEach { initProject(it) }
-                        projectsToInit.clear()
-                    }
-                }
-            })
-        }
+    fun initProjects() {
+        projectsToInit.forEach { initProject(it) }
     }
 
     /**
-     * Call if you sure that ServerConnectionResult was successful and therefore all tasks are received
+     * Call each time when user change the language
      */
     private fun initProject(project: Project) {
+        logger.info("Current chosen programming language is ${SurveyUiData.programmingLanguage.currentValue}")
         projectToTaskToFiles[project] = hashMapOf()
         PluginServer.tasks.forEach { task ->
-            val virtualFile = getOrCreateFile(project, task, Plugin.currentLanguage)
-            virtualFile?.let {
-                addTaskFile(it, task, project)
-                ApplicationManager.getApplication().invokeAndWait {
-                    if (task.isItsFileWritable()) {
-                        openFile(project, virtualFile)
-                    } else {
-                        closeFile(project, virtualFile)
+            SurveyUiData.programmingLanguage.currentValue?.let {
+                val virtualFile = getOrCreateFile(project, task, it)
+                virtualFile?.let {
+                    addTaskFile(it, task, project)
+                    ApplicationManager.getApplication().invokeAndWait {
+                        if (task.isItsFileWritable()) {
+                            openFile(project, virtualFile)
+                        } else {
+                            closeFile(project, virtualFile)
+                        }
                     }
                 }
             }
@@ -82,11 +76,9 @@ object TaskFileHandler {
             logger.info("Project $project is already added or set to be added")
             return
         }
-        if (PluginServer.serverConnectionResult == ServerConnectionResult.SUCCESS) {
+        SurveyUiData.programmingLanguage.currentValue?.let {
             initProject(project)
-        } else {
-            projectsToInit.add(project)
-        }
+        } ?: projectsToInit.add(project)
     }
 
     private fun addSourceFolder(relativePath: String, module: Module) {
@@ -126,19 +118,6 @@ object TaskFileHandler {
             }
         }
         return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
-    }
-
-    private fun removeAllListeners() {
-        projectToTaskToFiles.forEach { (_, taskToFiles) ->
-            taskToFiles.forEach { (_, file) ->
-                run {
-                    ApplicationManager.getApplication().invokeAndWait {
-                        val document = FileDocumentManager.getInstance().getDocument(file)
-                        document?.removeDocumentListener(listener)
-                    }
-                }
-            }
-        }
     }
 
     /**

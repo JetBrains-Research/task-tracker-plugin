@@ -1,6 +1,7 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import javafx.beans.binding.Bindings
@@ -19,10 +20,7 @@ import org.jetbrains.research.ml.codetracker.models.Country
 import org.jetbrains.research.ml.codetracker.models.Gender
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.tracking.StoredInfoHandler
-import org.jetbrains.research.ml.codetracker.tracking.StoredInfoWrapper
-import org.jetbrains.research.ml.codetracker.tracking.UiLoggedData
-import org.jetbrains.research.ml.codetracker.tracking.UiLoggedDataHeader
+import org.jetbrains.research.ml.codetracker.tracking.*
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
@@ -83,7 +81,7 @@ interface ProgrammingLanguageNotifier : Consumer<Int> {
 object SurveyUiData : LanguagePaneUiData() {
     private val countries: List<Country> = PluginServer.countries
     private val genders: List<Gender> = PluginServer.genders
-    private val programmingLanguages: List<Language> = Language.values().toList()
+    private val programmingLanguages: List<Language> = PluginServer.programmingLanguages
 
     val age = UiField(-1, AgeNotifier.AGE_TOPIC, StoredInfoHandler.getIntStoredField(UiLoggedDataHeader.AGE, -1))
     val gender = ListedUiField(
@@ -359,6 +357,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     private fun initStartWorkingButton() {
         startWorkingButton.onMouseClicked {
             ApplicationManager.getApplication().invokeLater {
+                TaskFileHandler.initProjects()
                 val surveyInfo: Map<String, String> = UiLoggedData.headers.zip(UiLoggedData.getData(Unit)).toMap()
                 StoredInfoWrapper.updateStoredInfo(surveyInfo)
             }
@@ -379,7 +378,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
                     peMonthsLabel.text = it.months
                     countryLabel.text = it.country
                     startWorkingText.text = it.startSession
-//                  Todo: make programmingLanguageLabel translatable
+                    programmingLanguageLabel.text = it.programmingLanguage
                     paneUiData.country.dataListComparator =
                         compareBy { c -> c.translation.getOrDefault(newLanguage, "") }
                 }

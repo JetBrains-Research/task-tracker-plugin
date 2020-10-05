@@ -40,6 +40,8 @@ object PluginServer {
         private set
     var taskSolvingErrorDialogText: TaskSolvingErrorDialogText? = null
         private set
+    var programmingLanguages: List<Language> = emptyList()
+        private set
 
     private val logger: Logger = Logger.getInstance(javaClass)
 
@@ -69,7 +71,8 @@ object PluginServer {
      */
     private fun safeFind(find: () -> Unit) {
         logger.info("${Plugin.PLUGIN_NAME} PluginServer safeFind, current thread is ${Thread.currentThread().name}")
-        val publisher = ApplicationManager.getApplication().messageBus.syncPublisher(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC)
+        val publisher =
+            ApplicationManager.getApplication().messageBus.syncPublisher(ServerConnectionNotifier.SERVER_CONNECTION_TOPIC)
         serverConnectionResult = ServerConnectionResult.LOADING
         publisher.accept(serverConnectionResult)
 
@@ -89,6 +92,12 @@ object PluginServer {
         genders = findGenders()
         countries = findCountries()
         taskSolvingErrorDialogText = findTaskSolvingErrorDialogText()
+        programmingLanguages = findProgrammingLanguages()
+    }
+
+    private fun findProgrammingLanguages(): List<Language> {
+        return CollectionsQueryExecutor.getCollection("programming-language/all", ProgrammingLanguage.serializer())
+            .mapNotNull { it.getLanguage() }
     }
 
     private fun findAvailableLanguages(): List<PaneLanguage> {
@@ -116,7 +125,10 @@ object PluginServer {
     }
 
     private fun findTaskSolvingErrorDialogText(): TaskSolvingErrorDialogText {
-        return CollectionsQueryExecutor.getItemFromCollection("dialog-text/task_solving_error", TaskSolvingErrorDialogText.serializer())
+        return CollectionsQueryExecutor.getItemFromCollection(
+            "dialog-text/task_solving_error",
+            TaskSolvingErrorDialogText.serializer()
+        )
     }
 
 }

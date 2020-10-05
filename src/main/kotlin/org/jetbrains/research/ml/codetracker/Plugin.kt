@@ -96,9 +96,6 @@ object Plugin {
     private val ideVersion: Version? = getVersion()
     private val requiredPlugins = getRequiredPlugins()
 
-    // TODO: How will we change it?
-    val currentLanguage = Language.CPP
-
     init {
         logger.info("$PLUGIN_NAME: init plugin, test mode is $testMode")
     }
