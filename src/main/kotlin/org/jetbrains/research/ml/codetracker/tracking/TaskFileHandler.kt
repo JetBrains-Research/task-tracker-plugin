@@ -23,13 +23,11 @@ import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.models.Task
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.server.ServerConnectionNotifier
-import org.jetbrains.research.ml.codetracker.server.ServerConnectionResult
 import org.jetbrains.research.ml.codetracker.ui.MainController
+import org.jetbrains.research.ml.codetracker.ui.panes.SurveyControllerManager
 import org.jetbrains.research.ml.codetracker.ui.panes.SurveyUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskChoosingUiData
 import org.jetbrains.research.ml.codetracker.ui.panes.TaskSolvingControllerManager
-import org.jetbrains.research.ml.codetracker.ui.panes.util.subscribe
 import java.io.File
 import java.io.IOException
 
@@ -49,7 +47,7 @@ object TaskFileHandler {
     }
 
     /**
-     * Call each time when user change the language
+     * Call each time when user press startWorkingButton
      */
     private fun initProject(project: Project) {
         logger.info("Current chosen programming language is ${SurveyUiData.programmingLanguage.currentValue}")
@@ -76,9 +74,14 @@ object TaskFileHandler {
             logger.info("Project $project is already added or set to be added")
             return
         }
-        SurveyUiData.programmingLanguage.currentValue?.let {
-            initProject(project)
-        } ?: projectsToInit.add(project)
+        MainController.visiblePane?.let {
+            if (it.javaClass != SurveyControllerManager.javaClass) {
+                SurveyUiData.programmingLanguage.currentValue?.let {
+                    initProject(project)
+                } ?: projectsToInit.add(project)
+            }
+        }
+
     }
 
     private fun addSourceFolder(relativePath: String, module: Module) {
