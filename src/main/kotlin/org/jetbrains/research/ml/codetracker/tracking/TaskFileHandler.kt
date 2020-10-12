@@ -74,14 +74,11 @@ object TaskFileHandler {
             logger.info("Project $project is already added or set to be added")
             return
         }
-        MainController.visiblePane?.let {
-            if (it.javaClass != SurveyControllerManager.javaClass) {
-                SurveyUiData.programmingLanguage.currentValue?.let {
-                    initProject(project)
-                } ?: projectsToInit.add(project)
-            }
+        if (MainController.visiblePane != SurveyControllerManager) {
+            SurveyUiData.programmingLanguage.currentValue?.let {
+                initProject(project)
+            } ?: projectsToInit.add(project)
         }
-
     }
 
     private fun addSourceFolder(relativePath: String, module: Module) {
