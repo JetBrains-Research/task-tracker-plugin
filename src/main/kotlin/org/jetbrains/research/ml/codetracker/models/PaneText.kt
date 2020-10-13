@@ -10,7 +10,8 @@ data class SurveyPaneText(
     val country: String,
     val years: String,
     val months: String,
-    val startSession: String
+    val startSession: String,
+    val programmingLanguage: String
 )
 
 @Serializable

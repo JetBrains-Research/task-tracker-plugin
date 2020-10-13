@@ -36,9 +36,9 @@ object TaskFileInitContentProvider {
 
     fun getTaskFileName(task: Task, language: Language): String {
         return when(language) {
-            Language.JAVA  -> "${getClassNameByTask(task)}${Plugin.currentLanguage.extension.ext}"
-            Language.KOTLIN -> "${task.key.capitalize()}${Plugin.currentLanguage.extension.ext}"
-            else -> "${task.key}${Plugin.currentLanguage.extension.ext}"
+            Language.JAVA  -> "${getClassNameByTask(task)}${language.extension.ext}"
+            Language.KOTLIN -> "${task.key.capitalize()}${language.extension.ext}"
+            else -> "${task.key}${language.extension.ext}"
         }
     }
 

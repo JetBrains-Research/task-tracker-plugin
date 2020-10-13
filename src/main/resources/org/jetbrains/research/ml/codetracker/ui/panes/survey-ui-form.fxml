@@ -28,7 +28,7 @@
     </Pane>
     <Pane fx:id="profilePane" layoutY="${80.0 * scale}" prefHeight="${760.0 * scale}" prefWidth="${560.0 * scale}" stylesheets="@style.css">
         <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="${552.0 * scale}" layoutY="${62.0 * scale}" opacity="0.35" points="-552.0, -64.0, -552.0, 110.0, 8.0, -22.0, 8.0, -64.0" stroke="WHITE" strokeType="INSIDE" />
-        <Rectangle fx:id="yellowRectangle" arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="${191.0 * scale}" layoutY="${415.0 * scale}" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="${560.0 * scale}" />
+        <Rectangle fx:id="yellowRectangle" arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="${281.0 * scale}" layoutY="${415.0 * scale}" opacity="0.25" stroke="WHITE" strokeType="INSIDE" width="${560.0 * scale}" />
         <Polygon fx:id="bluePolygon" fill="#7abaf5" layoutX="${45.0 * scale}" layoutY="${238.0 * scale}" opacity="0.25" points="-45.0, 128.0, 515.0, 198.0, 515.0, -102.0, -45.0, -102.0" stroke="WHITE" strokeType="INSIDE" />
         <HBox layoutX="${30.0 * scale}" layoutY="${49.0 * scale}" styleClass="h-box">
             <Label fx:id="ageLabel" styleClass="sanserif-bold-20">
@@ -77,14 +77,16 @@
         </Label>
         <ComboBox fx:id="countryComboBox" layoutX="${80.0 * scale}" layoutY="${440.0 * scale}" prefHeight="${20.0 * scale}" prefWidth="${396.0 * scale}" />
         <ComboBox fx:id="languageComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${40.0 * scale}" layoutX="${510.0 * scale}" layoutY="${8.0 * scale}" styleClass="language" visibleRowCount="5" />
-        <Button fx:id="startWorkingButton" layoutX="${440.0 * scale}" layoutY="${501.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${93.0 * scale}">
+        <ComboBox fx:id="programmingLanguageComboBox" layoutX="${80.0 * scale}" layoutY="${550.0 * scale}" prefHeight="${20.0 * scale}" prefWidth="${396.0 * scale}" />
+        <Label fx:id="programmingLanguageLabel" layoutX="${25.0 * scale}" layoutY="${500.0 * scale}" styleClass="sanserif-bold-20" text="programming language:" />
+        <Button fx:id="startWorkingButton" layoutX="${440.0 * scale}" layoutY="${610.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}" prefWidth="${93.0 * scale}">
             <graphic>
                 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
                     <ImageView fitHeight="${35.0 * scale}" fitWidth="${75.0 * scale}" pickOnBounds="true" preserveRatio="true">
                         <Image url="@next.png" />
                     </ImageView>
                     <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />
-                    <Text fx:id="startWorkingText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="${98.736328125 * scale}" styleClass="sanserif-bold-15">
+                    <Text fx:id="startWorkingText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-15" textAlignment="CENTER" wrappingWidth="${98.736328125 * scale}">
                     </Text>
                 </VBox>
             </graphic>

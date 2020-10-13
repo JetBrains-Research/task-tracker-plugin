@@ -56,6 +56,8 @@ object PluginServer {
         private set
     var taskSolvingErrorDialogText: TaskSolvingErrorDialogText? = null
         private set
+    var programmingLanguages: List<Language> = emptyList()
+        private set
     private val logger: Logger = Logger.getInstance(javaClass)
 
     var serverConnectionResult: ServerConnectionResult = ServerConnectionResult.UNINITIALIZED
@@ -108,6 +110,12 @@ object PluginServer {
         genders = receiveGenders()
         countries = receiveCountries()
         taskSolvingErrorDialogText = receiveTaskSolvingErrorDialogText()
+        programmingLanguages = receiveProgrammingLanguages()
+    }
+
+    private fun receiveProgrammingLanguages(): List<Language> {
+        return CollectionsQueryExecutor.getCollection("programming-language/all", ProgrammingLanguage.serializer())
+            .mapNotNull { it.getLanguage() }
     }
 
     private fun receiveAvailableLanguages(): List<PaneLanguage> {

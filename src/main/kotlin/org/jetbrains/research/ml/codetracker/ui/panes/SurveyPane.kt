@@ -1,6 +1,7 @@
 package org.jetbrains.research.ml.codetracker.ui.panes
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import javafx.beans.binding.Bindings
@@ -17,11 +18,9 @@ import javafx.util.Callback
 import org.jetbrains.research.ml.codetracker.Plugin
 import org.jetbrains.research.ml.codetracker.models.Country
 import org.jetbrains.research.ml.codetracker.models.Gender
+import org.jetbrains.research.ml.codetracker.models.Language
 import org.jetbrains.research.ml.codetracker.server.PluginServer
-import org.jetbrains.research.ml.codetracker.tracking.StoredInfoHandler
-import org.jetbrains.research.ml.codetracker.tracking.StoredInfoWrapper
-import org.jetbrains.research.ml.codetracker.tracking.UiLoggedData
-import org.jetbrains.research.ml.codetracker.tracking.UiLoggedDataHeader
+import org.jetbrains.research.ml.codetracker.tracking.*
 import org.jetbrains.research.ml.codetracker.ui.panes.util.*
 import java.net.URL
 import java.util.*
@@ -73,9 +72,16 @@ interface CountryComparatorNotifier : Consumer<Comparator<Country>> {
     }
 }
 
+interface ProgrammingLanguageNotifier : Consumer<Int> {
+    companion object {
+        val PROGRAMMING_LANGUAGE_TOPIC = Topic.create("programming language change", ProgrammingLanguageNotifier::class.java)
+    }
+}
+
 object SurveyUiData : LanguagePaneUiData() {
     private val countries: List<Country> = PluginServer.countries
     private val genders: List<Gender> = PluginServer.genders
+    private val programmingLanguages: List<Language> = PluginServer.programmingLanguages
 
     val age = UiField(-1, AgeNotifier.AGE_TOPIC, StoredInfoHandler.getIntStoredField(UiLoggedDataHeader.AGE, -1))
     val gender = ListedUiField(
@@ -104,6 +110,12 @@ object SurveyUiData : LanguagePaneUiData() {
         CountryComparatorNotifier.COUNTRY_COMPARATOR_TOPIC,
         StoredInfoHandler.getIndexByStoredKey(UiLoggedDataHeader.COUNTRY, countries, -1)
     )
+    val programmingLanguage = ListedUiField(
+        programmingLanguages,
+        -1,
+        ProgrammingLanguageNotifier.PROGRAMMING_LANGUAGE_TOPIC,
+        initValue = StoredInfoHandler.getIndexByStoredKey(UiLoggedDataHeader.PROGRAMMING_LANGUAGE, programmingLanguages, -1)
+    )
 
     override fun getData() = listOf(
         age,
@@ -111,6 +123,7 @@ object SurveyUiData : LanguagePaneUiData() {
         peYears,
         peMonths,
         country,
+        programmingLanguage,
         language
     )
 }
@@ -179,6 +192,13 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
     private lateinit var countryComboBox: ComboBox<Country>
     private lateinit var countryObservableList: ObservableList<Country>
 
+    // Programming language
+    @FXML
+    private lateinit var programmingLanguageLabel: Label
+
+    @FXML
+    private lateinit var programmingLanguageComboBox: ComboBox<String>
+
     // StartWorking
     @FXML
     private lateinit var startWorkingButton: Button
@@ -211,6 +231,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
         initPeYears()
         initPeMonths()
         initCountry()
+        initProgrammingLanguage()
         initStartWorkingButton()
         makeTranslatable()
         super.initialize(url, resource)
@@ -319,9 +340,24 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
         })
     }
 
+    private fun initProgrammingLanguage() {
+        programmingLanguageComboBox.items = FXCollections.observableList(paneUiData.programmingLanguage.dataList.map { it.key })
+
+        programmingLanguageComboBox.selectionModel.selectedItemProperty().addListener { _ ->
+            paneUiData.programmingLanguage.uiValue = programmingLanguageComboBox.selectionModel.selectedIndex
+        }
+        subscribe(ProgrammingLanguageNotifier.PROGRAMMING_LANGUAGE_TOPIC, object : ProgrammingLanguageNotifier {
+            override fun accept(newLanguageIndex: Int) {
+                programmingLanguageComboBox.selectionModel.select(newLanguageIndex)
+                startWorkingButton.isDisable = paneUiData.anyRequiredDataDefault()
+            }
+        })
+    }
+
     private fun initStartWorkingButton() {
         startWorkingButton.onMouseClicked {
             ApplicationManager.getApplication().invokeLater {
+                TaskFileHandler.initProjects()
                 val surveyInfo: Map<String, String> = UiLoggedData.headers.zip(UiLoggedData.getData(Unit)).toMap()
                 StoredInfoWrapper.updateStoredInfo(surveyInfo)
             }
@@ -342,6 +378,7 @@ class SurveyController(project: Project, scale: Double, fxPanel: JFXPanel, id: I
                     peMonthsLabel.text = it.months
                     countryLabel.text = it.country
                     startWorkingText.text = it.startSession
+                    programmingLanguageLabel.text = it.programmingLanguage
                     paneUiData.country.dataListComparator =
                         compareBy { c -> c.translation.getOrDefault(newLanguage, "") }
                 }
