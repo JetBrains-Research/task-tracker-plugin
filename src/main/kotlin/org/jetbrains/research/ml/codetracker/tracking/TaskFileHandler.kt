@@ -74,10 +74,10 @@ object TaskFileHandler {
             logger.info("Project $project is already added or set to be added")
             return
         }
-        if (MainController.visiblePane != SurveyControllerManager) {
-            SurveyUiData.programmingLanguage.currentValue?.let {
-                initProject(project)
-            } ?: projectsToInit.add(project)
+        if (MainController.visiblePane != SurveyControllerManager && SurveyUiData.programmingLanguage.currentValue != null) {
+            initProject(project)
+        } else {
+            projectsToInit.add(project)
         }
     }
 
