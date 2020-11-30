@@ -1,6 +1,6 @@
 [![JetBrains Research](https://jb.gg/badges/research.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 
-# Codetracker
+# TaskTracker
 
 **Codetracker** is an IntelliJ-based IDE plugin for tracking code changes while solving programming problems.
 The plugin is built by the [ML4SE lab @ JetBrains Research](https://research.jetbrains.org/groups/ml_methods) 
