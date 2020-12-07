@@ -13,7 +13,7 @@ plugins {
     id("org.jetbrains.dokka") version "0.10.1"
 }
 
-group = "io.github.elena-lyulina.codetracker"
+group = "org.jetbrains.research.ml.tasktracker"
 version = "1.1"
 
 repositories {
@@ -120,7 +120,7 @@ gluonClient {
 tasks.withType<ShadowJar> {
     project.logger.warn("Don't forget to:\n" +
             "- set your remote server as baseUrl in QueryExecutor class\n" +
-            "- turn OFF org.jetbrains.research.ml.codetracker.Plugin.testMode")
+            "- turn OFF org.jetbrains.research.ml.tasktracker.Plugin.testMode")
 }
 
 tasks.withType<Wrapper> {

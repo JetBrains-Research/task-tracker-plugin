@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<Pane fx:id="mainPane" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1">
+    <Pane id="codetrackerPane" prefHeight="${80.0 * scale}" prefWidth="${560.0 * scale}">
+        <HBox layoutX="${12.0 * scale}" layoutY="${11.0 * scale}" style="-fx-alignment: center-right;" prefHeight="${59.0 * scale}" prefWidth="${536.0 * scale}">
+            <Label alignment="CENTER_RIGHT" styleClass="codetracker-sign" text="TaskTracker">
+            </Label>
+        </HBox>
+    </Pane>
+    <Pane fx:id="taskPane" layoutY="${80.0 * scale}" prefHeight="${760.0 * scale}" prefWidth="${560.0 * scale}">
+        <Polygon fx:id="greenPolygon" fill="#fff782" layoutX="${56.0 * scale}" layoutY="${711.0 * scale}" opacity="0.3"
+                 points="225.0, -311.0, 504.0, 50.0, 504.0, -491.0" stroke="WHITE" strokeType="INSIDE"/>
+        <Polygon fx:id="orangePolygon" fill="#f5d590" layoutX="${281.0 * scale}" layoutY="${460.0 * scale}" opacity="0.4"
+                 points="-281.0, 300.0, 280.0, 300.0, 9.0, -54.0, -281.0, 119.0" stroke="WHITE" strokeType="INSIDE"/>
+        <Rectangle fx:id="yellowRectangle" arcHeight="5.0" arcWidth="5.0" fill="#fff782" height="${72.0 * scale}"
+                   opacity="0.3" stroke="WHITE" strokeType="INSIDE" width="${560.0 * scale}"/>
+        <Polygon fx:id="bluePolygon" fill="#7abaf5" layoutX="${28.0 * scale}" layoutY="${61.0 * scale}" opacity="0.25"
+                 points="532.0, 700.0, 532.0, -21.0, -28.0, -21.0" stroke="WHITE" strokeType="INSIDE"/>
+        <TextFlow fx:id="taskTextFlow" layoutX="${20.0 * scale}" layoutY="${14.0 * scale}" prefHeight="${340.0 * scale}" prefWidth="${483.0 * scale}">
+            <Text fx:id="taskNameText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20">
+            </Text>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" text="&#10;"/>
+            <Text fx:id="taskDescriptionText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-16"
+                  wrappingWidth="${493.3779296875 * scale}"/>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" text="&#10;&#10;"/>
+            <Text fx:id="taskInputHeaderText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20">
+            </Text>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" text="&#10;"/>
+            <Text fx:id="taskInputText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-16"/>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" text="&#10;&#10;"
+                  wrappingWidth="${207.900390625 * scale}"/>
+            <Text fx:id="taskOutputHeaderText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20"
+                           wrappingWidth="${207.900390625 * scale}">
+            </Text>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-bold-20" text="&#10;"
+                  wrappingWidth="${207.900390625 * scale}"/>
+            <Text fx:id="taskOutputText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="sanserif-16"/>
+        </TextFlow>
+        <TextArea fx:id="firstExampleInput" editable="false" focusTraversable="false" layoutX="${20.0 * scale}" layoutY="${378.0 * scale}"
+                  prefHeight="${80.0 * scale}" prefWidth="${260.0 * scale}" styleClass="text-field" wrapText="true"/>
+        <TextArea fx:id="firstExampleOutput" editable="false" focusTraversable="false" layoutX="${280.0 * scale}" layoutY="${378.0 * scale}"
+                  prefHeight="${80.0 * scale}" prefWidth="${260.0 * scale}" styleClass="text-field" wrapText="true"/>
+        <TextArea fx:id="secondExampleInput" editable="false" focusTraversable="false" layoutX="${20.0 * scale}" layoutY="${458.0 * scale}"
+                  prefHeight="${80.0 * scale}" prefWidth="${260.0 * scale}" styleClass="text-field" wrapText="true"/>
+        <TextArea fx:id="secondExampleOutput" editable="false" focusTraversable="false" layoutX="${280.0 * scale}" layoutY="${458.0 * scale}"
+                  prefHeight="${80.0 * scale}" prefWidth="${260.0 * scale}" styleClass="text-field" wrapText="true"/>
+        <TextArea fx:id="thirdExampleInput" editable="false" focusTraversable="false" layoutX="${20.0 * scale}" layoutY="${538.0 * scale}"
+                  prefHeight="${80.0 * scale}" prefWidth="${260.0 * scale}" styleClass="text-field" wrapText="true"/>
+        <TextArea fx:id="thirdExampleOutput" editable="false" focusTraversable="false" layoutX="${280.0 * scale}" layoutY="${538.0 * scale}"
+                  prefHeight="${80.0 * scale}" prefWidth="${260.0 * scale}" styleClass="text-field" wrapText="true"/>
+        <ComboBox fx:id="languageComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${25.0 * scale}" prefWidth="${40.0 * scale}" layoutX="${510.0 * scale}" layoutY="${8.0 * scale}" styleClass="language" visibleRowCount="5" />
+        <Button fx:id="sendSolutionButton" layoutX="${439.0 * scale}" layoutY="${647.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}"
+                prefWidth="${93.0 * scale}">
+            <graphic>
+                <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
+                    <ImageView fitHeight="${35.0 * scale}" fitWidth="${75.0 * scale}" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@next.png"/>
+                    </ImageView>
+                    <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />
+                    <Text fx:id="sendSolutionText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER"
+                                   wrappingWidth="${98.736328125 * scale}" styleClass="sanserif-bold-15">
+                    </Text>
+                </VBox>
+            </graphic>
+        </Button>
+        <Button fx:id="backToTasksButton" layoutX="${30.0 * scale}" layoutY="${647.0 * scale}" mnemonicParsing="false" prefHeight="${93.0 * scale}"
+                prefWidth="${87.0 * scale}">
+            <graphic>
+                <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="${106.0 * scale}" prefWidth="${122.0 * scale}" styleClass="v-box">
+                    <ImageView fitHeight="${35.0 * scale}" fitWidth="${35.0 * scale}" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@close.png"/>
+                    </ImageView>
+                    <Pane prefHeight="${15.0 * scale}" prefWidth="${84.0 * scale}" />
+                    <Text fx:id="backToTasksText" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER"
+                                   wrappingWidth="${99.736328125 * scale}" styleClass="sanserif-bold-15">
+                    </Text>
+                </VBox>
+            </graphic>
+        </Button>
+        <Label fx:id="inputLabel" layoutX="${20.0 * scale}" layoutY="${343.0 * scale}" prefHeight="${25.0 * scale}" prefWidth="${260.0 * scale}"
+                        styleClass="sanserif-bold-20">
+        </Label>
+        <Label fx:id="outputLabel" alignment="CENTER_RIGHT" layoutX="${280.0 * scale}" layoutY="${343.0 * scale}" prefHeight="${25.0 * scale}"
+                        prefWidth="${260.0 * scale}" styleClass="sanserif-bold-20">
+        </Label>
+    </Pane>
+</Pane>
