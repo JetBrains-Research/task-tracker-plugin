@@ -279,7 +279,7 @@
             </Pane>
             <AnchorPane prefHeight="80.0" prefWidth="560.0">
                <children>
-                  <Label layoutX="193.0" layoutY="11.0" text="CodeTracker">
+                  <Label layoutX="193.0" layoutY="11.0" text="TaskTracker">
                      <font>
                         <Font name="SansSerif Bold" size="48.0" />
                      </font>

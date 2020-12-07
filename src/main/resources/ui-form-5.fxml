@@ -215,7 +215,7 @@
                 prefWidth="${280.0 * height}" text="отличная работа! " styleClass="sanserif-bold-24"/>
       </Pane>
       <Pane prefHeight="${80.0 * height}" prefWidth="${560.0 * height}">
-         <Label layoutX="${193.0 * height}" layoutY="${11.0 * height}" text="CodeTracker"
+         <Label layoutX="${193.0 * height}" layoutY="${11.0 * height}" text="TaskTracker"
                 styleClass="codetracker-sign"/>
       </Pane>
    </Pane>

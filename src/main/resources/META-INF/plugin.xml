@@ -1,16 +1,16 @@
 <idea-plugin>
-    <id>io.github.elena-lyulina.codetracker.codetracker</id>
-    <name>Codetracker</name>
+    <id>org.jetbrains.research.ml.tasktracker</id>
+    <name>TaskTracker</name>
     <vendor>JetBrains Research</vendor>
 
     <description><![CDATA[
-    Codetracker is a plugin build to research people’s behaviour while solving various programming tasks.
+    TaskTracker is a plugin build to research people’s behaviour while solving various programming tasks.
     The plugin tracks all code changes while solving tasks in addition to user actions, performed in IDE.
     It stores them in .csv files and sends anonymously to the privately hosted server when you submit the solutions.
     The plugin sends only those code changes that happen in automatically created files for task solving. Any other files are not considered.
     This data is planned to be used to create an open dataset with additional variables anonymization.
     Please, see
-     <a href="https://github.com/JetBrains-Research/codetracker">plugin homepage</a> for detailed description and privacy policy.
+     <a href="https://github.com/JetBrains-Research/task-tracker-plugin">plugin homepage</a> for detailed description and privacy policy.
 
     ]]></description>
 
@@ -19,10 +19,10 @@
 <!--    <depends>Activity Tracker</depends>-->
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="org.jetbrains.research.ml.codetracker.InitActivity"/>
-        <toolWindow id="codetracker" anchor="right" factoryClass="org.jetbrains.research.ml.codetracker.ui.PluginToolWindowFactory"/>
-        <errorHandler implementation="org.jetbrains.research.ml.codetracker.reporting.GitHubErrorReporter"/>
-        <writingAccessProvider implementation="org.jetbrains.research.ml.codetracker.tracking.PluginAccessProvider"/>
+        <postStartupActivity implementation="org.jetbrains.research.ml.tasktracker.InitActivity"/>
+        <toolWindow id="tasktracker" anchor="right" factoryClass="org.jetbrains.research.ml.tasktracker.ui.PluginToolWindowFactory"/>
+        <errorHandler implementation="org.jetbrains.research.ml.tasktracker.reporting.GitHubErrorReporter"/>
+        <writingAccessProvider implementation="org.jetbrains.research.ml.tasktracker.tracking.PluginAccessProvider"/>
     </extensions>
 
 </idea-plugin>
