@@ -39,7 +39,7 @@ dependencies {
     implementation("com.gluonhq", "charm-glisten", "6.0.1")
     implementation("com.google.code.gson", "gson", "2.8.5")
     implementation("com.squareup.okhttp3", "okhttp", "4.2.2")
-    implementation("org.controlsfx:controlsfx:11.0.2")
+//    implementation("org.controlsfx:controlsfx:11.0.3")
     compile("com.google.auto.service:auto-service:1.0-rc7")
     implementation("org.eclipse.mylyn.github", "org.eclipse.egit.github.core", "2.1.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:0.9.1")
@@ -68,7 +68,7 @@ dependencies {
    Uncomment for testing with Intellij IDEA
 */
 intellij {
-    version = "2020.2"
+    version = "2020.3"
 }
 
 
