@@ -95,7 +95,7 @@ intellij {
 }
 
 javafx {
-    version = "11"
+    version = "15"
     modules("javafx.controls", "javafx.fxml", "javafx.swing")
     configuration = "compileOnly"
 }
@@ -124,5 +124,5 @@ tasks.withType<ShadowJar> {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "5.2.1"
+    gradleVersion = "6.8"
 }
