@@ -26,7 +26,7 @@ Currently TaskTracker is available in English and Russian.
 ## Privacy
 
 **By installing TaskTracker, you agree to send us changes in code that you make during problem solving.**
-This plugin only tracks changes in the documents it creates creates automatically for solving the tasks. 
+This plugin only tracks changes in the documents it creates automatically for solving the tasks. 
 The data is sent to our privately hosted instance of [TaskTracker server](https://github.com/JetBrains-Research/task-tracker-server).
 **TaskTracker only sends the data when you click the `Submit` button.**
 All data is sent **anonymously** and only includes filenames, source code, and changes.
