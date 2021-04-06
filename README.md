@@ -15,7 +15,7 @@ For example, we are building an automated hint generation system based on this d
 ### Problem solving
 
 On startup, TaskTracker asks the user to specify their age and programming experience.
-The UI of TaskTracker enables the user to choose a problem to solve and see correct examples of desired behaviour. 
+The UI of TaskTracker enables the user to choose a problem to solve and see correct examples of desired behavior. 
 All data about problems is received from the [TaskTracker server](https://github.com/JetBrains-Research/task-tracker-server) 
 when the plugin starts.  
 
@@ -25,11 +25,11 @@ Currently TaskTracker is available in English and Russian.
 
 ## Privacy
 
-**By installing TaskTracker, you agree to send us changes in code that you make during problem solving.**
-This plugin only tracks changes in the documents it creates automatically for solving the tasks. 
-The data is sent to our privately hosted instance of [TaskTracker server](https://github.com/JetBrains-Research/task-tracker-server).
-**TaskTracker only sends the data when you click the `Submit` button.**
-All data is sent **anonymously** and only includes filenames, source code, and changes.
+Disclaimer for participants in our research only. By installing the TaskTracker plugin using our distribution file, you agree **to send us changes in code** that you make during problem solving.
+
+The TaskTracker plugin tracks changes **only** in the documents it **creates and opens automatically** to solve the tasks. 
+The data is sent to our **privately hosted instance of the [TaskTracker server](https://github.com/JetBrains-Research/task-tracker-server)**. 
+TaskTracker only sends the data when you **click** the **Submit** button. All data is sent **anonymously**, and only includes filenames, source code, and changes. For more information, see our [Privacy policy](https://github.com/JetBrains-Research/task-tracker-plugin/wiki/Privacy-policy).
 
 ## Installation
 
@@ -41,5 +41,5 @@ For instructions, see [how to install plugins in IntelliJ IDEs](https://www.jetb
 
 ## Releases
 
-The list of releases is [here](https://github.com/JetBrains-Research/task-tracker-plugin/releases).
+To learn more about TaskTracker releases, see the [list](https://github.com/JetBrains-Research/task-tracker-plugin/releases).
 
