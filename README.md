@@ -35,9 +35,7 @@ TaskTracker only sends the data when you **click** the **Submit** button. All da
 
 Just clone the repo by `git clone https://github.com/JetBrains-Research/task-tracker-plugin` and run `./gradlew build shadowJar` to build a .zip distribution of the plugin. 
 The .zip is located in `build/distributions/tasktracker-1.0-SNAPSHOT.zip`. Then __install the plugin from disk__ into an IntelliJ-based IDE of your choice.
-For instructions, see [how to install plugins in IntelliJ IDEs](https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk) and  
-
-[how to install and uninstall the TaskTracker plugin](https://github.com/JetBrains-Research/task-tracker-plugin/wiki) (the guide is available in English and Russian).
+For instructions, see [how to install plugins in IntelliJ IDEs](https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk) and [how to install and uninstall the TaskTracker plugin](https://github.com/JetBrains-Research/task-tracker-plugin/wiki) (the guide is available in English and Russian).
 
 ## Releases
 
