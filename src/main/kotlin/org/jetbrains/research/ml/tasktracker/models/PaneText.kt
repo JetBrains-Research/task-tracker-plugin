@@ -35,7 +35,8 @@ data class TaskSolvingPaneText(
     val inputData: String,
     val outputData: String,
     val submit: String,
-    val backToTasks: String
+    val backToTasks: String,
+    val hint: String
 )
 
 @Serializable
