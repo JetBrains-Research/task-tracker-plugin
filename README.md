@@ -1,5 +1,7 @@
 [![JetBrains Research](https://jb.gg/badges/research.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 
+Repository archived by abarilo as no longer maintained
+
 # TaskTracker
 
 **TaskTracker** is an IntelliJ-based IDE plugin for tracking code changes while solving programming problems.
